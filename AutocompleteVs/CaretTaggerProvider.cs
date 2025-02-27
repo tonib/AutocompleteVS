@@ -29,7 +29,7 @@ namespace AutocompleteVs
 				return null;
 
 			// TODO: In the	colortagger example, this is not implemented like this.. is rigth?
-			return new CaretTagger<T>((IWpfTextView)textView);
+			return new CaretTagger((IWpfTextView)textView) as ITagger<T>;
 		}
 	}
 }

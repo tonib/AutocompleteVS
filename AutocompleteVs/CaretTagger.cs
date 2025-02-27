@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Shapes;
 
 namespace AutocompleteVs
 {
-	class CaretTagger<T> : ITagger<T> where T : ITag
+	class CaretTagger : ITagger<LabelTag>
 	{
 		private readonly IWpfTextView TextView;
 
@@ -33,10 +34,11 @@ namespace AutocompleteVs
 			TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(span));
 		}
 
-		public IEnumerable<ITagSpan<T>> GetTags(NormalizedSnapshotSpanCollection spans)
+		public IEnumerable<ITagSpan<LabelTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
-			//throw new NotImplementedException();
-			return new List<ITagSpan<T>>();
+			// TODO: Check caret is inside spans ??? NFI
+			SnapshotSpan span = new SnapshotSpan(TextView.TextSnapshot, TextView.Caret.Position.BufferPosition, 0);
+			return new ITagSpan<LabelTag>[] { new TagSpan<LabelTag>(span, new LabelTag("Achilipu arriquitaun")) };
 		}
 	}
 }
