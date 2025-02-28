@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Text.Formatting;
 using System;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AutocompleteVs.Test
 {
@@ -92,6 +93,7 @@ namespace AutocompleteVs.Test
 					Geometry geometry = textViewLines.GetMarkerGeometry(span);
 					if (geometry != null)
 					{
+						/*
 						var drawing = new GeometryDrawing(this.brush, this.pen, geometry);
 						drawing.Freeze();
 
@@ -108,6 +110,19 @@ namespace AutocompleteVs.Test
 						Canvas.SetTop(image, geometry.Bounds.Top);
 
 						this.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+						*/
+
+						var drawing = new GeometryDrawing(this.brush, this.pen, geometry);
+						drawing.Freeze();
+
+						Label label = new Label();
+						label.Content = "Achilipu";
+
+						// Align the image with the top of the bounds of the text geometry
+						Canvas.SetLeft(label, geometry.Bounds.Left);
+						Canvas.SetTop(label, geometry.Bounds.Top);
+
+						this.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, label, null);
 					}
 				}
 			}
