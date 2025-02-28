@@ -55,6 +55,8 @@
     <Compile Include="AutocompleteVsPackage.cs" />
     <Compile Include="Support\IntraTextAdornmentTagger.cs" />
     <Compile Include="Support\IntraTextAdornmentTagTransformer.cs" />
+    <Compile Include="Test\TextAdornment1.cs" />
+    <Compile Include="Test\TextAdornment1TextViewCreationListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source.extension.vsixmanifest">
@@ -62,10 +64,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
