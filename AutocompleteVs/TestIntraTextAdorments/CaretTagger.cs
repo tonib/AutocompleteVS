@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Shapes;
 
-namespace AutocompleteVs
+namespace AutocompleteVs.TestIntraTextAdorments
 {
 	class CaretTagger : ITagger<LabelTag>
 	{
@@ -18,7 +18,7 @@ namespace AutocompleteVs
 
 		public CaretTagger(IWpfTextView textView)
 		{
-			this.TextView = textView;
+			TextView = textView;
 			TextView.Caret.PositionChanged += Caret_PositionChanged;
 		}
 
@@ -30,7 +30,7 @@ namespace AutocompleteVs
 			int max = Math.Max(oldIdx, newIdx);
 			int length = max - min;
 			var span = new SnapshotSpan(TextView.TextSnapshot, min, length);
-			
+
 			TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(span));
 		}
 

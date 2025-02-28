@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutocompleteVs
+namespace AutocompleteVs.TestIntraTextAdorments
 {
 	/// <summary>
 	/// Text tag info

@@ -9,15 +9,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutocompleteVs
+namespace AutocompleteVs.TestIntraTextAdorments
 {
 	[Export(typeof(IViewTaggerProvider))]
 	[ContentType("code")]
 	[TagType(typeof(IntraTextAdornmentTag))]
-	sealed class CaretTaggerProvider : IViewTaggerProvider
+	internal sealed class LabelAdornmentTaggerProvider : IViewTaggerProvider
 	{
-		public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) 
-			where T : ITag
+#pragma warning disable 649 // "field never assigned to" -- field is set by MEF.
+		[Import]
+		internal IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService;
+#pragma warning restore 649
+
+		public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
 		{
 			if (textView == null)
 				throw new ArgumentNullException("textView");
@@ -28,8 +32,11 @@ namespace AutocompleteVs
 			if (buffer != textView.TextBuffer)
 				return null;
 
-			// TODO: In the	colortagger example, this is not implemented like this.. is rigth?
-			return new CaretTagger((IWpfTextView)textView) as ITagger<T>;
+			return LabelAdornmentTagger.GetTagger(
+				(IWpfTextView)textView,
+				new Lazy<ITagAggregator<LabelTag>>(
+					() => BufferTagAggregatorFactoryService.CreateTagAggregator<LabelTag>(textView.TextBuffer)))
+				as ITagger<T>;
 		}
 	}
 }

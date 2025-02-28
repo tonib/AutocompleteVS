@@ -45,16 +45,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CaretTagger.cs" />
-    <Compile Include="CaretTaggerProvider.cs" />
-    <Compile Include="LabelAdornment.cs" />
-    <Compile Include="LabelAdornmentTagger.cs" />
-    <Compile Include="LabelAdornmentTaggerProvider.cs" />
-    <Compile Include="LabelTag.cs" />
+    <Compile Include="TestIntraTextAdorments\CaretTagger.cs" />
+    <Compile Include="TestIntraTextAdorments\CaretTaggerProvider.cs" />
+    <Compile Include="TestIntraTextAdorments\LabelAdornment.cs" />
+    <Compile Include="TestIntraTextAdorments\LabelAdornmentTagger.cs" />
+    <Compile Include="TestIntraTextAdorments\LabelAdornmentTaggerProvider.cs" />
+    <Compile Include="TestIntraTextAdorments\LabelTag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AutocompleteVsPackage.cs" />
-    <Compile Include="Support\IntraTextAdornmentTagger.cs" />
-    <Compile Include="Support\IntraTextAdornmentTagTransformer.cs" />
+    <Compile Include="TestIntraTextAdorments\Support\IntraTextAdornmentTagger.cs" />
+    <Compile Include="TestIntraTextAdorments\Support\IntraTextAdornmentTagTransformer.cs" />
     <Compile Include="Test\TextAdornment1.cs" />
     <Compile Include="Test\TextAdornment1TextViewCreationListener.cs" />
   </ItemGroup>

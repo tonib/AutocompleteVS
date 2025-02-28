@@ -1,4 +1,4 @@
-﻿using AutocompleteVs.Support;
+﻿using AutocompleteVs.TestIntraTextAdorments.Support;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutocompleteVs
+namespace AutocompleteVs.TestIntraTextAdorments
 {
 	/// <summary>
 	/// Provides autocompletion adorments at the caret position
@@ -20,14 +20,14 @@ namespace AutocompleteVs
 
 		internal static ITagger<IntraTextAdornmentTag> GetTagger(IWpfTextView view, Lazy<ITagAggregator<LabelTag>> colorTagger)
 		{
-			return view.Properties.GetOrCreateSingletonProperty<LabelAdornmentTagger>(
+			return view.Properties.GetOrCreateSingletonProperty(
 				() => new LabelAdornmentTagger(view, colorTagger.Value));
 		}
 
 		private LabelAdornmentTagger(IWpfTextView view, ITagAggregator<LabelTag> labelTagger)
 			: base(view)
 		{
-			this.LabelTagger = labelTagger;
+			LabelTagger = labelTagger;
 		}
 
 		public void Dispose()
