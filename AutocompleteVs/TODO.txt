@@ -1,0 +1,6 @@
+﻿Try to put again nuget ollamasharp reference
+Remove achilipus
+show autocompletion
+fast key for autocompletion
+key to add autocompletion
+configure context size
