@@ -22,6 +22,21 @@ namespace AutocompleteVs
         [Import]
         internal IVsEditorAdaptersFactoryService AdapterService = null;
 
+        public const string AUTOCOMPLETE_ADORNMENT_LAYER_ID = "AutocompleteLayer";
+
+        // Disable "Field is never assigned to..." and "Field is never used" compiler's warnings. Justification: the field is used by MEF.
+#pragma warning disable 649, 169
+        /// <summary>
+        /// Defines the adornment layer for the adornment. This layer is ordered
+        /// after the selection layer in the Z-order
+        /// </summary>
+        [Export(typeof(AdornmentLayerDefinition))]
+        [Name(AUTOCOMPLETE_ADORNMENT_LAYER_ID)]
+        [Order(After = PredefinedAdornmentLayers.Selection, Before = PredefinedAdornmentLayers.Text)]
+        private AdornmentLayerDefinition editorAdornmentLayer;
+
+#pragma warning restore 649, 169
+
         IWpfTextView WpfTextView;
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)

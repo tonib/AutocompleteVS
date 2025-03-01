@@ -130,7 +130,7 @@ namespace AutocompleteVs
 			// _ = Generation.TestAsync();
 
 			// Call the model, do not wait
-			_ = DoRequestAsync(prefixText, suffixText);
+			_ = DoRequestAsync(view, prefixText, suffixText);
 		}
 
 		/*async private Task TestAsync()
@@ -145,7 +145,7 @@ namespace AutocompleteVs
 			//	_ = await x.MoveNextAsync();
 		}*/
 
-		async private static Task DoRequestAsync(string prefixText, string suffixText)
+		async private static Task DoRequestAsync(Microsoft.VisualStudio.Text.Editor.IWpfTextView view, string prefixText, string suffixText)
 		{
 			try
 			{
@@ -161,12 +161,18 @@ namespace AutocompleteVs
 				request.Suffix = suffixText;
 
 				Debug.WriteLine("---------------");
+				string autocompleteText = "";
 				var enumerator = ollama.GenerateAsync(request).GetAsyncEnumerator();
 				while (await enumerator.MoveNextAsync())
 				{
-					Debug.Write(enumerator.Current.Response);
+					string newToken = enumerator.Current.Response;
+					Debug.Write(newToken);
+					autocompleteText += newToken;
 				}
 				Debug.WriteLine("---------------");
+
+				ViewAutocompleteHandler handler = ViewAutocompleteHandler.AttachedHandler(view);
+				handler.AddAutocompletionAdornment(autocompleteText);
 
 			}
 			catch(Exception ex)

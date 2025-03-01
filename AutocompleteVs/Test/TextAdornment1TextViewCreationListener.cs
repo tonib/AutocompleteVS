@@ -8,9 +8,9 @@ namespace AutocompleteVs.Test
 	/// Establishes an <see cref="IAdornmentLayer"/> to place the adornment on and exports the <see cref="IWpfTextViewCreationListener"/>
 	/// that instantiates the adornment on the event of a <see cref="IWpfTextView"/>'s creation
 	/// </summary>
-	[Export(typeof(IWpfTextViewCreationListener))]
+	/*[Export(typeof(IWpfTextViewCreationListener))]
 	[ContentType("text")]
-	[TextViewRole(PredefinedTextViewRoles.Document)]
+	[TextViewRole(PredefinedTextViewRoles.Document)]*/
 	internal sealed class TextAdornment1TextViewCreationListener : IWpfTextViewCreationListener
 	{
 		// Disable "Field is never assigned to..." and "Field is never used" compiler's warnings. Justification: the field is used by MEF.
