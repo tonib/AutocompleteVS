@@ -66,7 +66,7 @@ namespace AutocompleteVs
 		public void AddAutocompletionAdornment(string autocompleteText)
 		{
 			// Get caret line
-			var caretLine = View.Caret.ContainingTextViewLine;
+			ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
 
 			int caretIdx = View.Caret.Position.BufferPosition;
 			SnapshotSpan span = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(caretIdx, caretIdx + 1));
@@ -74,6 +74,36 @@ namespace AutocompleteVs
 
 			Label label = new Label();
 			label.Content = autocompleteText;
+			// TODO: Cache label, there will be a singe adornment in view
+
+			// Debug border
+			//label.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0xff));
+			//label.BorderBrush.Freeze();
+			//label.BorderThickness = new System.Windows.Thickness(1);
+			//label.Height = geometry.Bounds.Height * 1.1;
+
+			// Set label height
+			label.Height = geometry.Bounds.Height;
+			// TODO: Check if there is some setting in VS for paddings:
+			label.Padding = new System.Windows.Thickness(0);
+
+			// Set font default formatting properties:
+			var textProperties = View.FormattedLineSource.DefaultTextProperties;
+			var typeFace = textProperties.Typeface;
+			label.FontFamily = typeFace.FontFamily;
+			label.FontSize = textProperties.FontRenderingEmSize;
+			label.FontStretch = typeFace.Stretch;
+			label.FontStyle = typeFace.Style;
+			label.FontWeight = typeFace.Weight;
+			// Make foreground color "grayish":
+			label.Foreground = textProperties.ForegroundBrush.Clone();
+			label.Foreground.Opacity = 0.5;
+			label.Background = textProperties.BackgroundBrush;
+
+			// TODO: If we are not at the end of current line, show suggestion in other line (upper / lower)
+			// TODO: Make sure it does not collide with VS single word autocompletion toolwindow
+
+			// TODO: Add line tranformation defined by the VS ??? (see eye fish example in VS extensibility)
 
 			// Align the image with the top of the bounds of the text geometry
 			Canvas.SetLeft(label, geometry.Bounds.Left);

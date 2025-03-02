@@ -1,4 +1,5 @@
-﻿
+﻿Add recommended settins for ollama: Remove temperature, choose always the most probable
+
 keyboard handling:
 	https://learn.microsoft.com/en-us/visualstudio/extensibility/binding-keyboard-shortcuts-to-menu-items?view=vs-2022
 	https://www.alashiban.com/multi-editing-tutorial/?doing_wp_cron=1740908324.0118949413299560546875

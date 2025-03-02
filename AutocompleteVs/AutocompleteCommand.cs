@@ -130,6 +130,7 @@ namespace AutocompleteVs
 			// _ = Generation.TestAsync();
 
 			// Call the model, do not wait
+			// TODO: This seems to lock. Check if it should be run on a different thread, or should remove thread affinity
 			_ = DoRequestAsync(view, prefixText, suffixText);
 		}
 
