@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace AutocompleteVs.Keyboard
 {
-
+	/*
+	// TODO: Remove this, not working
 	[Export(typeof(IKeyProcessorProvider))]
 	[TextViewRole(PredefinedTextViewRoles.Document)]
 	[ContentType(VsTextViewListener.CONTENT_TYPE_ID)]
@@ -23,4 +24,5 @@ namespace AutocompleteVs.Keyboard
 		public KeyProcessor GetAssociatedProcessor(IWpfTextView wpfTextView) => 
 			AutocompleteKeyProcesor.AttachedProcessor(wpfTextView);
 	}
+	*/
 }

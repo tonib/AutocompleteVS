@@ -76,7 +76,7 @@
         </Strings>
       </Button>
     </Buttons>
-
+    
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
       <!--  The bitmap id is defined in a way that is a little bit different from the others:
@@ -88,6 +88,11 @@
     </Bitmaps>
   </Commands>
 
+  <KeyBindings>
+    <KeyBinding guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId" editor="guidVSStd97"
+      key1="M" mod1="CONTROL" key2="A" />
+  </KeyBindings>
+  
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidAutocompleteVsPackage" value="{05fd51b7-1fda-4eda-b9f9-d12f95255b5b}" />

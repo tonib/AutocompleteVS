@@ -32,9 +32,10 @@ namespace AutocompleteVs
 			Layer = view.GetAdornmentLayer(VsTextViewListener.AUTOCOMPLETE_ADORNMENT_LAYER_ID);
 
 			// Get keyboard notifications
-			AutocompleteKeyProcesor.AttachedProcessor(View).OnPreviewKeyDown += ViewAutocompleteHandler_OnPreviewKeyDown;
+			// AutocompleteKeyProcesor.AttachedProcessor(View).OnPreviewKeyDown += ViewAutocompleteHandler_OnPreviewKeyDown;
 		}
 
+		/*
 		private void ViewAutocompleteHandler_OnPreviewKeyDown(KeyEventArgs args)
 		{
 			ModifierKeys modifiers = System.Windows.Input.Keyboard.Modifiers;
@@ -57,7 +58,7 @@ namespace AutocompleteVs
 			// Esc: Cancel suggestion
 			// Ctrl + tab: If suggestion is visible, add the autocomplete tab
 			// Ctrl + right arrow: If suggestion is visible, autocomplete next word
-		}
+		}*/
 
 		static public ViewAutocompleteHandler AttachedHandler(IWpfTextView view) => 
 			view.Properties.GetOrCreateSingletonProperty(() => new ViewAutocompleteHandler(view));

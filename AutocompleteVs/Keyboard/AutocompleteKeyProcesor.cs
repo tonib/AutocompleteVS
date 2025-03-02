@@ -9,6 +9,8 @@ using System.Windows.Input;
 
 namespace AutocompleteVs.Keyboard
 {
+	// TODO: Remove this, not working
+	/*
 	/// <summary>
 	/// Handles keyboard events in a view
 	/// </summary>
@@ -41,4 +43,5 @@ namespace AutocompleteVs.Keyboard
 			base.PreviewKeyDown(args);
 		}
 	}
+	*/
 }
