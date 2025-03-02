@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Editor;
+﻿using AutocompleteVs.Keyboard;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
@@ -67,6 +68,9 @@ namespace AutocompleteVs
 
             // Create the view autocompletion handler
             ViewAutocompleteHandler.AttachedHandler(WpfTextView);
+
+            // Get view command notifications
+            AutocompleteCommandFilter.AttachCommandFiter(textViewAdapter, WpfTextView);
 
             /*
              * See: https://stackoverflow.com/questions/18268685/visual-studio-extension-keyprocessor-alt-key

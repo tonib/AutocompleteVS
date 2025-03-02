@@ -49,6 +49,7 @@
     <Compile Include="Keyboard\AutocompleteCommandHandler.cs" />
     <Compile Include="Keyboard\AutocompleteKeyProcesor.cs" />
     <Compile Include="Keyboard\AutocompleteKeyProcessorProvider.cs" />
+    <Compile Include="Keyboard\AutocompleteCommandFilter.cs" />
     <Compile Include="ViewAutocompleteHandler.cs" />
     <Compile Include="AutocompleteCommand.cs" />
     <Compile Include="Generation.cs" />
