@@ -8,6 +8,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace AutocompleteVs
 {
@@ -16,12 +17,20 @@ namespace AutocompleteVs
     /// </summary>
     [Export(typeof(IVsTextViewCreationListener))]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
-    [ContentType("text")]
+    [ContentType(CONTENT_TYPE_ID)]
     internal sealed class VsTextViewListener : IVsTextViewCreationListener
     {
         [Import]
         internal IVsEditorAdaptersFactoryService AdapterService = null;
 
+        /// <summary>
+        /// Content type supported for autocompletion
+        /// </summary>
+        public const string CONTENT_TYPE_ID = "text";
+
+        /// <summary>
+        /// Adornments layer identifier for autocompletion
+        /// </summary>
         public const string AUTOCOMPLETE_ADORNMENT_LAYER_ID = "AutocompleteLayer";
 
         // Disable "Field is never assigned to..." and "Field is never used" compiler's warnings. Justification: the field is used by MEF.
@@ -55,6 +64,9 @@ namespace AutocompleteVs
                 return;
 
             WpfTextView = (IWpfTextView)textView;
+
+            // Create the view autocompletion handler
+            ViewAutocompleteHandler.AttachedHandler(WpfTextView);
 
             /*
              * See: https://stackoverflow.com/questions/18268685/visual-studio-extension-keyprocessor-alt-key

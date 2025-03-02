@@ -46,6 +46,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Keyboard\AutocompleteKeyProcesor.cs" />
+    <Compile Include="Keyboard\AutocompleteKeyProcessorProvider.cs" />
     <Compile Include="ViewAutocompleteHandler.cs" />
     <Compile Include="AutocompleteCommand.cs" />
     <Compile Include="Generation.cs" />
