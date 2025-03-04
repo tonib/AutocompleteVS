@@ -52,7 +52,7 @@
     <Compile Include="Keyboard\AutocompleteCommandFilter.cs" />
     <Compile Include="ViewAutocompleteHandler.cs" />
     <Compile Include="AutocompleteCommand.cs" />
-    <Compile Include="Generation.cs" />
+    <Compile Include="AutocompletionGeneration.cs" />
     <Compile Include="TestIntraTextAdorments\CaretTagger.cs" />
     <Compile Include="TestIntraTextAdorments\CaretTaggerProvider.cs" />
     <Compile Include="TestIntraTextAdorments\LabelAdornment.cs" />

@@ -30,38 +30,26 @@ namespace AutocompleteVs
 		{
 			View = view;
 			Layer = view.GetAdornmentLayer(VsTextViewListener.AUTOCOMPLETE_ADORNMENT_LAYER_ID);
-
-			// Get keyboard notifications
-			// AutocompleteKeyProcesor.AttachedProcessor(View).OnPreviewKeyDown += ViewAutocompleteHandler_OnPreviewKeyDown;
 		}
-
-		/*
-		private void ViewAutocompleteHandler_OnPreviewKeyDown(KeyEventArgs args)
-		{
-			ModifierKeys modifiers = System.Windows.Input.Keyboard.Modifiers;
-
-			// This does not work, as it reports args.Key == Key.System
-			// if (args.Key == Key.Space && (modifiers & ModifierKeys.Control & ModifierKeys.Shift) != 0)
-
-			// Ctrl + Shift + Space: Start autocompletion
-			if (System.Windows.Input.Keyboard.IsKeyDown(Key.Space) && (modifiers & ModifierKeys.Control & ModifierKeys.Shift) != 0)
-			{
-				Debug.WriteLine("Start autocompletion");
-			}
-			if (args.Key == Key.Space)
-			{
-				if((modifiers & ModifierKeys.Control & ModifierKeys.Shift) != 0)
-					Debug.WriteLine("Start autocompletion");
-			}
-			Debug.WriteLine(args.Key + " "  + System.Windows.Input.Keyboard.IsKeyDown(Key.Space));
-
-			// Esc: Cancel suggestion
-			// Ctrl + tab: If suggestion is visible, add the autocomplete tab
-			// Ctrl + right arrow: If suggestion is visible, autocomplete next word
-		}*/
 
 		static public ViewAutocompleteHandler AttachedHandler(IWpfTextView view) => 
 			view.Properties.GetOrCreateSingletonProperty(() => new ViewAutocompleteHandler(view));
+
+		public void StartGeneration()
+		{
+			// TODO: This only for models allowing fill in the middle
+			// Get prefix / suffix text
+			int caretIdx = View.Caret.Position.BufferPosition;
+			string prefixText = View.TextBuffer.CurrentSnapshot.GetText(0, caretIdx);
+			string suffixText;
+			int textLength = View.TextBuffer.CurrentSnapshot.Length;
+			if (caretIdx >= textLength)
+				suffixText = "";
+			else
+				suffixText = View.TextBuffer.CurrentSnapshot.GetText(caretIdx, View.TextBuffer.CurrentSnapshot.Length - caretIdx);
+
+			_ = AutocompletionGeneration.Instance.GetAutocompletionAsync(this, prefixText, suffixText);
+		}
 
 		public void AddAutocompletionAdornment(string autocompleteText)
 		{

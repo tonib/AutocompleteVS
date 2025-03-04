@@ -4,13 +4,13 @@ keyboard handling:
 	https://learn.microsoft.com/en-us/visualstudio/extensibility/binding-keyboard-shortcuts-to-menu-items?view=vs-2022
 	https://www.alashiban.com/multi-editing-tutorial/?doing_wp_cron=1740908324.0118949413299560546875
 	https://learn.microsoft.com/en-us/visualstudio/extensibility/internals/command-routing-algorithm?view=vs-2022
-	
-create a simpler project for tests
-show autocompletion
-fast key for autocompletion
+
+autocomplete single lines only ???
+set context limits for autocompletion
+show autocompletion (todos)
 key to add autocompletion
 configure context size
-
+store ollama configuration
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING
