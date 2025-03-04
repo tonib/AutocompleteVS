@@ -6,6 +6,7 @@ keyboard handling:
 	https://learn.microsoft.com/en-us/visualstudio/extensibility/internals/command-routing-algorithm?view=vs-2022
 
 autocomplete single lines only ???
+support multiline autocompletion
 set context limits for autocompletion
 show autocompletion (todos)
 key to add autocompletion

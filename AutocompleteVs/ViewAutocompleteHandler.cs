@@ -24,12 +24,68 @@ namespace AutocompleteVs
 		/// </summary>
 		private readonly IAdornmentLayer Layer;
 		private readonly IWpfTextView View;
-		// Label Adornment;
+
+		/// <summary>
+		/// The label to render the current suggestion. Null until first suggestion is added
+		/// </summary>
+		private Label LabelAdornment;
+
+		/// <summary>
+		/// Is currently the adornment displayed?
+		/// </summary>
+		private bool LabelAdornmentVisible;
+
+		// TODO: Remove this, unused
+		/// <summary>
+		/// Line identifier where adornment is displayed. null if identifier is not visible
+		/// </summary>
+		private object AdornmentLineIdentityTag;
 
 		private ViewAutocompleteHandler(IWpfTextView view)
 		{
 			View = view;
 			Layer = view.GetAdornmentLayer(VsTextViewListener.AUTOCOMPLETE_ADORNMENT_LAYER_ID);
+
+			View.LayoutChanged += View_LayoutChanged;
+		}
+
+		/// <summary>
+		/// Called when lines must to be re-rendered. This will re-add the suggestion adornment to the line to re-render
+		/// </summary>
+		private void View_LayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+		{
+			try
+			{
+				if (!LabelAdornmentVisible)
+					return;
+				Debug.WriteLine("View_LayoutChanged");
+				// This does not work. line.IdentityTag.Equals(AdornmentLineIdentityTag) neither. So, not really identity ???
+				//foreach (ITextViewLine line in e.NewOrReformattedLines)
+				//{
+				//	if (line.IdentityTag == AdornmentLineIdentityTag)
+				//	{
+				//		Debug.WriteLine("View_LayoutChanged: Re-adding adornment");
+				//		AddAdornment();
+				//		return;
+				//	}
+				//}
+
+				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
+				foreach (ITextViewLine line in e.NewOrReformattedLines)
+				{
+					if (line == caretLine)
+					{
+						Debug.WriteLine("View_LayoutChanged: Re-adding adornment");
+						AddAdornment(CaretSpan);
+						return;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				// TODO: Log exception
+				Debug.WriteLine(ex.ToString());
+			}
 		}
 
 		static public ViewAutocompleteHandler AttachedHandler(IWpfTextView view) => 
@@ -51,18 +107,15 @@ namespace AutocompleteVs
 			_ = AutocompletionGeneration.Instance.GetAutocompletionAsync(this, prefixText, suffixText);
 		}
 
-		public void AddAutocompletionAdornment(string autocompleteText)
+		/// <summary>
+		/// Initialize LabelAdornment, if needed
+		/// </summary>
+		private void SetupLabel()
 		{
-			// Get caret line
-			ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
+			if (LabelAdornment != null)
+				return;
 
-			int caretIdx = View.Caret.Position.BufferPosition;
-			SnapshotSpan span = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(caretIdx, caretIdx + 1));
-			Geometry geometry = View.TextViewLines.GetMarkerGeometry(span);
-
-			Label label = new Label();
-			label.Content = autocompleteText;
-			// TODO: Cache label, there will be a singe adornment in view
+			LabelAdornment = new Label();
 
 			// Debug border
 			//label.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0xff));
@@ -70,34 +123,81 @@ namespace AutocompleteVs
 			//label.BorderThickness = new System.Windows.Thickness(1);
 			//label.Height = geometry.Bounds.Height * 1.1;
 
-			// Set label height
-			label.Height = geometry.Bounds.Height;
-			// TODO: Check if there is some setting in VS for paddings:
-			label.Padding = new System.Windows.Thickness(0);
-
 			// Set font default formatting properties:
 			var textProperties = View.FormattedLineSource.DefaultTextProperties;
 			var typeFace = textProperties.Typeface;
-			label.FontFamily = typeFace.FontFamily;
-			label.FontSize = textProperties.FontRenderingEmSize;
-			label.FontStretch = typeFace.Stretch;
-			label.FontStyle = typeFace.Style;
-			label.FontWeight = typeFace.Weight;
+			LabelAdornment.FontFamily = typeFace.FontFamily;
+			LabelAdornment.FontSize = textProperties.FontRenderingEmSize;
+			LabelAdornment.FontStretch = typeFace.Stretch;
+			LabelAdornment.FontStyle = typeFace.Style;
+			LabelAdornment.FontWeight = typeFace.Weight;
 			// Make foreground color "grayish":
-			label.Foreground = textProperties.ForegroundBrush.Clone();
-			label.Foreground.Opacity = 0.5;
-			label.Background = textProperties.BackgroundBrush;
+			LabelAdornment.Foreground = textProperties.ForegroundBrush.Clone();
+			LabelAdornment.Foreground.Opacity = 0.5;
+			LabelAdornment.Background = textProperties.BackgroundBrush;
 
-			// TODO: If we are not at the end of current line, show suggestion in other line (upper / lower)
-			// TODO: Make sure it does not collide with VS single word autocompletion toolwindow
-
-			// TODO: Add line tranformation defined by the VS ??? (see eye fish example in VS extensibility)
-
-			// Align the image with the top of the bounds of the text geometry
-			Canvas.SetLeft(label, geometry.Bounds.Left);
-			Canvas.SetTop(label, geometry.Bounds.Top);
-
-			Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, label, null);
+			// TODO: Check if there is some setting in VS for line padding (top / bottom):
+			LabelAdornment.Padding = new System.Windows.Thickness(0);
 		}
+
+		private void RemoveAdornment()
+		{
+			if (!LabelAdornmentVisible)
+				return;
+
+			Layer.RemoveAdornment(LabelAdornment);
+			LabelAdornmentVisible = false;
+			AdornmentLineIdentityTag = null;
+		}
+
+		public void AddAutocompletionAdornment(string autocompleteText)
+		{
+			try
+			{
+				RemoveAdornment();
+				if (autocompleteText == null || string.IsNullOrEmpty(autocompleteText.Trim()))
+					return;
+
+				// Get caret line
+				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
+				AdornmentLineIdentityTag = caretLine.IdentityTag;
+
+				SnapshotSpan caretSpan = CaretSpan;
+				Geometry geometry = View.TextViewLines.GetMarkerGeometry(caretSpan);
+
+				SetupLabel();
+				LabelAdornment.Content = autocompleteText;
+
+				// Align the image with the top of the bounds of the text geometry
+				LabelAdornment.Height = geometry.Bounds.Height;
+				Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
+				Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
+
+				// TODO: If we are not at the end of current line, show suggestion in other line (upper / lower)
+				// TODO: Make sure it does not collide with VS single word autocompletion toolwindow
+				// TODO: Add line tranformation defined by the VS ??? (see eye fish example in VS extensibility)
+				// TODO: Support for multiline suggestions
+
+				AddAdornment(caretSpan);
+				LabelAdornmentVisible = true;
+			}
+			catch (Exception ex)
+			{
+				// TODO: Log exceptions
+				Debug.WriteLine(ex.ToString());
+			}
+		}
+
+		private SnapshotSpan CaretSpan
+		{
+			get
+			{
+				int caretIdx = View.Caret.Position.BufferPosition;
+				return new SnapshotSpan(View.TextSnapshot, Span.FromBounds(caretIdx, caretIdx + 1));
+			}
+		}
+
+		private void AddAdornment(SnapshotSpan caretSpan) 
+			=> Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, CaretSpan, null, LabelAdornment, null);
 	}
 }
