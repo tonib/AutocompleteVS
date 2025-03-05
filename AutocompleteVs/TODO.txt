@@ -1,5 +1,16 @@
 ﻿Add recommended settins for ollama: Remove temperature, choose always the most probable
 
+Error (remove first?):
+	View_LayoutChanged: Re-adding adornment
+	Excepción producida: 'System.ArgumentException' en PresentationCore.dll
+	System.ArgumentException: El Visual especificado ya es un objeto secundario de otro Visual o la raíz de un CompositionTarget.
+	   en System.Windows.Media.VisualCollection.Add(Visual visual)
+	   en System.Windows.Controls.UIElementCollection.AddInternal(UIElement element)
+	   en System.Windows.Controls.UIElementCollection.Add(UIElement element)
+	   en Microsoft.VisualStudio.Text.Editor.Implementation.AdornmentLayer.AddAdornment(AdornmentPositioningBehavior behavior, Nullable`1 visualSpan, Object tag, UIElement element, AdornmentRemovedCallback removedCallback)
+	   en AutocompleteVs.ViewAutocompleteHandler.AddAdornment(SnapshotSpan caretSpan)
+	   en AutocompleteVs.ViewAutocompleteHandler.View_LayoutChanged(Object sender, TextViewLayoutChangedEventArgs e)
+
 keyboard handling:
 	https://learn.microsoft.com/en-us/visualstudio/extensibility/binding-keyboard-shortcuts-to-menu-items?view=vs-2022
 	https://www.alashiban.com/multi-editing-tutorial/?doing_wp_cron=1740908324.0118949413299560546875

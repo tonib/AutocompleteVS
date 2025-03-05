@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutocompleteVs.Keyboard
+namespace AutocompleteVs
 {
 	// https://github.com/madskristensen/MultiEdit/blob/master/src/Editor/MultiPointEditCommandFilter.cs
 
@@ -17,11 +17,15 @@ namespace AutocompleteVs.Keyboard
 	{
 		private IOleCommandTarget NextTarget;
 
+		private IWpfTextView View;
+
 		private AutocompleteCommandFilter(IVsTextView viewAdapter, IWpfTextView textView)
 		{
 			int result = viewAdapter.AddCommandFilter(this, out NextTarget);
 			if (result != VSConstants.S_OK)
 				throw new Exception($"Error adding command filter, code {result}");
+
+			View = textView;
 		}
 
 		static public void AttachCommandFiter(IVsTextView viewAdapter, IWpfTextView textView) =>
@@ -39,10 +43,23 @@ namespace AutocompleteVs.Keyboard
 						Debug.WriteLine("Tab");
 						//return VSConstants.S_OK;
 						break;
+
+					case VSConstants.VSStd2KCmdID.OPENLINEABOVE:
+						// Ctrl + Enter
+						Debug.WriteLine("OPENLINEABOVE");
+						if(InsertCurrentSuggestion())
+							return VSConstants.S_OK;
+						break;
 				}
 			}
 
 			return NextTarget?.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut) ?? VSConstants.S_OK;
+		}
+
+		private bool InsertCurrentSuggestion()
+		{
+			ViewAutocompleteHandler view = ViewAutocompleteHandler.AttachedHandler(View);
+			return view.AddCurrentSuggestionToView();
 		}
 
 		public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)

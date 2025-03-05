@@ -33,13 +33,12 @@ namespace AutocompleteVs
 		/// <summary>
 		/// Is currently the adornment displayed?
 		/// </summary>
-		private bool LabelAdornmentVisible;
+		private bool SuggstionAdornmentVisible;
 
-		// TODO: Remove this, unused
 		/// <summary>
-		/// Line identifier where adornment is displayed. null if identifier is not visible
+		/// Last generated suggestion for this view
 		/// </summary>
-		private object AdornmentLineIdentityTag;
+		private string CurrentSuggestionText;
 
 		private ViewAutocompleteHandler(IWpfTextView view)
 		{
@@ -56,9 +55,10 @@ namespace AutocompleteVs
 		{
 			try
 			{
-				if (!LabelAdornmentVisible)
+				if (!SuggstionAdornmentVisible)
 					return;
 				Debug.WriteLine("View_LayoutChanged");
+
 				// This does not work. line.IdentityTag.Equals(AdornmentLineIdentityTag) neither. So, not really identity ???
 				//foreach (ITextViewLine line in e.NewOrReformattedLines)
 				//{
@@ -142,31 +142,29 @@ namespace AutocompleteVs
 
 		private void RemoveAdornment()
 		{
-			if (!LabelAdornmentVisible)
+			if (!SuggstionAdornmentVisible)
 				return;
 
 			Layer.RemoveAdornment(LabelAdornment);
-			LabelAdornmentVisible = false;
-			AdornmentLineIdentityTag = null;
+			SuggstionAdornmentVisible = false;
 		}
 
-		public void AddAutocompletionAdornment(string autocompleteText)
+		public void AutocompletionGenerationFinished(string viewSuggestionText)
 		{
 			try
 			{
-				RemoveAdornment();
-				if (autocompleteText == null || string.IsNullOrEmpty(autocompleteText.Trim()))
+				if (viewSuggestionText == null || string.IsNullOrEmpty(viewSuggestionText.Trim()))
 					return;
+				CurrentSuggestionText = viewSuggestionText;
 
 				// Get caret line
 				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
-				AdornmentLineIdentityTag = caretLine.IdentityTag;
 
 				SnapshotSpan caretSpan = CaretSpan;
 				Geometry geometry = View.TextViewLines.GetMarkerGeometry(caretSpan);
 
 				SetupLabel();
-				LabelAdornment.Content = autocompleteText;
+				LabelAdornment.Content = viewSuggestionText;
 
 				// Align the image with the top of the bounds of the text geometry
 				LabelAdornment.Height = geometry.Bounds.Height;
@@ -179,7 +177,7 @@ namespace AutocompleteVs
 				// TODO: Support for multiline suggestions
 
 				AddAdornment(caretSpan);
-				LabelAdornmentVisible = true;
+				SuggstionAdornmentVisible = true;
 			}
 			catch (Exception ex)
 			{
@@ -197,7 +195,28 @@ namespace AutocompleteVs
 			}
 		}
 
-		private void AddAdornment(SnapshotSpan caretSpan) 
-			=> Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, CaretSpan, null, LabelAdornment, null);
+		private void AddAdornment(SnapshotSpan caretSpan)
+		{
+			RemoveAdornment();
+			Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, CaretSpan, null, LabelAdornment, null);
+		}
+
+		/// <summary>
+		/// Adds currently visible suggestion to the view
+		/// </summary>
+		/// <returns>False if nothing has been added</returns>
+		public bool AddCurrentSuggestionToView()
+		{
+			if (!SuggstionAdornmentVisible)
+				return false;
+
+			// https://stackoverflow.com/questions/13788221/how-to-insert-the-text-in-the-editor-in-the-textadornment-template-in-visual-stu
+			ITextEdit textEdit = View.TextBuffer.CreateEdit();
+			textEdit.Insert(View.Caret.Position.BufferPosition, CurrentSuggestionText);
+			textEdit.Apply();
+			RemoveAdornment();
+
+			return true;
+		}
 	}
 }

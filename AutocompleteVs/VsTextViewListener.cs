@@ -1,5 +1,4 @@
-﻿using AutocompleteVs.Keyboard;
-using Microsoft.VisualStudio.Editor;
+﻿using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
@@ -13,10 +12,10 @@ using System.Windows.Forms;
 
 namespace AutocompleteVs
 {
-    /// <summary>
-    /// Listens for editors creation
-    /// </summary>
-    [Export(typeof(IVsTextViewCreationListener))]
+	/// <summary>
+	/// Listens for editors creation
+	/// </summary>
+	[Export(typeof(IVsTextViewCreationListener))]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
     [ContentType(CONTENT_TYPE_ID)]
     internal sealed class VsTextViewListener : IVsTextViewCreationListener

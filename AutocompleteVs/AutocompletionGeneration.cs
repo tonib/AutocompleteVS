@@ -93,7 +93,7 @@ namespace AutocompleteVs
 				// Notify the view the autocompletion has finished.
 				// Run it in the UI thread. Otherwise it will trhow an excepcion
 				await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				view.AddAutocompletionAdornment(autocompleteText);
+				view.AutocompletionGenerationFinished(autocompleteText);
 			}
 			catch(TaskCanceledException)
 			{
