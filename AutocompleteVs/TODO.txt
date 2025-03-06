@@ -1,28 +1,17 @@
-﻿Add recommended settins for ollama: Remove temperature, choose always the most probable
+﻿
+Error: adding adornment in new line. it adds suggestion at line start, even if cursor is not at line start
+	Try logical buffer position?
 
-Error (remove first?):
-	View_LayoutChanged: Re-adding adornment
-	Excepción producida: 'System.ArgumentException' en PresentationCore.dll
-	System.ArgumentException: El Visual especificado ya es un objeto secundario de otro Visual o la raíz de un CompositionTarget.
-	   en System.Windows.Media.VisualCollection.Add(Visual visual)
-	   en System.Windows.Controls.UIElementCollection.AddInternal(UIElement element)
-	   en System.Windows.Controls.UIElementCollection.Add(UIElement element)
-	   en Microsoft.VisualStudio.Text.Editor.Implementation.AdornmentLayer.AddAdornment(AdornmentPositioningBehavior behavior, Nullable`1 visualSpan, Object tag, UIElement element, AdornmentRemovedCallback removedCallback)
-	   en AutocompleteVs.ViewAutocompleteHandler.AddAdornment(SnapshotSpan caretSpan)
-	   en AutocompleteVs.ViewAutocompleteHandler.View_LayoutChanged(Object sender, TextViewLayoutChangedEventArgs e)
-
-keyboard handling (remove this, no longer needed):
-	https://learn.microsoft.com/en-us/visualstudio/extensibility/binding-keyboard-shortcuts-to-menu-items?view=vs-2022
-	https://www.alashiban.com/multi-editing-tutorial/?doing_wp_cron=1740908324.0118949413299560546875
-	https://learn.microsoft.com/en-us/visualstudio/extensibility/internals/command-routing-algorithm?view=vs-2022
-
-trim autocompletions
 autocomplete single lines only ???
 	Handle case for autompletion in the middle of a line
 	support multiline autocompletion > add transform
+ctrl + > to add single words
 automatic autocompletion
 extension settings: store ollama configuration
-set ollama settings
+set ollama settings:
+	only the most probable, no temperature or creative stuff
+		Exceptions: Re-suggest in the same place: Try an alternative suggestion
+	reproducible suggestions
 support for open ai api
 set context limits for autocompletion
 show autocompletion (TODOs)
@@ -31,3 +20,10 @@ configure context size
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING
+
+
+
+keyboard handling (remove this, no longer needed):
+	https://learn.microsoft.com/en-us/visualstudio/extensibility/binding-keyboard-shortcuts-to-menu-items?view=vs-2022
+	https://www.alashiban.com/multi-editing-tutorial/?doing_wp_cron=1740908324.0118949413299560546875
+	https://learn.microsoft.com/en-us/visualstudio/extensibility/internals/command-routing-algorithm?view=vs-2022

@@ -40,6 +40,9 @@ namespace AutocompleteVs
 		/// </summary>
 		private string CurrentSuggestionText;
 
+		/// <summary>
+		/// Buffer index to the place where suggestion has been added
+		/// </summary>
 		private int IdxSuggestionPosition;
 
 		private ViewAutocompleteHandler(IWpfTextView view)
@@ -48,6 +51,17 @@ namespace AutocompleteVs
 			Layer = view.GetAdornmentLayer(VsTextViewListener.AUTOCOMPLETE_ADORNMENT_LAYER_ID);
 
 			View.LayoutChanged += View_LayoutChanged;
+			View.Caret.PositionChanged += Caret_PositionChanged;
+		}
+
+		/// <summary>
+		/// Caret position changed in view
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+		{
+			RemoveAdornment();
 		}
 
 		/// <summary>
@@ -77,7 +91,7 @@ namespace AutocompleteVs
 				{
 					if (line == caretLine)
 					{
-						Debug.WriteLine("View_LayoutChanged: Re-adding adornment");
+						// Debug.WriteLine("View_LayoutChanged: Re-adding adornment");
 						AddAdornment(false);
 						return;
 					}
@@ -142,7 +156,10 @@ namespace AutocompleteVs
 			LabelAdornment.Padding = new System.Windows.Thickness(0);
 		}
 
-		private void RemoveAdornment()
+		/// <summary>
+		/// Removes the current suggestion adornment
+		/// </summary>
+		public void RemoveAdornment()
 		{
 			if (!SuggstionAdornmentVisible)
 				return;

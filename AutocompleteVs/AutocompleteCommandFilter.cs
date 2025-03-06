@@ -33,26 +33,36 @@ namespace AutocompleteVs
 
 		public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 		{
-			// Debug.WriteLine(nCmdID);
-
-			if (pguidCmdGroup == typeof(VSConstants.VSStd2KCmdID).GUID)
+			try
 			{
-				switch ((VSConstants.VSStd2KCmdID)nCmdID)
-				{
-					case VSConstants.VSStd2KCmdID.TAB:
-						Debug.WriteLine("Tab");
-						//return VSConstants.S_OK;
-						break;
+				// Debug.WriteLine(nCmdID);
 
-					case VSConstants.VSStd2KCmdID.OPENLINEABOVE:
-						// Ctrl + Enter
-						Debug.WriteLine("OPENLINEABOVE");
-						if(InsertCurrentSuggestion())
-							return VSConstants.S_OK;
-						break;
+				if (pguidCmdGroup == typeof(VSConstants.VSStd2KCmdID).GUID)
+				{
+					switch ((VSConstants.VSStd2KCmdID)nCmdID)
+					{
+						case VSConstants.VSStd2KCmdID.TYPECHAR:
+							// Character typed in editor: Cancel running generations, remove current suggestion
+							_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
+							ViewAutocompleteHandler.AttachedHandler(View).RemoveAdornment();
+							break;
+
+						case VSConstants.VSStd2KCmdID.OPENLINEABOVE:
+							// Ctrl + Enter
+							// Debug.WriteLine("OPENLINEABOVE");
+							if (InsertCurrentSuggestion())
+							{
+								// Suggestion added: Command has been consumed
+								return VSConstants.S_OK;
+							}
+							break;
+					}
 				}
 			}
-
+			catch(Exception ex)
+			{
+				Debug.WriteLine(ex.ToString());
+			}
 			return NextTarget?.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut) ?? VSConstants.S_OK;
 		}
 
