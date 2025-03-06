@@ -174,16 +174,27 @@ namespace AutocompleteVs
 			{
 				if (viewSuggestionText == null || string.IsNullOrEmpty(viewSuggestionText.Trim()))
 					return;
-				CurrentSuggestionText = viewSuggestionText;
+
+				// Add virtual spaces to the text, if needed
+				// It seems VS keeps cursor position in new line, adding virtual spaces that are not yet added to the current line
+				// So, to get rigth suggestion / suggestion insertion, virtual spaces are needed. So, here are the damn spaces:
+				string virtualSpaces = new string(' ', View.Caret.Position.VirtualBufferPosition.VirtualSpaces);
+				CurrentSuggestionText = virtualSpaces + viewSuggestionText;
 
 				// Get caret line
 				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
 
-				SnapshotSpan caretSpan = CaretSpan;
+				//VirtualSnapshotPoint virtualPosition = View.Caret.Position.VirtualBufferPosition;
+				//VirtualSnapshotSpan virtualSpan = new VirtualSnapshotSpan(virtualPosition, virtualPosition.);
+				//var caretSpan = new SnapshotSpan(View.TextSnapshot, virtualSpan.SnapshotSpan);
+
+				int caretIdx = View.Caret.Position.BufferPosition;
+				var caretSpan = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(caretIdx, caretIdx + 1));
+
 				Geometry geometry = View.TextViewLines.GetMarkerGeometry(caretSpan);
 
 				SetupLabel();
-				LabelAdornment.Content = viewSuggestionText;
+				LabelAdornment.Content = CurrentSuggestionText;
 
 				// Align the image with the top of the bounds of the text geometry
 				LabelAdornment.Height = geometry.Bounds.Height;
@@ -202,15 +213,6 @@ namespace AutocompleteVs
 			{
 				// TODO: Log exceptions
 				Debug.WriteLine(ex.ToString());
-			}
-		}
-
-		private SnapshotSpan CaretSpan
-		{
-			get
-			{
-				int caretIdx = View.Caret.Position.BufferPosition;
-				return new SnapshotSpan(View.TextSnapshot, Span.FromBounds(caretIdx, caretIdx + 1));
 			}
 		}
 

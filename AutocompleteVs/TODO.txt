@@ -1,6 +1,5 @@
 ﻿
-Error: adding adornment in new line. it adds suggestion at line start, even if cursor is not at line start
-	Try logical buffer position?
+Error: After adding in virtual space, virtual spaces are added at the suggestion end. Try to remove them.
 
 autocomplete single lines only ???
 	Handle case for autompletion in the middle of a line
