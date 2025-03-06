@@ -11,18 +11,23 @@ Error (remove first?):
 	   en AutocompleteVs.ViewAutocompleteHandler.AddAdornment(SnapshotSpan caretSpan)
 	   en AutocompleteVs.ViewAutocompleteHandler.View_LayoutChanged(Object sender, TextViewLayoutChangedEventArgs e)
 
-keyboard handling:
+keyboard handling (remove this, no longer needed):
 	https://learn.microsoft.com/en-us/visualstudio/extensibility/binding-keyboard-shortcuts-to-menu-items?view=vs-2022
 	https://www.alashiban.com/multi-editing-tutorial/?doing_wp_cron=1740908324.0118949413299560546875
 	https://learn.microsoft.com/en-us/visualstudio/extensibility/internals/command-routing-algorithm?view=vs-2022
 
+trim autocompletions
 autocomplete single lines only ???
-support multiline autocompletion
+	Handle case for autompletion in the middle of a line
+	support multiline autocompletion > add transform
+automatic autocompletion
+extension settings: store ollama configuration
+set ollama settings
+support for open ai api
 set context limits for autocompletion
-show autocompletion (todos)
-key to add autocompletion
+show autocompletion (TODOs)
 configure context size
-store ollama configuration
+
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING

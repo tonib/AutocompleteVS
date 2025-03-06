@@ -40,6 +40,8 @@ namespace AutocompleteVs
 		/// </summary>
 		private string CurrentSuggestionText;
 
+		private int IdxSuggestionPosition;
+
 		private ViewAutocompleteHandler(IWpfTextView view)
 		{
 			View = view;
@@ -57,7 +59,7 @@ namespace AutocompleteVs
 			{
 				if (!SuggstionAdornmentVisible)
 					return;
-				Debug.WriteLine("View_LayoutChanged");
+				// Debug.WriteLine("View_LayoutChanged");
 
 				// This does not work. line.IdentityTag.Equals(AdornmentLineIdentityTag) neither. So, not really identity ???
 				//foreach (ITextViewLine line in e.NewOrReformattedLines)
@@ -76,7 +78,7 @@ namespace AutocompleteVs
 					if (line == caretLine)
 					{
 						Debug.WriteLine("View_LayoutChanged: Re-adding adornment");
-						AddAdornment(CaretSpan);
+						AddAdornment(false);
 						return;
 					}
 				}
@@ -176,8 +178,8 @@ namespace AutocompleteVs
 				// TODO: Add line tranformation defined by the VS ??? (see eye fish example in VS extensibility)
 				// TODO: Support for multiline suggestions
 
-				AddAdornment(caretSpan);
-				SuggstionAdornmentVisible = true;
+				IdxSuggestionPosition = View.Caret.Position.BufferPosition;
+				AddAdornment(true);
 			}
 			catch (Exception ex)
 			{
@@ -195,10 +197,13 @@ namespace AutocompleteVs
 			}
 		}
 
-		private void AddAdornment(SnapshotSpan caretSpan)
+		private void AddAdornment(bool removePrevious)
 		{
-			RemoveAdornment();
-			Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, CaretSpan, null, LabelAdornment, null);
+			if(removePrevious)
+				RemoveAdornment();
+			var span = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition + 1));
+			Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, LabelAdornment, null);
+			SuggstionAdornmentVisible = true;
 		}
 
 		/// <summary>

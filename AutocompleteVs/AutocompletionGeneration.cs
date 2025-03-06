@@ -88,6 +88,8 @@ namespace AutocompleteVs
 				if (CancellationTokenSource.IsCancellationRequested)
 					return;
 
+				// qwen2.5-coder:1.5b-base adds unwanted spaces
+				autocompleteText = autocompleteText.Trim();
 				Debug.WriteLine("Suggestion finished: " + autocompleteText);
 
 				// Notify the view the autocompletion has finished.

@@ -33,7 +33,7 @@ namespace AutocompleteVs
 
 		public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 		{
-			Debug.WriteLine(nCmdID);
+			// Debug.WriteLine(nCmdID);
 
 			if (pguidCmdGroup == typeof(VSConstants.VSStd2KCmdID).GUID)
 			{
