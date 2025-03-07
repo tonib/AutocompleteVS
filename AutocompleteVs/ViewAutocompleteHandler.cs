@@ -1,4 +1,5 @@
 ﻿using AutocompleteVs.Keyboard;
+using AutocompleteVs.LIneTransforms;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
@@ -175,6 +176,7 @@ namespace AutocompleteVs
 			if (!SuggstionAdornmentVisible)
 				return;
 
+			MultiLineCompletionTransformSource.Attached(View).RemoveCurrentTransform();
 			Layer.RemoveAdornment(LabelAdornment);
 			SuggstionAdornmentVisible = false;
 		}
@@ -211,6 +213,15 @@ namespace AutocompleteVs
 				LabelAdornment.Height = geometry.Bounds.Height;
 				Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
 				Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
+
+				// If line is empty, and suggestion is multiline, add a transform to the line to see all the autocmpletion
+				// TODO: Check if line is empty
+				// if(viewSuggestionText.Contains('\n'))
+				// {
+					MultiLineCompletionTransformSource transformSource = MultiLineCompletionTransformSource.Attached(View);
+					// TODO: Compute size needed
+					transformSource.AddTransform(caretLine, 50);
+				// }
 
 				// TODO: If we are not at the end of current line, show suggestion in other line (upper / lower)
 				// TODO: Make sure it does not collide with VS single word autocompletion toolwindow
