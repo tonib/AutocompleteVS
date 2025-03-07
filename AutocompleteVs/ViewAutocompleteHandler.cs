@@ -234,11 +234,20 @@ namespace AutocompleteVs
 			if (!SuggstionAdornmentVisible)
 				return false;
 
+			// Check if cursor is at virtual space
+			bool inVirtualSpace = View.Caret.InVirtualSpace;
+
 			// https://stackoverflow.com/questions/13788221/how-to-insert-the-text-in-the-editor-in-the-textadornment-template-in-visual-stu
 			ITextEdit textEdit = View.TextBuffer.CreateEdit();
 			textEdit.Insert(View.Caret.Position.BufferPosition, CurrentSuggestionText);
 			textEdit.Apply();
 			RemoveAdornment();
+
+			if(inVirtualSpace)
+			{
+				// Move cursor at the end of line. Needed, otherwhise the virtual spaces are keept after the current insertion
+				View.Caret.MoveTo(View.Caret.Position.BufferPosition);
+			}
 
 			return true;
 		}
