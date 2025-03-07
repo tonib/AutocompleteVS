@@ -52,15 +52,26 @@ namespace AutocompleteVs
 
 			View.LayoutChanged += View_LayoutChanged;
 			View.Caret.PositionChanged += Caret_PositionChanged;
+			View.TextBuffer.Changed += TextBuffer_Changed;
 		}
+
+		/// <summary>
+		/// Document text has changed (text typed, deleted, paste, etc)
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e) => SuggestionContextChanged();
 
 		/// <summary>
 		/// Caret position changed in view
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+		private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => SuggestionContextChanged();
+
+		private void SuggestionContextChanged()
 		{
+			_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
 			RemoveAdornment();
 		}
 

@@ -43,8 +43,9 @@ namespace AutocompleteVs
 					{
 						case VSConstants.VSStd2KCmdID.TYPECHAR:
 							// Character typed in editor: Cancel running generations, remove current suggestion
-							_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
-							ViewAutocompleteHandler.AttachedHandler(View).RemoveAdornment();
+							// Now handled by ViewAutocompleteHandler.TextBuffer_Changed
+							//_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
+							//ViewAutocompleteHandler.AttachedHandler(View).RemoveAdornment();
 							break;
 
 						case VSConstants.VSStd2KCmdID.OPENLINEABOVE:
