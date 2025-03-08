@@ -241,6 +241,7 @@ namespace AutocompleteVs
 					int idx = CurrentSuggestionText.IndexOf('\n');
 					if (idx >= 0)
 						CurrentSuggestionText = CurrentSuggestionText.Substring(0, idx);
+					suggestionTextToShow = CurrentSuggestionText;
 
 					// Align the image with the top of the bounds of the text geometry
 					Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
