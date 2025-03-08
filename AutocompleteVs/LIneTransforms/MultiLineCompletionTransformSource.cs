@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Text.Editor;
+﻿using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
@@ -18,6 +19,8 @@ namespace AutocompleteVs.LIneTransforms
 		private IWpfTextView View;
 		private int LineNumber = -1;
 		private int BottomSize = 0;
+		private int LineStart;
+		double LineTop;
 
 		private MultiLineCompletionTransformSource(IWpfTextView view)
 		{
@@ -49,18 +52,22 @@ namespace AutocompleteVs.LIneTransforms
 
 		public void AddTransform(ITextViewLine line, int bottomSize)
 		{
-			int lineNumber = View.TextSnapshot.GetLineNumberFromPosition(line.Start);
-
-			LineNumber = lineNumber;
+			LineStart = line.Start;
+			LineNumber = View.TextSnapshot.GetLineNumberFromPosition(line.Start);
 			BottomSize = bottomSize;
 
+			// Those are needed to force to redraw the line if the transform is removed:
+			LineStart = line.Start.Position;
+			LineTop = line.Top;
+
 			// Force to redraw the line
-			ForceRedrawLine(line);
+			ForceRedrawLine();
 		}
 
-		private void ForceRedrawLine(ITextViewLine line)
+		private void ForceRedrawLine()
 		{
-			View.DisplayTextLineContainingBufferPosition(line.Start, line.Top, ViewRelativePosition.Top);
+			var lineStart = new SnapshotPoint(View.TextSnapshot, LineStart);
+			View.DisplayTextLineContainingBufferPosition(lineStart, LineTop, ViewRelativePosition.Top);
 		}
 
 		public void RemoveCurrentTransform()
@@ -68,10 +75,8 @@ namespace AutocompleteVs.LIneTransforms
 			if (LineNumber < 0)
 				return;
 
-			int lineNumber = LineNumber;
 			LineNumber = -1;
-			IWpfTextViewLine line = View.TextViewLines[lineNumber];
-			ForceRedrawLine(line);
+			ForceRedrawLine();
 		}
 	}
 }

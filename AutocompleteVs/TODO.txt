@@ -21,6 +21,7 @@ show autocompletion (TODOs)
 configure context size
 Remove current suggestion with escape
 multiline suggestions: tab characters are replaced by 4 spaces. Read the number of spaces to place from vs settings
+Normalize suggestions line breaks ??? they may be incohoerent
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING
