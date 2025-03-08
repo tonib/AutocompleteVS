@@ -124,7 +124,10 @@ namespace AutocompleteVs
 			// TODO: This only for models allowing fill in the middle
 			// Get prefix / suffix text
 			int caretIdx = View.Caret.Position.BufferPosition;
+
+			// TOOD: Add caret virtual spaces to the end of prefix, otherwise, indentation is suggested wrong
 			string prefixText = View.TextBuffer.CurrentSnapshot.GetText(0, caretIdx);
+
 			string suffixText;
 			int textLength = View.TextBuffer.CurrentSnapshot.Length;
 			if (caretIdx >= textLength)
@@ -190,41 +193,64 @@ namespace AutocompleteVs
 				if (viewSuggestionText == null || string.IsNullOrEmpty(viewSuggestionText.Trim()))
 					return;
 
+				SetupLabel();
+
 				// Add virtual spaces to the text, if needed
 				// It seems VS keeps cursor position in new line, adding virtual spaces that are not yet added to the current line
 				// So, to get rigth suggestion / suggestion insertion, virtual spaces are needed. So, here are the damn spaces:
-				string virtualSpaces = new string(' ', View.Caret.Position.VirtualBufferPosition.VirtualSpaces);
-				CurrentSuggestionText = virtualSpaces + viewSuggestionText;
+				//string virtualSpaces = new string(' ', View.Caret.Position.VirtualBufferPosition.VirtualSpaces);
+				//CurrentSuggestionText = virtualSpaces + viewSuggestionText;
 
-				// Get caret line
+				CurrentSuggestionText = viewSuggestionText;
+
+				// Get caret position and line
 				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
-
-				//VirtualSnapshotPoint virtualPosition = View.Caret.Position.VirtualBufferPosition;
-				//VirtualSnapshotSpan virtualSpan = new VirtualSnapshotSpan(virtualPosition, virtualPosition.);
-				//var caretSpan = new SnapshotSpan(View.TextSnapshot, virtualSpan.SnapshotSpan);
-
-				int caretIdx = View.Caret.Position.BufferPosition;
-				var caretSpan = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(caretIdx, caretIdx + 1));
+				IdxSuggestionPosition = View.Caret.Position.BufferPosition;
+				var caretSpan = new SnapshotSpan(View.TextSnapshot, 
+					Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition + 1));
 
 				Geometry geometry = View.TextViewLines.GetMarkerGeometry(caretSpan);
 
-				SetupLabel();
-				LabelAdornment.Content = CurrentSuggestionText;
-
-				// Align the image with the top of the bounds of the text geometry
-				Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
 				Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
 
-				// If line is empty, and suggestion is multiline, add a transform to the line to see all the autocmpletion
-				// TODO: Do this only if line is empty
-				LabelAdornment.Height = AddMultilineSuggestionTransform(viewSuggestionText, caretLine, geometry);
+				// Two cases: We are on a empty line, or in a non empty line
+				// TODO: There should be a third case: On a non empty line, caret is at the line end.
+				// TODO: In this case, we could render a multiline suggestion. Currently not supported
+				string suggestionTextToShow = CurrentSuggestionText;
+				string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
+				if (string.IsNullOrWhiteSpace(caretLineText))
+				{
+					// Empty line: If suggestion is multiline, render it all
+					// Start rendering from left border
+					Canvas.SetLeft(LabelAdornment, 0);
 
-				// TODO: If we are not at the end of current line, show suggestion in other line (upper / lower)
-				// TODO: Make sure it does not collide with VS single word autocompletion toolwindow
-				// TODO: Add line tranformation defined by the VS ??? (see eye fish example in VS extensibility)
-				// TODO: Support for multiline suggestions
+					// If line is empty, and suggestion is multiline, add a transform to the line to see all the autocmpletion
+					// TODO: Do this only if line is empty
+					LabelAdornment.Height = AddMultilineSuggestionTransform(viewSuggestionText, caretLine, geometry);
 
-				IdxSuggestionPosition = View.Caret.Position.BufferPosition;
+					// Add caret line indentation characters
+					string padding = caretLineText.Substring(0, IdxSuggestionPosition - caretLine.Start);
+					suggestionTextToShow = padding + CurrentSuggestionText;
+					suggestionTextToShow = suggestionTextToShow.Replace("\t", "    ");
+				}
+				else
+				{
+					// Non empty line. Render only the first text line of suggestion
+					// TODO: If we are not at the end of current line, show suggestion in other line (upper / lower)
+					// TODO: Make sure it does not collide with VS single word autocompletion toolwindow
+					int idx = CurrentSuggestionText.IndexOf('\n');
+					if (idx >= 0)
+						CurrentSuggestionText = CurrentSuggestionText.Substring(0, idx);
+
+					// Align the image with the top of the bounds of the text geometry
+					Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
+				}
+
+				// Replace tabs. Otherwise they are rendered with a different size.
+				// TODO: Get number of spaces to put from VS settings
+				// LabelAdornment.Content = CurrentSuggestionText.Replace("\t", "    ");
+				LabelAdornment.Content = suggestionTextToShow;
+
 				AddAdornment();
 			}
 			catch (Exception ex)
@@ -274,11 +300,14 @@ namespace AutocompleteVs
 			// Check if cursor is at virtual space
 			bool inVirtualSpace = View.Caret.InVirtualSpace;
 
+			// Remove adorment BEFORE doing any change. Otherwise, references to buffers and lines will go invalid
+			string currentSuggestion = CurrentSuggestionText;
+			RemoveAdornment();
+
 			// https://stackoverflow.com/questions/13788221/how-to-insert-the-text-in-the-editor-in-the-textadornment-template-in-visual-stu
 			ITextEdit textEdit = View.TextBuffer.CreateEdit();
-			textEdit.Insert(View.Caret.Position.BufferPosition, CurrentSuggestionText);
+			textEdit.Insert(View.Caret.Position.BufferPosition, currentSuggestion);
 			textEdit.Apply();
-			RemoveAdornment();
 
 			if(inVirtualSpace)
 			{

@@ -1,4 +1,7 @@
 ﻿
+ERROR: MultiLineCompletionTransformSource.RemoveCurrentTransform() is throwing outofrange exceptions
+ERROR: There is scroll isuess, i guess when re-rendering line transform
+
 if there is a text selection and you fire suggestion command, things get broken (with multiline suggestion, check single line suggestion)
 cancel suggestion if command to generate suggestions is fired
 cancel suggestion generation if editor is closed
