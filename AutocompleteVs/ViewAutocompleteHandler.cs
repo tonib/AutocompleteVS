@@ -104,7 +104,7 @@ namespace AutocompleteVs
 					if (line == caretLine)
 					{
 						// Debug.WriteLine("View_LayoutChanged: Re-adding adornment");
-						AddAdornment(false);
+						AddAdornment();
 						return;
 					}
 				}
@@ -185,6 +185,8 @@ namespace AutocompleteVs
 		{
 			try
 			{
+				RemoveAdornment();
+
 				if (viewSuggestionText == null || string.IsNullOrEmpty(viewSuggestionText.Trim()))
 					return;
 
@@ -210,18 +212,12 @@ namespace AutocompleteVs
 				LabelAdornment.Content = CurrentSuggestionText;
 
 				// Align the image with the top of the bounds of the text geometry
-				LabelAdornment.Height = geometry.Bounds.Height;
 				Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
 				Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
 
 				// If line is empty, and suggestion is multiline, add a transform to the line to see all the autocmpletion
-				// TODO: Check if line is empty
-				// if(viewSuggestionText.Contains('\n'))
-				// {
-					MultiLineCompletionTransformSource transformSource = MultiLineCompletionTransformSource.Attached(View);
-					// TODO: Compute size needed
-					transformSource.AddTransform(caretLine, 50);
-				// }
+				// TODO: Do this only if line is empty
+				LabelAdornment.Height = AddMultilineSuggestionTransform(viewSuggestionText, caretLine, geometry);
 
 				// TODO: If we are not at the end of current line, show suggestion in other line (upper / lower)
 				// TODO: Make sure it does not collide with VS single word autocompletion toolwindow
@@ -229,7 +225,7 @@ namespace AutocompleteVs
 				// TODO: Support for multiline suggestions
 
 				IdxSuggestionPosition = View.Caret.Position.BufferPosition;
-				AddAdornment(true);
+				AddAdornment();
 			}
 			catch (Exception ex)
 			{
@@ -238,10 +234,29 @@ namespace AutocompleteVs
 			}
 		}
 
-		private void AddAdornment(bool removePrevious)
+		private double AddMultilineSuggestionTransform(string viewSuggestionText, ITextViewLine caretLine, Geometry geometry)
 		{
-			if(removePrevious)
-				RemoveAdornment();
+			double lineHeight = geometry.Bounds.Height;
+
+			// Count line breaks in suggestion
+			int nLineBreaks = 0;
+			for(int i=0; i<viewSuggestionText.Length; i++)
+			{
+				if (viewSuggestionText[i] == '\n')
+					nLineBreaks++;
+			}
+			if (nLineBreaks == 0)
+				return lineHeight;
+
+			// Multiline suggestions: Add a transform to make place to show all the suggestion
+			MultiLineCompletionTransformSource transformSource = MultiLineCompletionTransformSource.Attached(View);
+			double extraBottomSpace = lineHeight * nLineBreaks;
+			transformSource.AddTransform(caretLine, (int)extraBottomSpace);
+			return lineHeight + extraBottomSpace;
+		}
+
+		private void AddAdornment()
+		{
 			var span = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition + 1));
 			Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, LabelAdornment, null);
 			SuggstionAdornmentVisible = true;

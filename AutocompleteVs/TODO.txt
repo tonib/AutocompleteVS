@@ -1,4 +1,7 @@
 ﻿
+if there is a text selection and you fire suggestion command, things get broken (with multiline suggestion, check single line suggestion)
+cancel suggestion if command to generate suggestions is fired
+cancel suggestion generation if editor is closed
 autocomplete single lines only ???
 	Handle case for autompletion in the middle of a line
 	support multiline autocompletion > add transform
@@ -13,7 +16,8 @@ support for open ai api
 set context limits for autocompletion
 show autocompletion (TODOs)
 configure context size
-
+Remove current suggestion with escape
+multiline suggestions: tab characters are replaced by 4 spaces. Read the number of spaces to place from vs settings
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING
