@@ -70,7 +70,10 @@ namespace AutocompleteVs
 		/// <param name="e"></param>
 		private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => SuggestionContextChanged();
 
-		private void SuggestionContextChanged()
+		/// <summary>
+		/// Cancels current suggestion on ui, and current autocompletion generation
+		/// </summary>
+		public void SuggestionContextChanged()
 		{
 			_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
 			RemoveAdornment();
@@ -180,7 +183,7 @@ namespace AutocompleteVs
 		/// <summary>
 		/// Removes the current suggestion adornment
 		/// </summary>
-		public void RemoveAdornment()
+		private void RemoveAdornment()
 		{
 			if (!SuggstionAdornmentVisible)
 				return;

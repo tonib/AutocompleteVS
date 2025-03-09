@@ -13,6 +13,9 @@ namespace AutocompleteVs
 {
 	// https://github.com/madskristensen/MultiEdit/blob/master/src/Editor/MultiPointEditCommandFilter.cs
 
+	/// <summary>
+	/// Handles / intercepts commands in text editor
+	/// </summary>
 	class AutocompleteCommandFilter : IOleCommandTarget
 	{
 		private IOleCommandTarget NextTarget;
@@ -49,13 +52,18 @@ namespace AutocompleteVs
 							break;
 
 						case VSConstants.VSStd2KCmdID.OPENLINEABOVE:
-							// Ctrl + Enter
+							// Ctrl + Enter: Add suggestion
 							// Debug.WriteLine("OPENLINEABOVE");
 							if (InsertCurrentSuggestion())
 							{
 								// Suggestion added: Command has been consumed
 								return VSConstants.S_OK;
 							}
+							break;
+
+						case VSConstants.VSStd2KCmdID.CANCEL:
+							// Esc: Cancel current suggestion / generation
+							ViewAutocompleteHandler.AttachedHandler(View).SuggestionContextChanged();
 							break;
 					}
 				}

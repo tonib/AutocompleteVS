@@ -103,9 +103,17 @@ namespace AutocompleteVs
 			}
 			catch (Exception ex)
 			{
-				// TODO: If is exception due to cancelled task, do not log anything
-				// TODO: Log excepcion somewhere
-				Debug.WriteLine(ex.ToString());
+				// Somethimes is giving me IOException inside "await enumerator.MoveNextAsync()" instead a TaskCanceledException
+				// So check if process was canceled
+				if (!CancellationTokenSource.IsCancellationRequested)
+				{
+					// TODO: Log excepcion somewhere
+					Debug.WriteLine(ex.ToString());
+				}
+				else
+				{
+					Debug.WriteLine("Suggestion cancelled");
+				}
 			}
 			finally
 			{
