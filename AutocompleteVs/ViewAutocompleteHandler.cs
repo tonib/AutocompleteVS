@@ -1,6 +1,8 @@
 ﻿using AutocompleteVs.Keyboard;
 using AutocompleteVs.LIneTransforms;
+using AutocompleteVs.TestIntraTextAdorments;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using System;
@@ -45,6 +47,11 @@ namespace AutocompleteVs
 		/// Buffer index to the place where suggestion has been added
 		/// </summary>
 		private int IdxSuggestionPosition;
+
+		/// <summary>
+		/// Brush to draw suggestion borders, when suggestion is drawn ouside the caret line
+		/// </summary>
+		private SolidColorBrush SuggestionBorderBrush;
 
 		private ViewAutocompleteHandler(IWpfTextView view)
 		{
@@ -175,12 +182,6 @@ namespace AutocompleteVs
 
 			LabelAdornment = new Label();
 
-			// Debug border
-			//label.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0xff));
-			//label.BorderBrush.Freeze();
-			//label.BorderThickness = new System.Windows.Thickness(1);
-			//label.Height = geometry.Bounds.Height * 1.1;
-
 			// Set font default formatting properties:
 			var textProperties = View.FormattedLineSource.DefaultTextProperties;
 			var typeFace = textProperties.Typeface;
@@ -192,10 +193,40 @@ namespace AutocompleteVs
 			// Make foreground color "grayish":
 			LabelAdornment.Foreground = textProperties.ForegroundBrush.Clone();
 			LabelAdornment.Foreground.Opacity = 0.5;
-			LabelAdornment.Background = textProperties.BackgroundBrush;
+			SetLabelSolid(false);
 
 			// TODO: Check if there is some setting in VS for line padding (top / bottom):
 			LabelAdornment.Padding = new System.Windows.Thickness(0);
+		}
+
+		/// <summary>
+		/// Sets the adorment label style to display it with a solid background ot transparent
+		/// </summary>
+		/// <param name="solid">True if label background must to be solid, also adds a border to the label.
+		/// False to render the label transparent</param>
+		private void SetLabelSolid(bool solid)
+		{
+			if (solid)
+			{
+				if(SuggestionBorderBrush == null)
+				{
+					SuggestionBorderBrush = new SolidColorBrush(Color.FromArgb(255, 0xff, 0, 0));
+					SuggestionBorderBrush.Freeze();
+				}
+				LabelAdornment.BorderBrush = SuggestionBorderBrush;
+				LabelAdornment.BorderThickness = new System.Windows.Thickness(1);
+
+				// Solid bacground color
+				LabelAdornment.Background = View.Background;
+			}
+			else
+			{
+				LabelAdornment.BorderBrush = Brushes.Transparent;
+				LabelAdornment.BorderThickness = new System.Windows.Thickness(0);
+
+				// Im my tests this is alaways the bacground brush
+				LabelAdornment.Background = View.FormattedLineSource.DefaultTextProperties.BackgroundBrush;
+			}
 		}
 
 		/// <summary>
@@ -241,26 +272,27 @@ namespace AutocompleteVs
 
 				Geometry geometry = View.TextViewLines.GetMarkerGeometry(caretSpan);
 
-				Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
+				// Text to show in adornment
+				string suggestionTextToShow = CurrentSuggestionText;
 
 				// Two cases: We are on a empty line, or in a non empty line
-				// TODO: There should be a third case: On a non empty line, caret is at the line end.
-				// TODO: In this case, we could render a multiline suggestion. Currently not supported
-				string suggestionTextToShow = CurrentSuggestionText;
 				string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
 				if (string.IsNullOrWhiteSpace(caretLineText))
 				{
 					// Empty line: If suggestion is multiline, render it all
+					SetLabelSolid(false);
+
 					// Start rendering from left border
+					Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
 					Canvas.SetLeft(LabelAdornment, 0);
 
-					// If line is empty, and suggestion is multiline, add a transform to the line to see all the autocmpletion
-					// TODO: Do this only if line is empty
+					// Add a transform to the line to see all the autocmpletion, if needed
 					LabelAdornment.Height = AddMultilineSuggestionTransform(viewSuggestionText, caretLine, geometry);
 
 					// Add caret line indentation characters
 					string padding = caretLineText.Substring(0, IdxSuggestionPosition - caretLine.Start);
 					suggestionTextToShow = padding + CurrentSuggestionText;
+					// TODO: Tabs may not be 4 spaces, as it is configurable !!!
 					suggestionTextToShow = suggestionTextToShow.Replace("\t", "    ");
 				}
 				else
@@ -273,13 +305,29 @@ namespace AutocompleteVs
 						CurrentSuggestionText = CurrentSuggestionText.Substring(0, idx);
 					suggestionTextToShow = CurrentSuggestionText;
 
+					LabelAdornment.Height = geometry.Bounds.Height;
+
+					// Check if cursor is at the current line end:
+					string lineTextAfterCaret = caretLineText.Substring(IdxSuggestionPosition - caretLine.Start);
+					if(string.IsNullOrWhiteSpace(lineTextAfterCaret))
+					{
+						// Caret at the line end, or there is only spaces after caret. Render label in caret line
+						SetLabelSolid(false);
+						Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
+					}
+					else
+					{
+						// Caret in middle of text. Render text in previous line.
+						// TODO: This could hide text, so do it only if suggestion has been fired manually
+						SetLabelSolid(true);
+						Canvas.SetTop(LabelAdornment, geometry.Bounds.Top - geometry.Bounds.Height);
+					}
+
 					// Align the image with the top of the bounds of the text geometry
 					Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
 				}
 
 				// Replace tabs. Otherwise they are rendered with a different size.
-				// TODO: Get number of spaces to put from VS settings
-				// LabelAdornment.Content = CurrentSuggestionText.Replace("\t", "    ");
 				LabelAdornment.Content = suggestionTextToShow;
 
 				AddAdornment();

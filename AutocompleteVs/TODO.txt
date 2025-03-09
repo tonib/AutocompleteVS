@@ -17,14 +17,23 @@ show autocompletion (TODOs)
 configure context size
 multiline suggestions: tab characters are replaced by 4 spaces. Read the number of spaces to place from vs settings
 Normalize suggestions line breaks ??? they may be incohoerent
+Check read only editors (ex git history): Do not handle autocompletion here
+Check diff editor (ex git current changes): autocompletion should be handled here
 Show something on the UI (adorment or something else), if autocompletions generation is running
 ERROR: If you type "public bool IsOut(Point p)" and you ask a suggestion, if between the codelens info si added, the suggestion
 	appears in the codelens suggestion, and not in the real code line
+Performance: If we are generatign a suggestions in non empty line, only the first line will be rendered. It's not needed to
+	generate a full multiline suggestion. So, two options: 1) Stop suggestion generation when a \n is reached. 2) Cache
+	generation in case current suggestion is confirmed
+Refactoring: Move all MEF Exports to ViewAutocompleteHandler ???
+
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING
 
 
+How to show formatted code:
+	https://stackoverflow.com/questions/64061612/how-to-implement-the-default-outlining-tool-tip-in-visual-studio-extension
 
 keyboard handling (remove this, no longer needed):
 	https://learn.microsoft.com/en-us/visualstudio/extensibility/binding-keyboard-shortcuts-to-menu-items?view=vs-2022

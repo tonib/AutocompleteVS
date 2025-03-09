@@ -41,7 +41,7 @@ namespace AutocompleteVs
         /// </summary>
         [Export(typeof(AdornmentLayerDefinition))]
         [Name(AUTOCOMPLETE_ADORNMENT_LAYER_ID)]
-        [Order(After = PredefinedAdornmentLayers.Selection, Before = PredefinedAdornmentLayers.Text)]
+        [Order(After = PredefinedAdornmentLayers.Text, Before = PredefinedAdornmentLayers.Caret)]
         private AdornmentLayerDefinition editorAdornmentLayer;
 
 #pragma warning restore 649, 169
