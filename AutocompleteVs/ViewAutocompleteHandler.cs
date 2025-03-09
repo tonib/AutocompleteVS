@@ -188,6 +188,9 @@ namespace AutocompleteVs
 		{
 			try
 			{
+				// Debug text:
+				// viewSuggestionText = "abc\r\nxxx\r\nyyy";
+
 				RemoveAdornment();
 
 				if (viewSuggestionText == null || string.IsNullOrEmpty(viewSuggestionText.Trim()))

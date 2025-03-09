@@ -17,10 +17,18 @@ namespace AutocompleteVs.LIneTransforms
 	{
 		static private readonly LineTransform Identity = new LineTransform(1.0);
 		private IWpfTextView View;
+
+		/// <summary>
+		/// Line index number where transform has been applied. -1 == no transform applied
+		/// </summary>
 		private int LineNumber = -1;
+
 		private int BottomSize = 0;
+
+		/// <summary>
+		/// Buffer position for start line where transform has been applied
+		/// </summary>
 		private int LineStart;
-		double LineTop;
 
 		private MultiLineCompletionTransformSource(IWpfTextView view)
 		{
@@ -35,11 +43,16 @@ namespace AutocompleteVs.LIneTransforms
 			try
 			{
 				if (LineNumber < 0)
+				{
+					// No transform currently applied
 					return Identity;
+				}
 
+				// TODO: Performance. Just check if line contains the buffer position LineStart ???
 				int currentLineNumber = View.TextSnapshot.GetLineNumberFromPosition(line.Start);
 				if (LineNumber == currentLineNumber)
 					return new LineTransform(0, BottomSize, 1.0);
+
 				return Identity;
 			}
 			catch(Exception ex)
@@ -52,22 +65,27 @@ namespace AutocompleteVs.LIneTransforms
 
 		public void AddTransform(ITextViewLine line, int bottomSize)
 		{
-			LineStart = line.Start;
+			LineStart = line.Start.Position;
 			LineNumber = View.TextSnapshot.GetLineNumberFromPosition(line.Start);
 			BottomSize = bottomSize;
 
-			// Those are needed to force to redraw the line if the transform is removed:
-			LineStart = line.Start.Position;
-			LineTop = line.Top;
-
 			// Force to redraw the line
-			ForceRedrawLine();
+			ForceRedrawView();
 		}
 
-		private void ForceRedrawLine()
+		private void ForceRedrawView()
 		{
+			// Get line where transform was applied
 			var lineStart = new SnapshotPoint(View.TextSnapshot, LineStart);
-			View.DisplayTextLineContainingBufferPosition(lineStart, LineTop, ViewRelativePosition.Top);
+			if (!View.TryGetTextViewLineContainingBufferPosition(lineStart, out ITextViewLine line))
+				return;
+
+			// Line has been formated by the view?
+			if (line.VisibilityState != VisibilityState.Unattached)
+			{
+				// Yes. Force the view to redraw so that (top of) the line has exactly the same position.
+				View.DisplayTextLineContainingBufferPosition(line.Start, line.Top - View.ViewportTop, ViewRelativePosition.Top);
+			}
 		}
 
 		public void RemoveCurrentTransform()
@@ -76,7 +94,7 @@ namespace AutocompleteVs.LIneTransforms
 				return;
 
 			LineNumber = -1;
-			ForceRedrawLine();
+			ForceRedrawView();
 		}
 	}
 }
