@@ -53,7 +53,7 @@ namespace AutocompleteVs
 			}
 		}
 
-		public async Task GetAutocompletionAsync(ViewAutocompleteHandler view, string prefixText, string suffixText)
+		public async Task StartAutocompletionAsync(ViewAutocompleteHandler view, string prefixText, string suffixText)
 		{
 			await CancelCurrentGenerationAsync();
 			CurrentAutocompletion = GetAutocompletionInternalAsync(view, prefixText, suffixText);

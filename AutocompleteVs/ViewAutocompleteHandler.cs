@@ -119,8 +119,14 @@ namespace AutocompleteVs
 		static public ViewAutocompleteHandler AttachedHandler(IWpfTextView view) => 
 			view.Properties.GetOrCreateSingletonProperty(() => new ViewAutocompleteHandler(view));
 
+		/// <summary>
+		/// Launchs the autompletion process in the current caret position. Cancels current running process, if there is one
+		/// </summary>
 		public void StartGeneration()
 		{
+			// Cancel current generation / suggestion
+			SuggestionContextChanged();
+
 			// TODO: This only for models allowing fill in the middle
 			// Get prefix / suffix text
 			int caretIdx = View.Caret.Position.BufferPosition;
@@ -135,7 +141,7 @@ namespace AutocompleteVs
 			else
 				suffixText = View.TextBuffer.CurrentSnapshot.GetText(caretIdx, View.TextBuffer.CurrentSnapshot.Length - caretIdx);
 
-			_ = AutocompletionGeneration.Instance.GetAutocompletionAsync(this, prefixText, suffixText);
+			_ = AutocompletionGeneration.Instance.StartAutocompletionAsync(this, prefixText, suffixText);
 		}
 
 		/// <summary>
