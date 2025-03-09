@@ -371,7 +371,7 @@ namespace AutocompleteVs
 		/// Adds currently visible suggestion to the view
 		/// </summary>
 		/// <returns>False if nothing has been added</returns>
-		public bool AddCurrentSuggestionToView()
+		public bool AddCurrentSuggestionToView(bool singleWord)
 		{
 			if (!SuggstionAdornmentVisible)
 				return false;
@@ -383,9 +383,17 @@ namespace AutocompleteVs
 			string currentSuggestion = CurrentSuggestionText;
 			RemoveAdornment();
 
+			string textToInsert;
+			if (singleWord)
+			{
+				textToInsert = GetNextWordToInsert();
+			}
+			else
+				textToInsert = currentSuggestion;
+
 			// https://stackoverflow.com/questions/13788221/how-to-insert-the-text-in-the-editor-in-the-textadornment-template-in-visual-stu
 			ITextEdit textEdit = View.TextBuffer.CreateEdit();
-			textEdit.Insert(View.Caret.Position.BufferPosition, currentSuggestion);
+			textEdit.Insert(View.Caret.Position.BufferPosition, textToInsert);
 			textEdit.Apply();
 
 			if(inVirtualSpace)
@@ -394,7 +402,42 @@ namespace AutocompleteVs
 				View.Caret.MoveTo(View.Caret.Position.BufferPosition);
 			}
 
+			if(singleWord)
+			{
+				// Re-add suggestion for remaining words
+				string newSuggestion = currentSuggestion.Substring(textToInsert.Length);
+				if (!string.IsNullOrWhiteSpace(newSuggestion))
+					AutocompletionGenerationFinished(newSuggestion);
+			}
+
 			return true;
+		}
+
+		private string GetNextWordToInsert()
+		{
+			int idx = 0;
+
+			// Spaces previous to word
+			while (idx < CurrentSuggestionText.Length && Char.IsWhiteSpace(CurrentSuggestionText[idx]))
+				idx++;
+
+			if(idx >= CurrentSuggestionText.Length)
+			{
+				// All text was spaces
+				return CurrentSuggestionText;
+			}
+
+			char wordStart = CurrentSuggestionText[idx];
+			if (Char.IsLetterOrDigit(wordStart))
+			{
+				// A word / number / identifier
+				while (idx < CurrentSuggestionText.Length && Char.IsLetterOrDigit(CurrentSuggestionText[idx]))
+					idx++;
+				return CurrentSuggestionText.Substring(0, idx);
+			}
+
+			// Otherwise is a punctuation
+			return CurrentSuggestionText.Substring(0, idx + 1);
 		}
 	}
 }

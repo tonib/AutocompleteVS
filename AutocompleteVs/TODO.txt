@@ -1,12 +1,9 @@
 ﻿
 Make tests with empty document (probable errors with buffer limits)
 
-if there is a text selection and you fire suggestion command, things get broken (with multiline suggestion, check single line suggestion)
-autocomplete single lines only ???
-	Handle case for autompletion in the middle of a line
-ctrl + > to add single words
-automatic autocompletion
+Normalize suggestions line breaks. It seems sometimes are not normalized
 extension settings: store ollama configuration
+automatic autocompletion
 set ollama settings:
 	only the most probable, no temperature or creative stuff
 		Exceptions: Re-suggest in the same place: Try an alternative suggestion
@@ -16,7 +13,6 @@ set context limits for autocompletion
 show autocompletion (TODOs)
 configure context size
 multiline suggestions: tab characters are replaced by 4 spaces. Read the number of spaces to place from vs settings
-Normalize suggestions line breaks ??? they may be incohoerent
 Check read only editors (ex git history): Do not handle autocompletion here
 Check diff editor (ex git current changes): autocompletion should be handled here
 Show something on the UI (adorment or something else), if autocompletions generation is running

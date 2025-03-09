@@ -38,7 +38,7 @@ namespace AutocompleteVs
 		{
 			try
 			{
-				// Debug.WriteLine(nCmdID);
+				Debug.WriteLine(nCmdID);
 
 				if (pguidCmdGroup == typeof(VSConstants.VSStd2KCmdID).GUID)
 				{
@@ -54,7 +54,16 @@ namespace AutocompleteVs
 						case VSConstants.VSStd2KCmdID.OPENLINEABOVE:
 							// Ctrl + Enter: Add suggestion
 							// Debug.WriteLine("OPENLINEABOVE");
-							if (InsertCurrentSuggestion())
+							if (ViewAutocompleteHandler.AddCurrentSuggestionToView(false))
+							{
+								// Suggestion added: Command has been consumed
+								return VSConstants.S_OK;
+							}
+							break;
+
+						case VSConstants.VSStd2KCmdID.WORDNEXT:
+							// Ctrl + >: Autocomplete next word only
+							if (ViewAutocompleteHandler.AddCurrentSuggestionToView(true))
 							{
 								// Suggestion added: Command has been consumed
 								return VSConstants.S_OK;
@@ -75,11 +84,7 @@ namespace AutocompleteVs
 			return NextTarget?.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut) ?? VSConstants.S_OK;
 		}
 
-		private bool InsertCurrentSuggestion()
-		{
-			ViewAutocompleteHandler view = ViewAutocompleteHandler.AttachedHandler(View);
-			return view.AddCurrentSuggestionToView();
-		}
+		private ViewAutocompleteHandler ViewAutocompleteHandler => ViewAutocompleteHandler.AttachedHandler(View);
 
 		public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 		{
