@@ -54,6 +54,24 @@ namespace AutocompleteVs
 			View.LayoutChanged += View_LayoutChanged;
 			View.Caret.PositionChanged += Caret_PositionChanged;
 			View.TextBuffer.Changed += TextBuffer_Changed;
+			View.Closed += View_Closed;
+		}
+
+		/// <summary>
+		/// View has been closed
+		/// </summary>
+		private void View_Closed(object sender, EventArgs e)
+		{
+			try
+			{
+				// Cancel current generation, do not touch UI
+				_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
+			}
+			catch(Exception ex)
+			{
+				// TODO: Log exception
+				Debug.WriteLine(ex.ToString());
+			}
 		}
 
 		/// <summary>

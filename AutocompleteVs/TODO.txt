@@ -1,10 +1,7 @@
 ﻿
 Make tests with empty document (probable errors with buffer limits)
 
-ERROR: If you type "public bool IsOut(Point p)" and you ask a suggestion, if between the codelens info si added, the suggestion
-	appears in the codelens suggestion, and not in the real code line
 if there is a text selection and you fire suggestion command, things get broken (with multiline suggestion, check single line suggestion)
-cancel suggestion generation if editor is closed
 autocomplete single lines only ???
 	Handle case for autompletion in the middle of a line
 ctrl + > to add single words
@@ -21,6 +18,8 @@ configure context size
 multiline suggestions: tab characters are replaced by 4 spaces. Read the number of spaces to place from vs settings
 Normalize suggestions line breaks ??? they may be incohoerent
 Show something on the UI (adorment or something else), if autocompletions generation is running
+ERROR: If you type "public bool IsOut(Point p)" and you ask a suggestion, if between the codelens info si added, the suggestion
+	appears in the codelens suggestion, and not in the real code line
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING
