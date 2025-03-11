@@ -22,10 +22,10 @@ namespace AutocompleteVs
 	/// </summary>
 	internal sealed class ViewAutocompleteHandler
 	{
-		/// <summary>
-		/// The layer of the adornment.
-		/// </summary>
-		private readonly IAdornmentLayer Layer;
+        /// <summary>
+        /// The layer of the adornment.
+        /// </summary>
+        private readonly IAdornmentLayer Layer;
 		private readonly IWpfTextView View;
 
 		/// <summary>
@@ -43,10 +43,10 @@ namespace AutocompleteVs
 		/// </summary>
 		private string CurrentSuggestionText;
 
-		/// <summary>
-		/// Buffer index to the place where suggestion has been added
-		/// </summary>
-		private int IdxSuggestionPosition;
+        /// <summary>
+        /// Buffer index to the place where suggestion has been added
+        /// </summary>
+        private int IdxSuggestionPosition;
 
 		/// <summary>
 		/// Brush to draw suggestion borders, when suggestion is drawn ouside the caret line

@@ -8,7 +8,7 @@ set ollama settings:
 	only the most probable, no temperature or creative stuff
 		Exceptions: Re-suggest in the same place: Try an alternative suggestion
 	reproducible suggestions
-support for open ai api
+support for openai api
 set context limits for autocompletion
 show autocompletion (TODOs)
 configure context size
@@ -22,7 +22,7 @@ Performance: If we are generatign a suggestions in non empty line, only the firs
 	generate a full multiline suggestion. So, two options: 1) Stop suggestion generation when a \n is reached. 2) Cache
 	generation in case current suggestion is confirmed
 Refactoring: Move all MEF Exports to ViewAutocompleteHandler ???
-
+Set max number of tokens to generate
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING

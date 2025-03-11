@@ -73,19 +73,22 @@ namespace AutocompleteVs
 				request.Prompt = prefixText;
 				request.Suffix = suffixText;
 
-				// Debug.WriteLine("---------------");
-				string autocompleteText = "";
-				var enumerator = OLlamaClient.GenerateAsync(request, CancellationTokenSource.Token).GetAsyncEnumerator();
-				// ConfigureAwait(false) is required to avoid to get this task running to the UI thread
-				while (await enumerator.MoveNextAsync().ConfigureAwait(false))
+                string autocompleteText = "";
+                using (new ExecutionTime($"Autocompletion generation, prefix chars: {prefixText.Length}, suffix chars: {suffixText.Length}"))
 				{
-					string newToken = enumerator.Current.Response;
-					// Debug.Write(newToken);
-					autocompleteText += newToken;
-				}
-				// Debug.WriteLine("---------------");
+					// Debug.WriteLine("---------------");
+					var enumerator = OLlamaClient.GenerateAsync(request, CancellationTokenSource.Token).GetAsyncEnumerator();
+					// ConfigureAwait(false) is required to avoid to get this task running to the UI thread
+					while (await enumerator.MoveNextAsync().ConfigureAwait(false))
+					{
+						string newToken = enumerator.Current.Response;
+						// Debug.Write(newToken);
+						autocompleteText += newToken;
+					}
+                    // Debug.WriteLine("---------------");
+                }
 
-				if (CancellationTokenSource.IsCancellationRequested)
+                if (CancellationTokenSource.IsCancellationRequested)
 					return;
 
 				// qwen2.5-coder:1.5b-base adds unwanted spaces. NO
@@ -97,7 +100,7 @@ namespace AutocompleteVs
 				await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 				view.AutocompletionGenerationFinished(autocompleteText);
 			}
-			catch(TaskCanceledException)
+            catch(TaskCanceledException)
 			{
 				Debug.WriteLine("Suggestion cancelled");
 			}

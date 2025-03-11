@@ -38,7 +38,7 @@ namespace AutocompleteVs
 		{
 			try
 			{
-				Debug.WriteLine(nCmdID);
+				// Debug.WriteLine(nCmdID);
 
 				if (pguidCmdGroup == typeof(VSConstants.VSStd2KCmdID).GUID)
 				{
