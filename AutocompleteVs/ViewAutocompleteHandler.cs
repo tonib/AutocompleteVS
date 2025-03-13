@@ -72,7 +72,7 @@ namespace AutocompleteVs
 			try
 			{
 				// Cancel current generation, do not touch UI
-				_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
+				_ = AutocompletionGeneration.Instance?.CancelCurrentGenerationAsync();
 			}
 			catch(Exception ex)
 			{
@@ -100,7 +100,7 @@ namespace AutocompleteVs
 		/// </summary>
 		public void SuggestionContextChanged()
 		{
-			_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
+			_ = AutocompletionGeneration.Instance?.CancelCurrentGenerationAsync();
 			RemoveAdornment();
 		}
 
@@ -169,7 +169,7 @@ namespace AutocompleteVs
 			else
 				suffixText = View.TextBuffer.CurrentSnapshot.GetText(caretIdx, View.TextBuffer.CurrentSnapshot.Length - caretIdx);
 
-			_ = AutocompletionGeneration.Instance.StartAutocompletionAsync(this, prefixText, suffixText);
+			_ = AutocompletionGeneration.Instance?.StartAutocompletionAsync(this, prefixText, suffixText);
 		}
 
 		/// <summary>

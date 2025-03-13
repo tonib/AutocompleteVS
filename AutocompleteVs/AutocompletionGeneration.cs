@@ -19,29 +19,62 @@ namespace AutocompleteVs
 	{
 		static private AutocompletionGeneration _Instance;
 
+		/// <summary>
+		/// The autocompletion generation instance. It will be null until the package is initialized
+		/// </summary>
 		static public AutocompletionGeneration Instance
 		{
 			get
 			{
 				if (_Instance == null)
+				{
+					if(AutocompleteVsPackage.Instance == null)
+					{
+						// Package not initialized yet
+						return null;
+					}
 					_Instance = new AutocompletionGeneration();
+				}
 				return _Instance;
 			}
 		}
 
 		private OllamaApiClient OLlamaClient;
 
-		private AutocompletionGeneration()
+        /// <summary>
+        /// The current autocompletion generation task. It is null if no generation is running
+        /// </summary>
+        Task CurrentAutocompletion;
+
+        /// <summary>
+        /// cancellation token source for the current autocompletion generation
+        /// </summary>
+        CancellationTokenSource CancellationTokenSource;
+
+        /// <summary>
+        /// Initializes the ollama client
+        /// </summary>
+        private AutocompletionGeneration()
 		{
-			// set up the client. TODO: Load this from a configuration
-			var uri = new Uri("http://localhost:11434");
-			OLlamaClient = new OllamaApiClient(uri);
-			// select a model which should be used for further operations
-			OLlamaClient.SelectedModel = "qwen2.5-coder:1.5b-base";
+			ApplySettings(false);
 		}
 
-		Task CurrentAutocompletion;
-		CancellationTokenSource CancellationTokenSource;
+        /// <summary>
+        /// Create a new autocompletion client with the current settings
+        /// </summary>
+        /// <param name="cancelCurrentAutocompletion">True is current autocompletion should be cancelled</param>
+        public void ApplySettings(bool cancelCurrentAutocompletion)
+		{
+			if (cancelCurrentAutocompletion)
+				_ = CancelCurrentGenerationAsync();
+
+            // set up the client
+            Settings settings = AutocompleteVsPackage.Instance.Settings;
+            var uri = new Uri(settings.OllamaUrl);
+            OLlamaClient = new OllamaApiClient(uri);
+            // select a model which should be used for further operations
+            OLlamaClient.SelectedModel = settings.ModelName;
+        }
 
 		async public Task CancelCurrentGenerationAsync()
 		{

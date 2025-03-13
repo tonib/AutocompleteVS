@@ -26,14 +26,18 @@ namespace AutocompleteVs
 	[PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 	[Guid(AutocompleteVsPackage.PackageGuidString)]
 	[ProvideMenuResource("Menus.ctmenu", 1)]
-	public sealed class AutocompleteVsPackage : AsyncPackage
+    [ProvideOptionPage(typeof(Settings), Settings.Category, Settings.Category, 0, 0, true)]
+    public sealed class AutocompleteVsPackage : AsyncPackage
 	{
 		/// <summary>
 		/// AutocompleteVsPackage GUID string.
 		/// </summary>
 		public const string PackageGuidString = "05fd51b7-1fda-4eda-b9f9-d12f95255b5b";
 
-		#region Package Members
+		/// <summary>
+		/// The package instance
+		/// </summary>
+		static public AutocompleteVsPackage Instance { get; private set; }
 
 		/// <summary>
 		/// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -48,8 +52,13 @@ namespace AutocompleteVs
 			// Do any initialization that requires the UI thread after switching to the UI thread.
 			await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 		    await AutocompleteCommand.InitializeAsync(this);
-		}
 
-		#endregion
-	}
+			Instance = this;
+        }
+
+		/// <summary>
+		/// Package settings
+		/// </summary>
+        internal Settings Settings => (Settings)GetDialogPage(typeof(Settings));
+    }
 }
