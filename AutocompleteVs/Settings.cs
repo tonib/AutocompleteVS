@@ -30,6 +30,11 @@ namespace AutocompleteVs
         [Description("The Ollama model to user for autocompletion")]
         public string ModelName { get; set; } = "qwen2.5-coder:1.5b-base";
 
+        [Category(Category)]
+        [DisplayName("Automatic suggestions")]
+        [Description("If true, suggestions will be generated automatically when typing or moving the caret in editor")]
+        public bool AutomaticSuggestions { get; set; } = true;
+
         protected override void OnApply(PageApplyEventArgs e)
         {
             base.OnApply(e);

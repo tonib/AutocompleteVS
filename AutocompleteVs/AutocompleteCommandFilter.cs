@@ -72,7 +72,7 @@ namespace AutocompleteVs
 
 						case VSConstants.VSStd2KCmdID.CANCEL:
 							// Esc: Cancel current suggestion / generation
-							ViewAutocompleteHandler.AttachedHandler(View).SuggestionContextChanged();
+							ViewAutocompleteHandler.AttachedHandler(View).CancelCurrentAutocompletion();
 							break;
 					}
 				}

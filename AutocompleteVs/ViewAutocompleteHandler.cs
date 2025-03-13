@@ -95,14 +95,41 @@ namespace AutocompleteVs
 		/// <param name="e"></param>
 		private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => SuggestionContextChanged();
 
-		/// <summary>
-		/// Cancels current suggestion on ui, and current autocompletion generation
-		/// </summary>
-		public void SuggestionContextChanged()
+        /// <summary>
+        /// Called when suggestion context has changed. This will cancel current suggestion and, if configured, start a new one
+        /// </summary>
+        public void SuggestionContextChanged()
 		{
-			_ = AutocompletionGeneration.Instance?.CancelCurrentGenerationAsync();
-			RemoveAdornment();
-		}
+			try
+			{
+				CancelCurrentAutocompletion();
+
+				if (AutocompleteVsPackage.Instance?.Settings.AutomaticSuggestions ?? false)
+				{
+					// Check if we are in a valid position to start a new suggestion
+					// By now, if we are at a line end
+					ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
+					string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
+					string lineTextAfterCaret = caretLineText.Substring(View.Caret.Position.BufferPosition - caretLine.Start);
+					if (string.IsNullOrWhiteSpace(lineTextAfterCaret))
+						StartGeneration();
+				}
+			}
+			catch(Exception ex)
+			{
+                // TODO: Log exception
+                Debug.WriteLine(ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Cancels current suggestion on ui, and current autocompletion generation
+        /// </summary>
+        public void CancelCurrentAutocompletion()
+		{
+            _ = AutocompletionGeneration.Instance?.CancelCurrentGenerationAsync();
+            RemoveAdornment();
+        }
 
 		/// <summary>
 		/// Called when lines must to be re-rendered. This will re-add the suggestion adornment to the line to re-render
@@ -152,12 +179,12 @@ namespace AutocompleteVs
 		/// </summary>
 		public void StartGeneration()
 		{
-			// Cancel current generation / suggestion
-			SuggestionContextChanged();
+            // Cancel current generation / suggestion
+            CancelCurrentAutocompletion();
 
-			// TODO: This only for models allowing fill in the middle
-			// Get prefix / suffix text
-			int caretIdx = View.Caret.Position.BufferPosition;
+            // TODO: This only for models allowing fill in the middle
+            // Get prefix / suffix text
+            int caretIdx = View.Caret.Position.BufferPosition;
 
 			// TOOD: Add caret virtual spaces to the end of prefix, otherwise, indentation is suggested wrong
 			string prefixText = View.TextBuffer.CurrentSnapshot.GetText(0, caretIdx);

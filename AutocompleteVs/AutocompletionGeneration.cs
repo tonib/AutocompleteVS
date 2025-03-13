@@ -82,7 +82,8 @@ namespace AutocompleteVs
 			if (CurrentAutocompletion != null)
 			{
 				Debug.WriteLine("Waiting current completion to finish (cancelled)");
-				await CurrentAutocompletion;
+				if(CurrentAutocompletion != null)
+					await CurrentAutocompletion;
 			}
 		}
 
@@ -121,7 +122,7 @@ namespace AutocompleteVs
                     // Debug.WriteLine("---------------");
                 }
 
-                if (CancellationTokenSource.IsCancellationRequested)
+                if (CancellationTokenSource?.IsCancellationRequested ?? true)
 					return;
 
 				// qwen2.5-coder:1.5b-base adds unwanted spaces. NO
@@ -139,9 +140,10 @@ namespace AutocompleteVs
 			}
 			catch (Exception ex)
 			{
-				// Somethimes is giving me IOException inside "await enumerator.MoveNextAsync()" instead a TaskCanceledException
-				// So check if process was canceled
-				if (!CancellationTokenSource.IsCancellationRequested)
+                // Somethimes is giving me IOException inside "await enumerator.MoveNextAsync()" instead a TaskCanceledException
+                // So check if process was canceled
+                bool isCanceled = CancellationTokenSource?.IsCancellationRequested ?? true;
+                if (!isCanceled)
 				{
 					// TODO: Log excepcion somewhere
 					Debug.WriteLine(ex.ToString());
