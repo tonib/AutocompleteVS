@@ -1,11 +1,7 @@
 ﻿
 Make tests with empty document (probable errors with buffer limits)
 
-Normalize suggestions line breaks. It seems sometimes are not normalized
 Make a end trim of suggestion (unwanted line breaks)
-Support for multiline suggestions at the end of a non empty line
-Support Ctrl + > for multiline suggestions
-extension settings: store ollama configuration
 automatic autocompletion
 set ollama settings:
 	only the most probable, no temperature or creative stuff
@@ -26,7 +22,11 @@ Performance: If we are generatign a suggestions in non empty line, only the firs
 	generation in case current suggestion is confirmed
 Refactoring: Move all MEF Exports to ViewAutocompleteHandler ???
 Set max number of tokens to generate
+Check other models
 Suppor for Ctrl + < ??? (undo adding word)
+Codeqwen: Support for <|cursor|> Check WTF is this (cursor position???)
+Check larger models (performance)
+If when keep typing, the text keeps the suggestion, suggestion should not be removed
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING

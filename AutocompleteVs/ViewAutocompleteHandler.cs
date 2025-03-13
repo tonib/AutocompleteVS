@@ -275,7 +275,52 @@ namespace AutocompleteVs
 				// Text to show in adornment
 				string suggestionTextToShow = CurrentSuggestionText;
 
-				// Two cases: We are on a empty line, or in a non empty line
+                // Two cases: 1) In the middle of a non empty line, 2) At the end of a line, or in a empty line
+                string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
+                string lineTextAfterCaret = caretLineText.Substring(IdxSuggestionPosition - caretLine.Start);
+				if(!string.IsNullOrWhiteSpace(lineTextAfterCaret))
+				{
+                    // Case 1: In the middle of a non empty line
+                    // Caret in middle of text. Render text in previous line.
+                    // TODO: This could hide text, so do it only if suggestion has been fired manually
+                    SetLabelSolid(true);
+                    // Align left with caret, in upper line
+                    Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
+                    Canvas.SetTop(LabelAdornment, geometry.Bounds.Top - geometry.Bounds.Height);
+
+                    LabelAdornment.Height = geometry.Bounds.Height;
+
+                    // If suggestion is multiline, suggest only the first line
+                    int idx = CurrentSuggestionText.IndexOf('\n');
+                    if (idx >= 0)
+                        CurrentSuggestionText = CurrentSuggestionText.Substring(0, idx);
+                    suggestionTextToShow = CurrentSuggestionText;
+                }
+				else
+				{
+                    // Case 2: At the end of a line, or in a empty line
+                    SetLabelSolid(false);
+
+                    // TODO: This will render wrong if font is not monospaced, and should be rendered with two labels (unsupported)
+					string lineTextBeforeCaret = caretLineText.Substring(0, IdxSuggestionPosition - caretLine.Start);
+
+                    // Put current space up to the caret position
+                    // TODO: Tabs may not be 4 spaces, as it is configurable !!!
+                    string padding = lineTextBeforeCaret.Replace("\t", "    ");
+                    suggestionTextToShow = new string(' ', padding.Length) + CurrentSuggestionText;
+
+                    // Start rendering from left border
+                    Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
+                    Canvas.SetLeft(LabelAdornment, 0);
+
+                    // Add a transform to the line to see all the autocmpletion, if needed
+                    LabelAdornment.Height = AddMultilineSuggestionTransform(suggestionTextToShow, caretLine, geometry);
+
+                }
+
+				// Old version:
+                // Two cases: We are on a empty line, or in a non empty line
+                /*
 				string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
 				if (string.IsNullOrWhiteSpace(caretLineText))
 				{
@@ -326,9 +371,11 @@ namespace AutocompleteVs
 					// Align the image with the top of the bounds of the text geometry
 					Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
 				}
+				*/
 
-				// Replace tabs. Otherwise they are rendered with a different size.
-				LabelAdornment.Content = suggestionTextToShow;
+
+                // Replace tabs. Otherwise they are rendered with a different size.
+                LabelAdornment.Content = suggestionTextToShow;
 
 				AddAdornment();
 			}
