@@ -391,8 +391,10 @@ namespace AutocompleteVs
 			else
 				textToInsert = currentSuggestion;
 
-			// https://stackoverflow.com/questions/13788221/how-to-insert-the-text-in-the-editor-in-the-textadornment-template-in-visual-stu
-			ITextEdit textEdit = View.TextBuffer.CreateEdit();
+			textToInsert = NormalizeLineBreaks(textToInsert);
+
+            // https://stackoverflow.com/questions/13788221/how-to-insert-the-text-in-the-editor-in-the-textadornment-template-in-visual-stu
+            ITextEdit textEdit = View.TextBuffer.CreateEdit();
 			textEdit.Insert(View.Caret.Position.BufferPosition, textToInsert);
 			textEdit.Apply();
 
@@ -412,6 +414,13 @@ namespace AutocompleteVs
 
 			return true;
 		}
+
+		private string NormalizeLineBreaks(string text)
+		{
+            // Sometimes i get wrong line breaks. Normalize them
+            // TODO: Check if there is some setting in editor for line breaks character
+            return text.Replace("\r\n", "\n").Replace('\r', '\n').Replace("\n", Environment.NewLine);
+        }
 
 		private string GetNextWordToInsert()
 		{
