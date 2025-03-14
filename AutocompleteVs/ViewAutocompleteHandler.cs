@@ -1,5 +1,6 @@
 ﻿using AutocompleteVs.Keyboard;
 using AutocompleteVs.LIneTransforms;
+using AutocompleteVs.SuggestionGeneration;
 using AutocompleteVs.TestIntraTextAdorments;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -72,7 +73,7 @@ namespace AutocompleteVs
 			try
 			{
 				// Cancel current generation, do not touch UI
-				_ = AutocompletionGeneration.Instance?.CancelCurrentGenerationAsync();
+				AutocompletionGeneration.Instance?.CancelCurrentGeneration();
 			}
 			catch(Exception ex)
 			{
@@ -127,7 +128,7 @@ namespace AutocompleteVs
         /// </summary>
         public void CancelCurrentAutocompletion()
 		{
-            _ = AutocompletionGeneration.Instance?.CancelCurrentGenerationAsync();
+            AutocompletionGeneration.Instance?.CancelCurrentGeneration();
             RemoveAdornment();
         }
 
@@ -196,7 +197,7 @@ namespace AutocompleteVs
 			else
 				suffixText = View.TextBuffer.CurrentSnapshot.GetText(caretIdx, View.TextBuffer.CurrentSnapshot.Length - caretIdx);
 
-			_ = AutocompletionGeneration.Instance?.StartAutocompletionAsync(this, prefixText, suffixText);
+			AutocompletionGeneration.Instance?.StartAutocompletion(new GenerationParameters(this, prefixText, suffixText));
 		}
 
 		/// <summary>

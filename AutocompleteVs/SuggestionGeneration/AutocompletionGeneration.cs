@@ -10,13 +10,14 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.Text.Editor;
 using System.Threading;
 
-namespace AutocompleteVs
+namespace AutocompleteVs.SuggestionGeneration
 {
 	/// <summary>
 	/// Generates an autocompletions. Only a single generation in any view is run at same time
 	/// </summary>
-	class AutocompletionGeneration
+	internal class AutocompletionGeneration
 	{
+
 		static private AutocompletionGeneration _Instance;
 
 		/// <summary>
@@ -39,17 +40,24 @@ namespace AutocompleteVs
 			}
 		}
 
+		/// <summary>
+		/// Handles concurrency to have a single generation at same time
+		/// </summary>
+		private SemaphoreSlim Semaphore = new SemaphoreSlim(1);
+
 		private OllamaApiClient OLlamaClient;
 
         /// <summary>
-        /// The current autocompletion generation task. It is null if no generation is running
+        /// Current generation task. It is null if no generation is running
         /// </summary>
-        Task CurrentAutocompletion;
+        private Task CurrentAutocompletion;
+
+		private GenerationParameters NextAutocompletionParameters;
 
         /// <summary>
         /// cancellation token source for the current autocompletion generation
         /// </summary>
-        CancellationTokenSource CancellationTokenSource;
+        private CancellationTokenSource CancellationTokenSource;
 
         /// <summary>
         /// Initializes the ollama client
@@ -65,50 +73,105 @@ namespace AutocompleteVs
         /// <param name="cancelCurrentAutocompletion">True is current autocompletion should be cancelled</param>
         public void ApplySettings(bool cancelCurrentAutocompletion)
 		{
+			// TODO: Make this thread safe
 			if (cancelCurrentAutocompletion)
-				_ = CancelCurrentGenerationAsync();
+				CancelCurrentGeneration();
 
-            // set up the client
-            Settings settings = AutocompleteVsPackage.Instance.Settings;
-            var uri = new Uri(settings.OllamaUrl);
-            OLlamaClient = new OllamaApiClient(uri);
-            // select a model which should be used for further operations
-            OLlamaClient.SelectedModel = settings.ModelName;
+			// set up the client
+			Settings settings = AutocompleteVsPackage.Instance.Settings;
+			var uri = new Uri(settings.OllamaUrl);
+			OLlamaClient = new OllamaApiClient(uri);
+			// select a model which should be used for further operations
+			OLlamaClient.SelectedModel = settings.ModelName;
         }
 
-		async public Task CancelCurrentGenerationAsync()
+		public void CancelCurrentGeneration()
 		{
-			CancellationTokenSource?.Cancel();
-			if (CurrentAutocompletion != null)
+            Semaphore.Wait();
+			try
 			{
-				Debug.WriteLine("Waiting current completion to finish (cancelled)");
-				if(CurrentAutocompletion != null)
-					await CurrentAutocompletion;
+				CancellationTokenSource?.Cancel();
 			}
-		}
+            finally
+            {
+                Semaphore.Release();
+            }
+        }
 
-		public async Task StartAutocompletionAsync(ViewAutocompleteHandler view, string prefixText, string suffixText)
+		public void StartAutocompletion(GenerationParameters parameters)
 		{
-			await CancelCurrentGenerationAsync();
-			CurrentAutocompletion = GetAutocompletionInternalAsync(view, prefixText, suffixText);
-			await CurrentAutocompletion;
-		}
+            // Wait until the semaphore is available
+            Semaphore.Wait();
 
-		async private Task GetAutocompletionInternalAsync(ViewAutocompleteHandler view, string prefixText, string suffixText)
+			try
+			{
+				if(CurrentAutocompletion != null)
+				{
+                    // There is a running generation. Cancel it
+                    CancellationTokenSource?.Cancel();
+
+					// Queue the new generation. Override any previously queued generation
+					NextAutocompletionParameters = parameters;
+					return;
+                }
+
+                // No generation is running. Start a new one, and do not wait for it to finish
+                CancellationTokenSource = new CancellationTokenSource();
+                CurrentAutocompletion = GetAutocompletionInternalAsync(parameters);
+				_ = RunQueuedAutocompletionsAsync();
+
+            }
+            finally
+            {
+                Semaphore.Release();
+            }
+        }
+
+		async private Task RunQueuedAutocompletionsAsync()
+		{
+			while (true)
+			{
+				await CurrentAutocompletion;
+
+				// Check if there is a new generation queued
+				await Semaphore.WaitAsync();
+				try
+				{
+                    CancellationTokenSource.Dispose();
+                    CancellationTokenSource = null;
+
+                    if (NextAutocompletionParameters == null)
+					{
+						// No new generation queued
+						CurrentAutocompletion = null;
+                        return;
+					}
+
+                    // Prepare the new generation
+                    CancellationTokenSource = new CancellationTokenSource();
+                    CurrentAutocompletion = GetAutocompletionInternalAsync(NextAutocompletionParameters);
+                    NextAutocompletionParameters = null;
+				}
+				finally
+				{
+					Semaphore.Release();
+				}
+			}
+        }
+
+		async private Task GetAutocompletionInternalAsync(GenerationParameters parameters)
 		{
 			try
 			{
 				Debug.WriteLine("Starting new suggestion");
 
-				// Cancel current generation, if there is some
-				CancellationTokenSource = new CancellationTokenSource();
-
 				var request = new GenerateRequest();
-				request.Prompt = prefixText;
-				request.Suffix = suffixText;
+				request.Prompt = parameters.PrefixText;
+				request.Suffix = parameters.SuffixText;
 
                 string autocompleteText = "";
-                using (new ExecutionTime($"Autocompletion generation, prefix chars: {prefixText.Length}, suffix chars: {suffixText.Length}"))
+                using (new ExecutionTime($"Autocompletion generation, prefix chars: {parameters.PrefixText.Length}, " +
+					$"suffix chars: {parameters.SuffixText.Length}"))
 				{
 					// Debug.WriteLine("---------------");
 					var enumerator = OLlamaClient.GenerateAsync(request, CancellationTokenSource.Token).GetAsyncEnumerator();
@@ -122,8 +185,7 @@ namespace AutocompleteVs
                     // Debug.WriteLine("---------------");
                 }
 
-                if (CancellationTokenSource?.IsCancellationRequested ?? true)
-					return;
+                CancellationTokenSource.Token.ThrowIfCancellationRequested();
 
 				// qwen2.5-coder:1.5b-base adds unwanted spaces. NO
 				// autocompleteText = autocompleteText.Trim();
@@ -132,7 +194,7 @@ namespace AutocompleteVs
 				// Notify the view the autocompletion has finished.
 				// Run it in the UI thread. Otherwise it will trhow an excepcion
 				await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				view.AutocompletionGenerationFinished(autocompleteText);
+                parameters.View.AutocompletionGenerationFinished(autocompleteText);
 			}
             catch(TaskCanceledException)
 			{
@@ -152,11 +214,6 @@ namespace AutocompleteVs
 				{
 					Debug.WriteLine("Suggestion cancelled");
 				}
-			}
-			finally
-			{
-				CancellationTokenSource = null;
-				CurrentAutocompletion = null;
 			}
 		}
 	}
