@@ -273,7 +273,7 @@ namespace AutocompleteVs
 			SuggstionAdornmentVisible = false;
 		}
 
-		public void AutocompletionGenerationFinished(string viewSuggestionText)
+        public void AutocompletionGenerationFinished(string viewSuggestionText)
 		{
 			try
 			{
@@ -298,10 +298,13 @@ namespace AutocompleteVs
 				// Get caret position and line
 				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
 				IdxSuggestionPosition = View.Caret.Position.BufferPosition;
-				var caretSpan = new SnapshotSpan(View.TextSnapshot, 
-					Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition + 1));
 
-				Geometry geometry = View.TextViewLines.GetMarkerGeometry(caretSpan);
+                // If an empty span is passed to GetMarkerGeometry, it returns null. So, we need a non empty span.
+                // If caret is at document end, IdxSuggestionPosition + 1 is outside the document, and the SnapshotSpan constructor
+				// throws an exception. So:
+				// 1) If document is empty, do not add an adorment.
+				// 2) If caret is at document end, take previous char at the same line. If caret is at line start, we simply cannot get
+				//    the geometry
 
 				// Text to show in adornment
 				string suggestionTextToShow = CurrentSuggestionText;
@@ -312,6 +315,12 @@ namespace AutocompleteVs
 				if(!string.IsNullOrWhiteSpace(lineTextAfterCaret))
 				{
                     // Case 1: In the middle of a non empty line
+
+					// Get line geometry for caret position
+                    var caretSpan = new SnapshotSpan(View.TextSnapshot,
+                    Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition + 1));
+                    Geometry geometry = View.TextViewLines.GetMarkerGeometry(caretSpan);
+
                     // Caret in middle of text. Render text in previous line.
                     // TODO: This could hide text, so do it only if suggestion has been fired manually
                     SetLabelSolid(true);
@@ -340,70 +349,16 @@ namespace AutocompleteVs
                     string padding = lineTextBeforeCaret.Replace("\t", "    ");
                     suggestionTextToShow = new string(' ', padding.Length) + CurrentSuggestionText;
 
+                    // In this case, is not safe to call GetMarkerGeometry, as the caret can be at the end of the document, 
+                    // and GetMarkerGeometry needs a non empty span. So calculate the position manually
                     // Start rendering from left border
-                    Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
+                    Canvas.SetTop(LabelAdornment, caretLine.TextTop);
                     Canvas.SetLeft(LabelAdornment, 0);
 
                     // Add a transform to the line to see all the autocmpletion, if needed
-                    LabelAdornment.Height = AddMultilineSuggestionTransform(suggestionTextToShow, caretLine, geometry);
+                    LabelAdornment.Height = AddMultilineSuggestionTransform(suggestionTextToShow, caretLine, View.LineHeight);
 
                 }
-
-				// Old version:
-                // Two cases: We are on a empty line, or in a non empty line
-                /*
-				string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
-				if (string.IsNullOrWhiteSpace(caretLineText))
-				{
-					// Empty line: If suggestion is multiline, render it all
-					SetLabelSolid(false);
-
-					// Start rendering from left border
-					Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
-					Canvas.SetLeft(LabelAdornment, 0);
-
-					// Add a transform to the line to see all the autocmpletion, if needed
-					LabelAdornment.Height = AddMultilineSuggestionTransform(viewSuggestionText, caretLine, geometry);
-
-					// Add caret line indentation characters
-					string padding = caretLineText.Substring(0, IdxSuggestionPosition - caretLine.Start);
-					suggestionTextToShow = padding + CurrentSuggestionText;
-					// TODO: Tabs may not be 4 spaces, as it is configurable !!!
-					suggestionTextToShow = suggestionTextToShow.Replace("\t", "    ");
-				}
-				else
-				{
-					// Non empty line. Render only the first text line of suggestion
-					// TODO: If we are not at the end of current line, show suggestion in other line (upper / lower)
-					// TODO: Make sure it does not collide with VS single word autocompletion toolwindow
-					int idx = CurrentSuggestionText.IndexOf('\n');
-					if (idx >= 0)
-						CurrentSuggestionText = CurrentSuggestionText.Substring(0, idx);
-					suggestionTextToShow = CurrentSuggestionText;
-
-					LabelAdornment.Height = geometry.Bounds.Height;
-
-					// Check if cursor is at the current line end:
-					string lineTextAfterCaret = caretLineText.Substring(IdxSuggestionPosition - caretLine.Start);
-					if(string.IsNullOrWhiteSpace(lineTextAfterCaret))
-					{
-						// Caret at the line end, or there is only spaces after caret. Render label in caret line
-						SetLabelSolid(false);
-						Canvas.SetTop(LabelAdornment, geometry.Bounds.Top);
-					}
-					else
-					{
-						// Caret in middle of text. Render text in previous line.
-						// TODO: This could hide text, so do it only if suggestion has been fired manually
-						SetLabelSolid(true);
-						Canvas.SetTop(LabelAdornment, geometry.Bounds.Top - geometry.Bounds.Height);
-					}
-
-					// Align the image with the top of the bounds of the text geometry
-					Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
-				}
-				*/
-
 
                 // Replace tabs. Otherwise they are rendered with a different size.
                 LabelAdornment.Content = suggestionTextToShow;
@@ -417,10 +372,8 @@ namespace AutocompleteVs
 			}
 		}
 
-		private double AddMultilineSuggestionTransform(string viewSuggestionText, ITextViewLine caretLine, Geometry geometry)
+        private double AddMultilineSuggestionTransform(string viewSuggestionText, ITextViewLine caretLine, double lineHeight)
 		{
-			double lineHeight = geometry.Bounds.Height;
-
 			// Count line breaks in suggestion
 			int nLineBreaks = 0;
 			for(int i=0; i<viewSuggestionText.Length; i++)
@@ -440,8 +393,9 @@ namespace AutocompleteVs
 
 		private void AddAdornment()
 		{
-			var span = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition + 1));
-			Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, LabelAdornment, null);
+            // var span = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition + 1));
+            var span = new SnapshotSpan(View.TextSnapshot, Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition));
+            Layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, LabelAdornment, null);
 			SuggstionAdornmentVisible = true;
 		}
 
