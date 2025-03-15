@@ -277,10 +277,10 @@ namespace AutocompleteVs
 		{
 			try
 			{
-				// Debug text:
-				// viewSuggestionText = "abc\r\nxxx\r\nyyy";
+                // Debug text:
+                viewSuggestionText = "COLUMN__NAME";
 
-				RemoveAdornment();
+                RemoveAdornment();
 
 				if (viewSuggestionText == null || string.IsNullOrEmpty(viewSuggestionText.Trim()))
 					return;
@@ -298,13 +298,6 @@ namespace AutocompleteVs
 				// Get caret position and line
 				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
 				IdxSuggestionPosition = View.Caret.Position.BufferPosition;
-
-                // If an empty span is passed to GetMarkerGeometry, it returns null. So, we need a non empty span.
-                // If caret is at document end, IdxSuggestionPosition + 1 is outside the document, and the SnapshotSpan constructor
-				// throws an exception. So:
-				// 1) If document is empty, do not add an adorment.
-				// 2) If caret is at document end, take previous char at the same line. If caret is at line start, we simply cannot get
-				//    the geometry
 
 				// Text to show in adornment
 				string suggestionTextToShow = CurrentSuggestionText;
@@ -360,8 +353,8 @@ namespace AutocompleteVs
 
                 }
 
-                // Replace tabs. Otherwise they are rendered with a different size.
-                LabelAdornment.Content = suggestionTextToShow;
+                // Replace undescore chars ("_") by double underscores. In WPF, underscores are markers for access keys
+                LabelAdornment.Content = suggestionTextToShow.Replace("_", "__");
 
 				AddAdornment();
 			}

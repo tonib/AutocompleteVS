@@ -1,5 +1,4 @@
 ﻿
-Suggestion "COLUMN_NAME" is rendered wrong: "_" space is not honored ????
 Make a end trim of suggestion (unwanted line breaks)
 set ollama settings:
 	only the most probable, no temperature or creative stuff
