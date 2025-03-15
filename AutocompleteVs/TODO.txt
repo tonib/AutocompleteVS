@@ -1,10 +1,8 @@
 ﻿
 Make tests with empty document (probable errors with buffer limits)
 
-When you select a text and press Del, suggestion gets cancelled
 Package is not initialized until first command is run. Package should be initialized when cursor is moved or something typed
 Make a end trim of suggestion (unwanted line breaks)
-automatic autocompletion
 set ollama settings:
 	only the most probable, no temperature or creative stuff
 		Exceptions: Re-suggest in the same place: Try an alternative suggestion

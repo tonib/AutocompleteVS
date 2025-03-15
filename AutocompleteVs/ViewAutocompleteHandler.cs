@@ -63,14 +63,14 @@ namespace AutocompleteVs
 
 			View.LayoutChanged += View_LayoutChanged;
 			View.Caret.PositionChanged += Caret_PositionChanged;
-			View.TextBuffer.Changed += TextBuffer_Changed;
-			View.Closed += View_Closed;
+            View.TextBuffer.PostChanged += TextBuffer_PostChanged;
+            View.Closed += View_Closed;
 		}
 
-		/// <summary>
-		/// View has been closed
-		/// </summary>
-		private void View_Closed(object sender, EventArgs e)
+        /// <summary>
+        /// View has been closed
+        /// </summary>
+        private void View_Closed(object sender, EventArgs e)
 		{
 			try
 			{
@@ -84,19 +84,17 @@ namespace AutocompleteVs
 			}
 		}
 
-		/// <summary>
-		/// Document text has changed (text typed, deleted, paste, etc)
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e) => SuggestionContextChanged();
+        /// <summary>
+        /// Document text has changed (text typed, deleted, paste, etc)
+        /// </summary>
+        private void TextBuffer_PostChanged(object sender, EventArgs e) => SuggestionContextChanged();
 
-		/// <summary>
-		/// Caret position changed in view
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => SuggestionContextChanged();
+        /// <summary>
+        /// Caret position changed in view
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => SuggestionContextChanged();
 
         /// <summary>
         /// Called when suggestion context has changed. This will cancel current suggestion and, if configured, start a new one
