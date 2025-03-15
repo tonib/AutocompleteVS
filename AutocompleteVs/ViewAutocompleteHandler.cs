@@ -54,6 +54,8 @@ namespace AutocompleteVs
 		/// </summary>
 		private SolidColorBrush SuggestionBorderBrush;
 
+		private bool HandleSuggestionsContextChange = true;
+
 		private ViewAutocompleteHandler(IWpfTextView view)
 		{
 			View = view;
@@ -99,10 +101,13 @@ namespace AutocompleteVs
         /// <summary>
         /// Called when suggestion context has changed. This will cancel current suggestion and, if configured, start a new one
         /// </summary>
-        public void SuggestionContextChanged()
+        private void SuggestionContextChanged()
 		{
 			try
 			{
+				if (!HandleSuggestionsContextChange)
+					return;
+
 				CancelCurrentAutocompletion();
 
 				if (AutocompleteVsPackage.Instance?.Settings.AutomaticSuggestions ?? false)
@@ -468,24 +473,34 @@ namespace AutocompleteVs
 
 			textToInsert = NormalizeLineBreaks(textToInsert);
 
-            // https://stackoverflow.com/questions/13788221/how-to-insert-the-text-in-the-editor-in-the-textadornment-template-in-visual-stu
-            ITextEdit textEdit = View.TextBuffer.CreateEdit();
-			textEdit.Insert(View.Caret.Position.BufferPosition, textToInsert);
-			textEdit.Apply();
-
-			if(inVirtualSpace)
+			try
 			{
-				// Move cursor at the end of line. Needed, otherwhise the virtual spaces are keept after the current insertion
-				View.Caret.MoveTo(View.Caret.Position.BufferPosition);
-			}
+				// Disable context change while we are inserting text in editor
+				HandleSuggestionsContextChange = false;
 
-			if(singleWord)
-			{
-				// Re-add suggestion for remaining words
-				string newSuggestion = currentSuggestion.Substring(textToInsert.Length);
-				if (!string.IsNullOrWhiteSpace(newSuggestion))
-					AutocompletionGenerationFinished(newSuggestion);
+                // https://stackoverflow.com/questions/13788221/how-to-insert-the-text-in-the-editor-in-the-textadornment-template-in-visual-stu
+                ITextEdit textEdit = View.TextBuffer.CreateEdit();
+				textEdit.Insert(View.Caret.Position.BufferPosition, textToInsert);
+				textEdit.Apply();
+
+				if (inVirtualSpace)
+				{
+					// Move cursor at the end of line. Needed, otherwhise the virtual spaces are keept after the current insertion
+					View.Caret.MoveTo(View.Caret.Position.BufferPosition);
+				}
+
+				if (singleWord)
+				{
+					// Re-add suggestion for remaining words
+					string newSuggestion = currentSuggestion.Substring(textToInsert.Length);
+					if (!string.IsNullOrWhiteSpace(newSuggestion))
+						AutocompletionGenerationFinished(newSuggestion);
+				}
 			}
+			finally
+			{
+				HandleSuggestionsContextChange = true;
+            }
 
 			return true;
 		}
