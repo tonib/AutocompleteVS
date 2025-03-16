@@ -1,8 +1,7 @@
 ﻿
 Validate settings in the options page
-If there is some selection, do not do automatic suggestions
 Make a end trim of suggestion (unwanted line breaks)
-Exceptions: Re-suggest in the same place: Try an alternative suggestion with a different topk, topp, temperature
+Re-suggest in the same place: Try an alternative suggestion with a different topk, topp, temperature
 support for openai api
 multiline suggestions: tab characters are replaced by 4 spaces. Read the number of spaces to place from vs settings
 Check read only editors (ex git history): Do not handle autocompletion here
@@ -20,7 +19,7 @@ Codeqwen: Support for <|cursor|> Check WTF is this (cursor position???)
 Check larger models (performance)
 If when keep typing, the text keeps the suggestion, suggestion should not be removed
 Do not suggest after current code block. ex: if(){ <cursor> }. It seems closes the existing bracket and starts a new one
-	Same, i guess, for parenthesis in interline suggestions
+	Same, i guess, for parenthesis in interline suggestions. It's VERY annoying
 Related to previous: Support for non infill models. Option to do not infill
 
 

@@ -109,7 +109,11 @@ namespace AutocompleteVs
 
 				CancelCurrentAutocompletion();
 
-				if (AutocompleteVsPackage.Instance?.Settings.AutomaticSuggestions ?? false)
+				// If there is a selection, do not start a new suggestion
+				if (!View.Selection.IsEmpty)
+					return;
+
+                if (AutocompleteVsPackage.Instance?.Settings.AutomaticSuggestions ?? false)
 				{
 					// Check if we are in a valid position to start a new suggestion
 					// By now, if we are at a line end
