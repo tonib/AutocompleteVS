@@ -278,7 +278,7 @@ namespace AutocompleteVs
 			try
 			{
                 // Debug text:
-                viewSuggestionText = "COLUMN__NAME";
+                // viewSuggestionText = "COLUMN__NAME";
 
                 RemoveAdornment();
 
@@ -342,14 +342,15 @@ namespace AutocompleteVs
                     string padding = lineTextBeforeCaret.Replace("\t", "    ");
                     suggestionTextToShow = new string(' ', padding.Length) + CurrentSuggestionText;
 
+                    // Add a transform to the line to see all the autocmpletion, if needed
+                    LabelAdornment.Height = AddMultilineSuggestionTransform(suggestionTextToShow, caretLine, View.LineHeight);
+
+                    // This must to be done AFTER adding the line transform: It seems the transform can change the caretLine.TextTop
                     // In this case, is not safe to call GetMarkerGeometry, as the caret can be at the end of the document, 
                     // and GetMarkerGeometry needs a non empty span. So calculate the position manually
                     // Start rendering from left border
                     Canvas.SetTop(LabelAdornment, caretLine.TextTop);
                     Canvas.SetLeft(LabelAdornment, 0);
-
-                    // Add a transform to the line to see all the autocmpletion, if needed
-                    LabelAdornment.Height = AddMultilineSuggestionTransform(suggestionTextToShow, caretLine, View.LineHeight);
 
                 }
 
