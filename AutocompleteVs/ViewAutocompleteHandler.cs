@@ -74,6 +74,7 @@ namespace AutocompleteVs
 		{
 			try
 			{
+				Debug.WriteLine("View closed");
 				// Cancel current generation, do not touch UI
 				AutocompletionGeneration.Instance?.CancelCurrentGeneration();
 			}

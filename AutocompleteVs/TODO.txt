@@ -1,4 +1,5 @@
 ﻿
+If there is some selection, do not do automatic suggestions
 Make a end trim of suggestion (unwanted line breaks)
 set ollama settings:
 	only the most probable, no temperature or creative stuff

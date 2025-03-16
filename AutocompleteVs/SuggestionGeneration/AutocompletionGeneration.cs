@@ -60,6 +60,11 @@ namespace AutocompleteVs.SuggestionGeneration
         private CancellationTokenSource CancellationTokenSource;
 
         /// <summary>
+        /// Package settings
+        /// </summary>
+        Settings Settings;
+
+        /// <summary>
         /// Initializes the ollama client
         /// </summary>
         private AutocompletionGeneration()
@@ -73,16 +78,29 @@ namespace AutocompleteVs.SuggestionGeneration
         /// <param name="cancelCurrentAutocompletion">True is current autocompletion should be cancelled</param>
         public void ApplySettings(bool cancelCurrentAutocompletion)
 		{
-			// TODO: Make this thread safe
 			if (cancelCurrentAutocompletion)
 				CancelCurrentGeneration();
 
-			// set up the client
-			Settings settings = AutocompleteVsPackage.Instance.Settings;
-			var uri = new Uri(settings.OllamaUrl);
+            // TODO: This is no thread safe, but an error should be very unusual
+			if(OLlamaClient != null)
+			{
+				// Dispose previous client
+				try 
+				{ 
+					OLlamaClient.Dispose();  
+				}
+				catch(Exception ex)
+				{
+                    // TODO: Log exception
+                    Debug.WriteLine(ex.ToString());
+                }
+            }
+
+            // Set up the new client
+            Settings = AutocompleteVsPackage.Instance.Settings;
+			var uri = new Uri(Settings.OllamaUrl);
 			OLlamaClient = new OllamaApiClient(uri);
-			// select a model which should be used for further operations
-			OLlamaClient.SelectedModel = settings.ModelName;
+			OLlamaClient.SelectedModel = Settings.ModelName;
         }
 
 		public void CancelCurrentGeneration()
@@ -166,9 +184,24 @@ namespace AutocompleteVs.SuggestionGeneration
 				Debug.WriteLine("Starting new suggestion");
 
 				var request = new GenerateRequest();
-				request.Prompt = parameters.PrefixText;
+
+                // Request options
+                if (!string.IsNullOrEmpty(Settings.KeepAlive))
+					request.KeepAlive = Settings.KeepAlive;
+				request.Options = new RequestOptions()
+				{
+					TopK = Settings.TopK,
+					TopP = Settings.TopP,
+					Temperature = Settings.Temperature,
+					Seed = Settings.Seed,
+					NumPredict = Settings.NumPredict,
+					NumCtx = Settings.NumCtx
+				};
+
+                request.Prompt = parameters.PrefixText;
 				request.Suffix = parameters.SuffixText;
 
+                // TODO: Currently, there is no need to get the response as a stream
                 string autocompleteText = "";
                 using (new ExecutionTime($"Autocompletion generation, prefix chars: {parameters.PrefixText.Length}, " +
 					$"suffix chars: {parameters.SuffixText.Length}"))
@@ -187,9 +220,8 @@ namespace AutocompleteVs.SuggestionGeneration
 
                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-				// qwen2.5-coder:1.5b-base adds unwanted spaces. NO
-				// autocompleteText = autocompleteText.Trim();
-				Debug.WriteLine("Suggestion finished: " + autocompleteText);
+                // TODO: Write debug info about generation stats here
+                Debug.WriteLine("Suggestion finished: " + autocompleteText);
 
 				// Notify the view the autocompletion has finished.
 				// Run it in the UI thread. Otherwise it will trhow an excepcion
