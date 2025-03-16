@@ -76,6 +76,21 @@ namespace AutocompleteVs
             "Empty == use ollama default")]
         public string KeepAlive { get; set; } = "1h";
 
+        [Category(Category)]
+        [DisplayName("Max. number of characters in prompt")]
+        [Description("Maximum number of characters to send as prompt. Empty == send all file")]
+        public int? MaxPromptCharacters { get; set; } = 2048;
+
+        [Category(Category)]
+        [DisplayName("Prefix % when max. characters is reached")]
+        [Description("Only applies the current file has a size lager than the max. number of characters in prompt. " +
+            "As only that maximum number of characters will be sent, this is the % of characters to get from before the caret position." +
+            "The remaining % will be characters after caret position. Between 0 and 100")]
+        public double? InfillPrefixPercentage { get; set; } = 75.0;
+
+
+        public double? InfillSuffixPercentage => 100.0 - InfillPrefixPercentage;
+
         protected override void OnApply(PageApplyEventArgs e)
         {
             base.OnApply(e);

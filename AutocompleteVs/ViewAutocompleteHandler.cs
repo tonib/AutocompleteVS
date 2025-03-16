@@ -191,17 +191,44 @@ namespace AutocompleteVs
             // Get prefix / suffix text
             int caretIdx = View.Caret.Position.BufferPosition;
 
-			// TOOD: Add caret virtual spaces to the end of prefix, otherwise, indentation is suggested wrong
-			string prefixText = View.TextBuffer.CurrentSnapshot.GetText(0, caretIdx);
+            // TOOD: Add caret virtual spaces to the end of prefix, otherwise, indentation is suggested wrong
+            string prefixText = View.TextBuffer.CurrentSnapshot.GetText(0, caretIdx);
 
-			string suffixText;
-			int textLength = View.TextBuffer.CurrentSnapshot.Length;
-			if (caretIdx >= textLength)
-				suffixText = "";
-			else
-				suffixText = View.TextBuffer.CurrentSnapshot.GetText(caretIdx, View.TextBuffer.CurrentSnapshot.Length - caretIdx);
+            string suffixText;
+            int textLength = View.TextBuffer.CurrentSnapshot.Length;
+            if (caretIdx >= textLength)
+                suffixText = "";
+            else
+                suffixText = View.TextBuffer.CurrentSnapshot.GetText(caretIdx, View.TextBuffer.CurrentSnapshot.Length - caretIdx);
 
-			AutocompletionGeneration.Instance?.StartAutocompletion(new GenerationParameters(this, prefixText, suffixText));
+            Settings settings = AutocompleteVsPackage.Instance?.Settings;
+            if (settings?.MaxPromptCharacters != null && textLength > (int)settings.MaxPromptCharacters)
+			{
+                // Text must be cropped. Calculate theoerical lengths to keep
+                int prefixLengthToKeep = (int)(settings.MaxPromptCharacters * (settings.InfillPrefixPercentage / 100.0));
+                int suffixLengthToKeep = (int)settings.MaxPromptCharacters - prefixLengthToKeep;
+
+				if(suffixLengthToKeep > suffixText.Length)
+				{
+                    // Suffix is not long enough. Add more text to prefix
+                    prefixLengthToKeep += suffixLengthToKeep - suffixText.Length;
+                    suffixLengthToKeep = suffixText.Length;
+                }
+				else if(prefixLengthToKeep > prefixText.Length)
+				{
+                    // Prefix is not long enough. Add more text to suffix
+                    suffixLengthToKeep += prefixLengthToKeep - prefixText.Length;
+                    prefixLengthToKeep = prefixText.Length;
+                }
+				Debug.Assert(prefixLengthToKeep + suffixLengthToKeep == settings.MaxPromptCharacters);
+
+				// Crop text
+				Debug.WriteLine($"Prompt cropped to {settings.MaxPromptCharacters} chars");
+                prefixText = prefixText.Substring(prefixText.Length - prefixLengthToKeep);
+                suffixText = suffixText.Substring(0, suffixLengthToKeep);
+            }
+
+            AutocompletionGeneration.Instance?.StartAutocompletion(new GenerationParameters(this, prefixText, suffixText));
 		}
 
 		/// <summary>
@@ -446,7 +473,7 @@ namespace AutocompleteVs
 			}
 			finally
 			{
-				HandleSuggestionsContextChange = true;
+                HandleSuggestionsContextChange = true;
             }
 
 			return true;
@@ -474,16 +501,16 @@ namespace AutocompleteVs
 			}
 
 			char wordStart = CurrentSuggestionText[idx];
-			if (Char.IsLetterOrDigit(wordStart))
-			{
+            if (Char.IsLetterOrDigit(wordStart))
+            {
 				// A word / number / identifier
 				while (idx < CurrentSuggestionText.Length && Char.IsLetterOrDigit(CurrentSuggestionText[idx]))
 					idx++;
 				return CurrentSuggestionText.Substring(0, idx);
 			}
 
-			// Otherwise is a punctuation
-			return CurrentSuggestionText.Substring(0, idx + 1);
-		}
+            // Otherwise is a punctuation
+            return CurrentSuggestionText.Substring(0, idx + 1);
+        }
 	}
 }
