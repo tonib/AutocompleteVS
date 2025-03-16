@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.VisualStudio.Text.Editor;
 using System.Threading;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace AutocompleteVs.SuggestionGeneration
 {
@@ -180,55 +181,56 @@ namespace AutocompleteVs.SuggestionGeneration
 		async private Task GetAutocompletionInternalAsync(GenerationParameters parameters)
 		{
 			try
-			{
-				Debug.WriteLine("Starting new suggestion");
+            {
+                Debug.WriteLine("Starting new suggestion");
 
-				var request = new GenerateRequest();
+                var request = new GenerateRequest();
 
                 // Request options
                 if (!string.IsNullOrEmpty(Settings.KeepAlive))
-					request.KeepAlive = Settings.KeepAlive;
-				request.Options = new RequestOptions()
-				{
-					TopK = Settings.TopK,
-					TopP = Settings.TopP,
-					Temperature = Settings.Temperature,
-					Seed = Settings.Seed,
-					NumPredict = Settings.NumPredict,
-					NumCtx = Settings.NumCtx
-				};
+                    request.KeepAlive = Settings.KeepAlive;
+                request.Options = new RequestOptions()
+                {
+                    TopK = Settings.TopK,
+                    TopP = Settings.TopP,
+                    Temperature = Settings.Temperature,
+                    Seed = Settings.Seed,
+                    NumPredict = Settings.NumPredict,
+                    NumCtx = Settings.NumCtx
+                };
 
                 request.Prompt = parameters.PrefixText;
-				request.Suffix = parameters.SuffixText;
+                request.Suffix = parameters.SuffixText;
 
                 // TODO: Currently, there is no need to get the response as a stream
                 string autocompleteText = "";
+                GenerateResponseStream lastResponse = null;
                 using (new ExecutionTime($"Autocompletion generation, prefix chars: {parameters.PrefixText.Length}, " +
-					$"suffix chars: {parameters.SuffixText.Length}"))
-				{
-					// Debug.WriteLine("---------------");
-					var enumerator = OLlamaClient.GenerateAsync(request, CancellationTokenSource.Token).GetAsyncEnumerator();
-					// ConfigureAwait(false) is required to avoid to get this task running to the UI thread
-					while (await enumerator.MoveNextAsync().ConfigureAwait(false))
-					{
-						string newToken = enumerator.Current.Response;
-						// Debug.Write(newToken);
-						autocompleteText += newToken;
-					}
+                    $"suffix chars: {parameters.SuffixText.Length}"))
+                {
+                    // Debug.WriteLine("---------------");
+                    var enumerator = OLlamaClient.GenerateAsync(request, CancellationTokenSource.Token).GetAsyncEnumerator();
+                    // ConfigureAwait(false) is required to avoid to get this task running to the UI thread
+                    while (await enumerator.MoveNextAsync().ConfigureAwait(false))
+                    {
+                        lastResponse = enumerator.Current;
+                        string newToken = lastResponse.Response;
+                        // Debug.Write(newToken);
+                        autocompleteText += newToken;
+                    }
                     // Debug.WriteLine("---------------");
                 }
 
                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                // TODO: Write debug info about generation stats here
-                Debug.WriteLine("Suggestion finished: " + autocompleteText);
+                PrintResponseStats(autocompleteText, lastResponse);
 
-				// Notify the view the autocompletion has finished.
-				// Run it in the UI thread. Otherwise it will trhow an excepcion
-				await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                // Notify the view the autocompletion has finished.
+                // Run it in the UI thread. Otherwise it will trhow an excepcion
+                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 parameters.View.AutocompletionGenerationFinished(autocompleteText);
-			}
-            catch(TaskCanceledException)
+            }
+            catch (TaskCanceledException)
 			{
 				Debug.WriteLine("Suggestion cancelled");
 			}
@@ -248,5 +250,23 @@ namespace AutocompleteVs.SuggestionGeneration
 				}
 			}
 		}
-	}
+
+        private static string NanoToMiliseconds(long ns) => (ns / 1000000.0).ToString("0.00") + " ms";
+
+        private static void PrintResponseStats(string autocompleteText, GenerateResponseStream lastResponse)
+        {
+            Debug.WriteLine($"Suggestion finished, {autocompleteText.Length} chars.");
+            // Debug.WriteLine($"Suggestion: {autocompleteText}");
+            if (lastResponse is GenerateDoneResponseStream doneResponse)
+            {
+                Debug.WriteLine($"Total duration: {NanoToMiliseconds(doneResponse.TotalDuration)}, " +
+                    $"n. tokens prompt: {doneResponse.PromptEvalCount}, " +
+                    $"n. tokens response: {doneResponse.EvalCount}, " +
+                    $"Load duration: {NanoToMiliseconds(doneResponse.LoadDuration)}, " +
+                    $"PromptEval duration: {NanoToMiliseconds(doneResponse.PromptEvalDuration)}, " +
+                    $"Eval. duration: {NanoToMiliseconds(doneResponse.EvalDuration)}"
+                );
+            }
+        }
+    }
 }
