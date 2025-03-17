@@ -1,4 +1,5 @@
 ﻿
+Install current version and use it (own dog food eating)
 Make a end trim of suggestion (unwanted line breaks)
 Re-suggest in the same place: Try an alternative suggestion with a different topk, topp, temperature
 support for openai api
@@ -21,7 +22,7 @@ Do not suggest after current code block. ex: if(){ <cursor> }. It seems closes t
 	Same, i guess, for parenthesis in interline suggestions. It's VERY annoying
 Related to previous: Support for non infill models. Option to do not infill
 Validate settings in the options page
-
+Add a timeout after stop typing before running suggestion? (performance)
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING

@@ -88,7 +88,7 @@ namespace AutocompleteVs
             "The remaining % will be characters after caret position. Between 0 and 100")]
         public double? InfillPrefixPercentage { get; set; } = 75.0;
 
-
+        [Browsable(false)]
         public double? InfillSuffixPercentage => 100.0 - InfillPrefixPercentage;
 
         protected override void OnApply(PageApplyEventArgs e)

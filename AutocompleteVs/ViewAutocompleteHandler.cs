@@ -117,6 +117,7 @@ namespace AutocompleteVs
 				{
 					// Check if we are in a valid position to start a new suggestion
 					// By now, if we are at a line end
+					// TODO: This is trowing nullexception when closing editors..
 					ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
 					string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
 					string lineTextAfterCaret = caretLineText.Substring(View.Caret.Position.BufferPosition - caretLine.Start);
