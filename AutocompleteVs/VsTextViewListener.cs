@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
@@ -22,6 +23,9 @@ namespace AutocompleteVs
     {
         [Import]
         internal IVsEditorAdaptersFactoryService AdapterService = null;
+
+        [Import]
+        internal ICompletionBroker CompletionBroker { get; set; }
 
         /// <summary>
         /// Content type supported for autocompletion
@@ -66,7 +70,8 @@ namespace AutocompleteVs
             WpfTextView = (IWpfTextView)textView;
 
             // Create the view autocompletion handler
-            ViewAutocompleteHandler.AttachedHandler(WpfTextView);
+            ViewAutocompleteHandler handler = ViewAutocompleteHandler.AttachedHandler(WpfTextView);
+            handler.CompletionBroker = CompletionBroker;
 
             // Get view command notifications
             AutocompleteCommandFilter.AttachCommandFiter(textViewAdapter, WpfTextView);

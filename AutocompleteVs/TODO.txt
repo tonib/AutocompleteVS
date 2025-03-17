@@ -1,4 +1,5 @@
 ﻿
+ERROR: Suggestions indentation is plain wrong
 Install current version and use it (own dog food eating)
 Make a end trim of suggestion (unwanted line breaks)
 Re-suggest in the same place: Try an alternative suggestion with a different topk, topp, temperature

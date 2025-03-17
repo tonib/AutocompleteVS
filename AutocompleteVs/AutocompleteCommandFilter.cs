@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -72,8 +73,13 @@ namespace AutocompleteVs
 
 						case VSConstants.VSStd2KCmdID.CANCEL:
 							// Esc: Cancel current suggestion / generation
-							ViewAutocompleteHandler.AttachedHandler(View).CancelCurrentAutocompletion();
+							var handler = ViewAutocompleteHandler.AttachedHandler(View);
+							// If there is a VS intellisense session active, do nothing. Esc will cancel that session
+							// Do not cancell the suggestion
+							if (!handler.CompletionBroker.IsCompletionActive(View))
+								handler.CancelCurrentAutocompletion();
 							break;
+
 					}
 				}
 			}

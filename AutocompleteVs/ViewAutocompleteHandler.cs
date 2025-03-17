@@ -2,6 +2,7 @@
 using AutocompleteVs.LIneTransforms;
 using AutocompleteVs.SuggestionGeneration;
 using AutocompleteVs.TestIntraTextAdorments;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -56,7 +57,12 @@ namespace AutocompleteVs
 
 		private bool HandleSuggestionsContextChange = true;
 
-		private ViewAutocompleteHandler(IWpfTextView view)
+		/// <summary>
+		/// The VS intellisense autocompletion broker
+		/// </summary>
+		internal ICompletionBroker CompletionBroker;
+
+        private ViewAutocompleteHandler(IWpfTextView view)
 		{
 			View = view;
 			Layer = view.GetAdornmentLayer(VsTextViewListener.AUTOCOMPLETE_ADORNMENT_LAYER_ID);
@@ -85,10 +91,18 @@ namespace AutocompleteVs
 			}
 		}
 
-        /// <summary>
-        /// Document text has changed (text typed, deleted, paste, etc)
-        /// </summary>
-        private void TextBuffer_PostChanged(object sender, EventArgs e) => SuggestionContextChanged();
+		/// <summary>
+		/// Document text has changed (text typed, deleted, paste, etc)
+		/// </summary>
+		private void TextBuffer_PostChanged(object sender, EventArgs e)
+		{
+			// Check if we have typed something that follows the current suggestion
+			if(CurrentSuggestionText != null)
+			{
+				
+			}
+			SuggestionContextChanged();
+		}
 
         /// <summary>
         /// Caret position changed in view
@@ -475,7 +489,10 @@ namespace AutocompleteVs
 					if (!string.IsNullOrWhiteSpace(newSuggestion))
 						AutocompletionGenerationFinished(newSuggestion);
 				}
-			}
+
+				// Close VS autocompletion tooltip
+				CompletionBroker.DismissAllSessions(View);
+            }
 			finally
 			{
                 HandleSuggestionsContextChange = true;
