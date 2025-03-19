@@ -102,7 +102,18 @@ namespace AutocompleteVs.SuggestionGeneration
 
             // Set up the new client
             Settings = AutocompleteVsPackage.Instance.Settings;
-            Generator = new OllamaGenerator(Settings);
+			switch(Settings.GeneratorType)
+			{
+				case GeneratorType.Ollama:
+					Generator = new OllamaGenerator(Settings);
+					break;
+				case GeneratorType.OpenAi:
+					Generator = new OpenAiGenerator(Settings);
+					break;
+				default:
+					throw new Exception($"Unknown {Settings.GeneratorType} suggestions generator");
+			}
+            
         }
 
 		public void CancelCurrentGeneration()

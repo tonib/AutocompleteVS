@@ -88,6 +88,13 @@ namespace AutocompleteVs
             "The remaining % will be characters after caret position. Between 0 and 100")]
         public double? InfillPrefixPercentage { get; set; } = 75.0;
 
+        [Category(Category)]
+        [DisplayName("Generator type")]
+        public GeneratorType GeneratorType { get; set; } = GeneratorType.Ollama;
+
+        [Category(Category)]
+        [DisplayName("OpenAI key")]
+        public string OpenAiKey { get; set; }
 
         public double? InfillSuffixPercentage => 100.0 - InfillPrefixPercentage;
 
