@@ -96,7 +96,7 @@ namespace AutocompleteVs
             base.OnApply(e);
 
             // Update the ollama client
-            AutocompletionGeneration.Instance.ApplySettings(true);
+            OLlamaGeneration.Instance.ApplySettings(true);
         }
 
     }

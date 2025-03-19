@@ -16,15 +16,15 @@ namespace AutocompleteVs.SuggestionGeneration
 	/// <summary>
 	/// Generates an autocompletions. Only a single generation in any view is run at same time
 	/// </summary>
-	internal class AutocompletionGeneration
+	internal class OLlamaGeneration
 	{
 
-		static private AutocompletionGeneration _Instance;
+		static private OLlamaGeneration _Instance;
 
 		/// <summary>
 		/// The autocompletion generation instance. It will be null until the package is initialized
 		/// </summary>
-		static public AutocompletionGeneration Instance
+		static public OLlamaGeneration Instance
 		{
 			get
 			{
@@ -35,7 +35,7 @@ namespace AutocompleteVs.SuggestionGeneration
 						// Package not initialized yet
 						return null;
 					}
-					_Instance = new AutocompletionGeneration();
+					_Instance = new OLlamaGeneration();
 				}
 				return _Instance;
 			}
@@ -68,7 +68,7 @@ namespace AutocompleteVs.SuggestionGeneration
         /// <summary>
         /// Initializes the ollama client
         /// </summary>
-        private AutocompletionGeneration()
+        private OLlamaGeneration()
 		{
 			ApplySettings(false);
 		}
