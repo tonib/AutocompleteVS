@@ -76,7 +76,7 @@ namespace AutocompleteVs
 			{
 				Debug.WriteLine("View closed");
 				// Cancel current generation, do not touch UI
-				OLlamaGeneration.Instance?.CancelCurrentGeneration();
+				AutocompletionsGenerator.Instance?.CancelCurrentGeneration();
 			}
 			catch(Exception ex)
 			{
@@ -136,7 +136,7 @@ namespace AutocompleteVs
         /// </summary>
         public void CancelCurrentAutocompletion()
 		{
-            OLlamaGeneration.Instance?.CancelCurrentGeneration();
+            AutocompletionsGenerator.Instance?.CancelCurrentGeneration();
             RemoveAdornment();
         }
 
@@ -232,7 +232,7 @@ namespace AutocompleteVs
                 suffixText = suffixText.Substring(0, suffixLengthToKeep);
             }
 
-            OLlamaGeneration.Instance?.StartAutocompletion(new GenerationParameters(this, prefixText, suffixText));
+            AutocompletionsGenerator.Instance?.StartAutocompletion(new GenerationParameters(this, prefixText, suffixText));
 		}
 
 		/// <summary>

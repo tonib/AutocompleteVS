@@ -57,9 +57,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="SuggestionGeneration\GenerationParameters.cs" />
+    <Compile Include="SuggestionGeneration\IGenerator.cs" />
+    <Compile Include="SuggestionGeneration\OllamaGenerator.cs" />
     <Compile Include="ViewAutocompleteHandler.cs" />
     <Compile Include="AutocompleteCommand.cs" />
-    <Compile Include="SuggestionGeneration\OLlamaGeneration.cs" />
+    <Compile Include="SuggestionGeneration\AutocompletionsGenerator.cs" />
     <Compile Include="TestIntraTextAdorments\CaretTagger.cs" />
     <Compile Include="TestIntraTextAdorments\CaretTaggerProvider.cs" />
     <Compile Include="TestIntraTextAdorments\LabelAdornment.cs" />
