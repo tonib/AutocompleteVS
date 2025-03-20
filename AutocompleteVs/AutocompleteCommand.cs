@@ -101,85 +101,18 @@ namespace AutocompleteVs
 			try
 			{
 				ThreadHelper.ThrowIfNotOnUIThread();
-				//string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-				//string title = "AutocompleteCommand";
-
-				//// Show a message box to prove we were here
-				//VsShellUtilities.ShowMessageBox(
-				//	this.package,
-				//	message,
-				//	title,
-				//	OLEMSGICON.OLEMSGICON_INFO,
-				//	OLEMSGBUTTON.OLEMSGBUTTON_OK,
-				//	OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
 				Microsoft.VisualStudio.Text.Editor.IWpfTextView view = TextEditorUtils.GetTextView(package);
 				if (view == null)
 					return;
 
-				//// TODO: This only for models allowing fill in the middle
-				//// Get prefix / suffix text
-				//int caretIdx = view.Caret.Position.BufferPosition;
-				//string prefixText = view.TextBuffer.CurrentSnapshot.GetText(0, caretIdx);
-				//string suffixText;
-				//int textLength = view.TextBuffer.CurrentSnapshot.Length;
-				//if (caretIdx >= textLength)
-				//	suffixText = "";
-				//else
-				//	suffixText = view.TextBuffer.CurrentSnapshot.GetText(caretIdx, view.TextBuffer.CurrentSnapshot.Length - caretIdx);
-
 				ViewAutocompleteHandler.AttachedHandler(view).StartGeneration();
-
-				// Call the model, do not wait
-				// TODO: This seems to lock. Check if it should be run on a different thread, or should remove thread affinity
-				// _ = DoRequestAsync(view, prefixText, suffixText);
-
-				// Get 
 			}
 			catch(Exception ex)
 			{
-				// TODO: Log exception
-				Debug.WriteLine(ex.ToString());
+				OutputPaneHandler.Instance.Log(ex);
 			}
 		}
 
-		//async private static Task DoRequestAsync(Microsoft.VisualStudio.Text.Editor.IWpfTextView view, string prefixText, string suffixText)
-		//{
-		//	try
-		//	{
-		//		// set up the client
-		//		var uri = new Uri("http://localhost:11434");
-		//		var ollama = new OllamaApiClient(uri);
-
-		//		// select a model which should be used for further operations
-		//		ollama.SelectedModel = "qwen2.5-coder:1.5b-base";
-
-		//		var request = new GenerateRequest();
-		//		request.Prompt = prefixText;
-		//		request.Suffix = suffixText;
-
-		//		Debug.WriteLine("---------------");
-		//		string autocompleteText = "";
-		//		var enumerator = ollama.GenerateAsync(request).GetAsyncEnumerator();
-		//		while (await enumerator.MoveNextAsync())
-		//		{
-		//			string newToken = enumerator.Current.Response;
-		//			Debug.Write(newToken);
-		//			autocompleteText += newToken;
-		//		}
-		//		Debug.WriteLine("---------------");
-
-		//		ViewAutocompleteHandler handler = ViewAutocompleteHandler.AttachedHandler(view);
-		//		handler.AddAutocompletionAdornment(autocompleteText);
-
-		//	}
-		//	catch(Exception ex)
-		//	{
-		//		Debug.WriteLine(ex.ToString());
-		//	}
-		//}
-
-		/*
-			*/
 	}
 }

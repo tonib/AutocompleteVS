@@ -93,8 +93,7 @@ namespace AutocompleteVs.SuggestionGeneration
                 bool isCanceled = cancellationToken.IsCancellationRequested;
                 if (!isCanceled)
                 {
-                    // TODO: Log excepcion somewhere
-                    Debug.WriteLine(ex.ToString());
+                    await OutputPaneHandler.Instance.LogAsync(ex);
                 }
                 else
                 {

@@ -95,8 +95,7 @@ namespace AutocompleteVs.SuggestionGeneration
 				}
 				catch(Exception ex)
 				{
-                    // TODO: Log exception
-                    Debug.WriteLine(ex.ToString());
+					OutputPaneHandler.Instance.Log(ex);
                 }
             }
 

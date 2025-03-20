@@ -80,8 +80,7 @@ namespace AutocompleteVs
 			}
 			catch(Exception ex)
 			{
-				// TODO: Log exception
-				Debug.WriteLine(ex.ToString());
+				OutputPaneHandler.Instance.Log(ex);
 			}
 		}
 
@@ -126,9 +125,8 @@ namespace AutocompleteVs
 			}
 			catch(Exception ex)
 			{
-                // TODO: Log exception
-                Debug.WriteLine(ex.ToString());
-            }
+                OutputPaneHandler.Instance.Log(ex);
+			}
         }
 
         /// <summary>
@@ -176,7 +174,7 @@ namespace AutocompleteVs
 			catch (Exception ex)
 			{
 				// TODO: Log exception
-				Debug.WriteLine(ex.ToString());
+				OutputPaneHandler.Instance.Log(ex);
 			}
 		}
 
@@ -394,7 +392,7 @@ namespace AutocompleteVs
 			catch (Exception ex)
 			{
 				// TODO: Log exceptions
-				Debug.WriteLine(ex.ToString());
+				OutputPaneHandler.Instance.Log(ex);
 			}
 		}
 

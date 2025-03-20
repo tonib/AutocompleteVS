@@ -11,6 +11,8 @@ namespace AutocompleteVs
 {
     // https://learn.microsoft.com/en-us/visualstudio/extensibility/creating-an-options-page?view=vs-2022
 
+    // TODO: Organize this in categories, it's a mess
+
     /// <summary>
     /// Package settings
     /// </summary>

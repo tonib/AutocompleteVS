@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio;
+﻿using EnvDTE;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using System;
 using System.Runtime.InteropServices;
@@ -44,6 +45,16 @@ namespace AutocompleteVs
 		static public AutocompleteVsPackage Instance { get; private set; }
 
 		/// <summary>
+		/// This instance, casted as IServiceProvider. TODO: I don't know why this instance does not implement IServiceProvider. Because is async?
+		/// </summary>
+		public IServiceProvider ServiceProvider { get; private set; }
+
+		/// <summary>
+		/// Visual Studio instance
+		/// </summary>
+		public DTE DTE { get; private set; }
+
+		/// <summary>
 		/// Initialization of the package; this method is called right after the package is sited, so this is the place
 		/// where you can put all the initialization code that rely on services provided by VisualStudio.
 		/// </summary>
@@ -58,7 +69,9 @@ namespace AutocompleteVs
 		    await AutocompleteCommand.InitializeAsync(this);
 
 			Instance = this;
-        }
+			ServiceProvider = (IServiceProvider)this;
+			DTE = await GetServiceAsync(typeof(DTE)) as DTE;
+		}
 
 		/// <summary>
 		/// Package settings
