@@ -50,7 +50,7 @@ namespace AutocompleteVs.SuggestionGeneration
 					"current indentations You can use classes not included in current using statements: If they are needed," +
 					"user will add them later";
 
-				string userPrompt = parameters.PrefixText + "<|CURSOR|>" + parameters.SuffixText;
+				string userPrompt = parameters.ModelPrompt.PrefixText + "<|CURSOR|>" + parameters.ModelPrompt.SuffixText;
 
 				List<ChatMessage> messages = new List<ChatMessage>
 				{
@@ -67,7 +67,7 @@ namespace AutocompleteVs.SuggestionGeneration
 				// Notify the view the autocompletion has finished.
 				// Run it in the UI thread. Otherwise it will trhow an excepcion
 				await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				parameters.View.AutocompletionGenerationFinished(autocompleteText);
+				parameters.View.AutocompletionGenerationFinished(new Autocompletion(autocompleteText, parameters));
 			}
 			catch (TaskCanceledException)
 			{

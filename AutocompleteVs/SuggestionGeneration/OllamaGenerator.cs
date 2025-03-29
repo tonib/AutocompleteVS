@@ -51,14 +51,14 @@ namespace AutocompleteVs.SuggestionGeneration
                     NumCtx = Settings.NumCtx
                 };
 
-                request.Prompt = parameters.PrefixText;
-                request.Suffix = parameters.SuffixText;
+                request.Prompt = parameters.ModelPrompt.PrefixText;
+                request.Suffix = parameters.ModelPrompt.SuffixText;
 
                 // TODO: Currently, there is no need to get the response as a stream
                 string autocompleteText = "";
                 GenerateResponseStream lastResponse = null;
-                using (new ExecutionTime($"Autocompletion generation, prefix chars: {parameters.PrefixText.Length}, " +
-                    $"suffix chars: {parameters.SuffixText.Length}"))
+                using (new ExecutionTime($"Autocompletion generation, prefix chars: {parameters.ModelPrompt.PrefixText.Length}, " +
+                    $"suffix chars: {parameters.ModelPrompt.SuffixText.Length}"))
                 {
                     // Debug.WriteLine("---------------");
                     var enumerator = OLlamaClient.GenerateAsync(request, cancellationToken).GetAsyncEnumerator();
@@ -80,7 +80,7 @@ namespace AutocompleteVs.SuggestionGeneration
                 // Notify the view the autocompletion has finished.
                 // Run it in the UI thread. Otherwise it will trhow an excepcion
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                parameters.View.AutocompletionGenerationFinished(autocompleteText);
+                parameters.View.AutocompletionGenerationFinished(new Autocompletion(autocompleteText, parameters));
             }
             catch (TaskCanceledException)
             {
