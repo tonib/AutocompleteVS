@@ -62,11 +62,6 @@ namespace AutocompleteVs
 		/// </summary>
 		internal ICompletionBroker CompletionBroker;
 
-		/// <summary>
-		/// True if the next buffer change must to be ignored
-		/// </summary>
-		public bool IgnoreNextTextBufferChange;
-
         private ViewAutocompleteHandler(IWpfTextView view)
 		{
 			View = view;
@@ -101,15 +96,42 @@ namespace AutocompleteVs
 		/// </summary>
 		private void TextBuffer_PostChanged(object sender, EventArgs e)
 		{
-            // Check if we have typed something that follows the current suggestion
-            // TODO: This is failing. Sometimes this is called twice. Second time IgnoreNextTextBufferChange is false
-            if (IgnoreNextTextBufferChange)
+			// TODO: Still now working: It fails sometimes because prompt srinks (I dont know why yet)
+			// Check if we have typed something that follows the current suggestion
+			if(TextAddedFollowingAutocompletion())
 			{
-				IgnoreNextTextBufferChange = false;
+				// It did it. Do not cancell the current autocompletion
 				return;
 			}
+
 			SuggestionContextChanged();
 		}
+
+        private bool TextAddedFollowingAutocompletion()
+        {
+			if (CurrentAutocompletion == null)
+				return false;
+
+            GenerationParameters currentParms = ViewGenerationParameters();
+
+            string textAdded = CurrentAutocompletion.TextFollowsAutocompletion(currentParms.OriginalPrompt.PrefixText);
+            if (textAdded == null)
+				return false;
+
+			string newAutocompletionText = CurrentAutocompletion.Text.Substring(textAdded.Length);
+			if(newAutocompletionText.Length == 0)
+			{
+				// All autocompletion has been added: Cancel the current generation
+				this.CancelCurrentAutocompletion();
+				return true;
+			}
+
+            // Create the new Autocompletion
+            var newAutocompletion = new Autocompletion(newAutocompletionText, currentParms);
+			AutocompletionGenerationFinished(newAutocompletion);
+
+            return true;
+        }
 
         /// <summary>
         /// Caret position changed in view
@@ -221,34 +243,10 @@ namespace AutocompleteVs
             else
                 suffixText = View.TextBuffer.CurrentSnapshot.GetText(caretIdx, View.TextBuffer.CurrentSnapshot.Length - caretIdx);
 
+			Prompt originalPrompt = new Prompt(prefixText, suffixText);
+
             Settings settings = AutocompleteVsPackage.Instance?.Settings;
-            if (settings?.MaxPromptCharacters != null && textLength > (int)settings.MaxPromptCharacters)
-            {
-                // Text must be cropped. Calculate theoerical lengths to keep
-                int prefixLengthToKeep = (int)(settings.MaxPromptCharacters * (settings.InfillPrefixPercentage / 100.0));
-                int suffixLengthToKeep = (int)settings.MaxPromptCharacters - prefixLengthToKeep;
-
-                if (suffixLengthToKeep > suffixText.Length)
-                {
-                    // Suffix is not long enough. Add more text to prefix
-                    prefixLengthToKeep += suffixLengthToKeep - suffixText.Length;
-                    suffixLengthToKeep = suffixText.Length;
-                }
-                else if (prefixLengthToKeep > prefixText.Length)
-                {
-                    // Prefix is not long enough. Add more text to suffix
-                    suffixLengthToKeep += prefixLengthToKeep - prefixText.Length;
-                    prefixLengthToKeep = prefixText.Length;
-                }
-                Debug.Assert(prefixLengthToKeep + suffixLengthToKeep == settings.MaxPromptCharacters);
-
-                // Crop text
-                Debug.WriteLine($"Prompt cropped to {settings.MaxPromptCharacters} chars");
-                prefixText = prefixText.Substring(prefixText.Length - prefixLengthToKeep);
-                suffixText = suffixText.Substring(0, suffixLengthToKeep);
-            }
-
-			return new GenerationParameters(this, prefixText, suffixText);
+            return new GenerationParameters(this, originalPrompt, originalPrompt.CropToSettings(settings));
         }
 
 		/// <summary>
@@ -520,6 +518,7 @@ namespace AutocompleteVs
 			return true;
 		}
 
+		// TODO: Move this to Autocompletion class
 		private string NormalizeLineBreaks(string text)
 		{
             // Sometimes i get wrong line breaks. Normalize them
@@ -527,24 +526,5 @@ namespace AutocompleteVs
             return text.Replace("\r\n", "\n").Replace('\r', '\n').Replace("\n", Environment.NewLine);
         }
 
-        /*internal void CharTyped(char typedChar)
-        {
-            if(!SuggstionAdornmentVisible)
-                return;
-
-			Debug.WriteLine($"Char type: {typedChar}, Next expected char: {CurrentSuggestionText[0]}");
-			if (CurrentSuggestionText.Length > 0 && CurrentSuggestionText[0] == typedChar)
-			{
-				string currentSuggestion = CurrentSuggestionText;
-                // Do not cancel suggestion, continue with the current one
-                Debug.WriteLine($"Expected");
-                IgnoreNextTextBufferChange = true;
-				RemoveAdornment();
-
-                string newSuggestion = currentSuggestion.Substring(1);
-                if (!string.IsNullOrWhiteSpace(newSuggestion))
-                    AutocompletionGenerationFinished(newSuggestion, true);
-            }
-        }*/
     }
 }

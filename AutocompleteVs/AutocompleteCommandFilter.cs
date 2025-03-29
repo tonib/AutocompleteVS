@@ -47,15 +47,6 @@ namespace AutocompleteVs
 				{
 					switch ((VSConstants.VSStd2KCmdID)nCmdID)
 					{
-						case VSConstants.VSStd2KCmdID.TYPECHAR:
-                            // Character typed in editor: Cancel running generations, remove current suggestion
-                            // Now handled by ViewAutocompleteHandler.TextBuffer_Changed
-                            //_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
-                            //ViewAutocompleteHandler.AttachedHandler(View).RemoveAdornment();
-       //                     char typedChar = (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
-							//ViewAutocompleteHandler.AttachedHandler(View).CharTyped(typedChar);
-                            break;
-
 						case VSConstants.VSStd2KCmdID.OPENLINEABOVE:
 							// Ctrl + Enter: Add suggestion
 							// Debug.WriteLine("OPENLINEABOVE");

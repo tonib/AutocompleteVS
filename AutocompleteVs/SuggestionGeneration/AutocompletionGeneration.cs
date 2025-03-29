@@ -121,7 +121,6 @@ namespace AutocompleteVs.SuggestionGeneration
 		{
             // Wait until the semaphore is available
             Semaphore.Wait();
-
 			try
 			{
 				if(CurrentAutocompletion != null)
@@ -199,14 +198,14 @@ namespace AutocompleteVs.SuggestionGeneration
                     NumCtx = Settings.NumCtx
                 };
 
-                request.Prompt = parameters.PrefixText;
-                request.Suffix = parameters.SuffixText;
+                request.Prompt = parameters.ModelPrompt.PrefixText;
+                request.Suffix = parameters.ModelPrompt.SuffixText;
 
                 // TODO: Currently, there is no need to get the response as a stream
                 string autocompleteText = "";
                 GenerateResponseStream lastResponse = null;
-                using (new ExecutionTime($"Autocompletion generation, prefix chars: {parameters.PrefixText.Length}, " +
-                    $"suffix chars: {parameters.SuffixText.Length}"))
+                using (new ExecutionTime($"Autocompletion generation, prefix chars: {parameters.ModelPrompt.PrefixText.Length}, " +
+                    $"suffix chars: {parameters.ModelPrompt.SuffixText.Length}"))
                 {
                     // Debug.WriteLine("---------------");
                     var enumerator = OLlamaClient.GenerateAsync(request, CancellationTokenSource.Token).GetAsyncEnumerator();

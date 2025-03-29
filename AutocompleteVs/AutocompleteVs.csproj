@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="SuggestionGeneration\Autocompletion.cs" />
     <Compile Include="SuggestionGeneration\GenerationParameters.cs" />
+    <Compile Include="SuggestionGeneration\Prompt.cs" />
     <Compile Include="ViewAutocompleteHandler.cs" />
     <Compile Include="AutocompleteCommand.cs" />
     <Compile Include="SuggestionGeneration\AutocompletionGeneration.cs" />

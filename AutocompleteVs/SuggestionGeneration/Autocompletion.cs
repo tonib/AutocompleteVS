@@ -61,5 +61,44 @@ namespace AutocompleteVs.SuggestionGeneration
             // Otherwise is a punctuation
             return Text.Substring(0, idx + 1);
         }
+
+        /// <summary>
+        /// Checks whether a given text follows this autocompletion
+        /// </summary>
+        /// <param name="text">Text to check</param>
+        /// <returns>null if the text does not follow the autocompletion. If it follows it, is the text following the autocompletion
+        /// that has been added</returns>
+        public string TextFollowsAutocompletion(string text)
+        {
+            if (text.Length <= Parameters.OriginalPrompt.PrefixText.Length)
+            {
+                // The prefix has changed (srinked)
+                return null;
+            }
+
+            // Length of text added after the prefix
+            int lengthIncrease = text.Length - Parameters.OriginalPrompt.PrefixText.Length;
+            if (lengthIncrease > Text.Length)
+            {
+                // Text added is larger than the autocompletion
+                return null;
+            }
+
+            if (!text.StartsWith(Parameters.OriginalPrompt.PrefixText))
+            {
+                // The prefix has changed
+                return null;
+            }
+
+            string textAdded = text.Substring(Parameters.OriginalPrompt.PrefixText.Length);
+            if(!Text.StartsWith(textAdded))
+            {
+                // Text added is not a prefix of the autocompletion
+                return null;
+            }
+
+            return textAdded;
+        }
+
     }
 }
