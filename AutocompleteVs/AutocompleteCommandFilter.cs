@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text.Editor;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,11 +48,13 @@ namespace AutocompleteVs
 					switch ((VSConstants.VSStd2KCmdID)nCmdID)
 					{
 						case VSConstants.VSStd2KCmdID.TYPECHAR:
-							// Character typed in editor: Cancel running generations, remove current suggestion
-							// Now handled by ViewAutocompleteHandler.TextBuffer_Changed
-							//_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
-							//ViewAutocompleteHandler.AttachedHandler(View).RemoveAdornment();
-							break;
+                            // Character typed in editor: Cancel running generations, remove current suggestion
+                            // Now handled by ViewAutocompleteHandler.TextBuffer_Changed
+                            //_ = AutocompletionGeneration.Instance.CancelCurrentGenerationAsync();
+                            //ViewAutocompleteHandler.AttachedHandler(View).RemoveAdornment();
+       //                     char typedChar = (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
+							//ViewAutocompleteHandler.AttachedHandler(View).CharTyped(typedChar);
+                            break;
 
 						case VSConstants.VSStd2KCmdID.OPENLINEABOVE:
 							// Ctrl + Enter: Add suggestion

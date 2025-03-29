@@ -41,9 +41,9 @@ namespace AutocompleteVs
 		private bool SuggstionAdornmentVisible;
 
 		/// <summary>
-		/// Last generated suggestion for this view
+		/// Last generated autocompletion for this view
 		/// </summary>
-		private string CurrentSuggestionText;
+		private Autocompletion CurrentAutocompletion;
 
         /// <summary>
         /// Buffer index to the place where suggestion has been added
@@ -61,6 +61,11 @@ namespace AutocompleteVs
 		/// The VS intellisense autocompletion broker
 		/// </summary>
 		internal ICompletionBroker CompletionBroker;
+
+		/// <summary>
+		/// True if the next buffer change must to be ignored
+		/// </summary>
+		public bool IgnoreNextTextBufferChange;
 
         private ViewAutocompleteHandler(IWpfTextView view)
 		{
@@ -96,10 +101,12 @@ namespace AutocompleteVs
 		/// </summary>
 		private void TextBuffer_PostChanged(object sender, EventArgs e)
 		{
-			// Check if we have typed something that follows the current suggestion
-			if(CurrentSuggestionText != null)
+            // Check if we have typed something that follows the current suggestion
+            // TODO: This is failing. Sometimes this is called twice. Second time IgnoreNextTextBufferChange is false
+            if (IgnoreNextTextBufferChange)
 			{
-				
+				IgnoreNextTextBufferChange = false;
+				return;
 			}
 			SuggestionContextChanged();
 		}
@@ -198,14 +205,8 @@ namespace AutocompleteVs
 		static public ViewAutocompleteHandler AttachedHandler(IWpfTextView view) => 
 			view.Properties.GetOrCreateSingletonProperty(() => new ViewAutocompleteHandler(view));
 
-		/// <summary>
-		/// Launchs the autompletion process in the current caret position. Cancels current running process, if there is one
-		/// </summary>
-		public void StartGeneration()
+		private GenerationParameters ViewGenerationParameters()
 		{
-            // Cancel current generation / suggestion
-            CancelCurrentAutocompletion();
-
             // TODO: This only for models allowing fill in the middle
             // Get prefix / suffix text
             int caretIdx = View.Caret.Position.BufferPosition;
@@ -222,32 +223,45 @@ namespace AutocompleteVs
 
             Settings settings = AutocompleteVsPackage.Instance?.Settings;
             if (settings?.MaxPromptCharacters != null && textLength > (int)settings.MaxPromptCharacters)
-			{
+            {
                 // Text must be cropped. Calculate theoerical lengths to keep
                 int prefixLengthToKeep = (int)(settings.MaxPromptCharacters * (settings.InfillPrefixPercentage / 100.0));
                 int suffixLengthToKeep = (int)settings.MaxPromptCharacters - prefixLengthToKeep;
 
-				if(suffixLengthToKeep > suffixText.Length)
-				{
+                if (suffixLengthToKeep > suffixText.Length)
+                {
                     // Suffix is not long enough. Add more text to prefix
                     prefixLengthToKeep += suffixLengthToKeep - suffixText.Length;
                     suffixLengthToKeep = suffixText.Length;
                 }
-				else if(prefixLengthToKeep > prefixText.Length)
-				{
+                else if (prefixLengthToKeep > prefixText.Length)
+                {
                     // Prefix is not long enough. Add more text to suffix
                     suffixLengthToKeep += prefixLengthToKeep - prefixText.Length;
                     prefixLengthToKeep = prefixText.Length;
                 }
-				Debug.Assert(prefixLengthToKeep + suffixLengthToKeep == settings.MaxPromptCharacters);
+                Debug.Assert(prefixLengthToKeep + suffixLengthToKeep == settings.MaxPromptCharacters);
 
-				// Crop text
-				Debug.WriteLine($"Prompt cropped to {settings.MaxPromptCharacters} chars");
+                // Crop text
+                Debug.WriteLine($"Prompt cropped to {settings.MaxPromptCharacters} chars");
                 prefixText = prefixText.Substring(prefixText.Length - prefixLengthToKeep);
                 suffixText = suffixText.Substring(0, suffixLengthToKeep);
             }
 
-            AutocompletionGeneration.Instance?.StartAutocompletion(new GenerationParameters(this, prefixText, suffixText));
+			return new GenerationParameters(this, prefixText, suffixText);
+        }
+
+		/// <summary>
+		/// Launchs the autompletion process in the current caret position. Cancels current running process, if there is one
+		/// </summary>
+		public void StartGeneration()
+		{
+            // Cancel current generation / suggestion
+            CancelCurrentAutocompletion();
+
+            // Start generation
+            GenerationParameters parms = ViewGenerationParameters();
+            AutocompletionGeneration.Instance?.StartAutocompletion(parms);
 		}
 
 		/// <summary>
@@ -320,7 +334,7 @@ namespace AutocompleteVs
 			SuggstionAdornmentVisible = false;
 		}
 
-        public void AutocompletionGenerationFinished(string viewSuggestionText)
+        public void AutocompletionGenerationFinished(Autocompletion autocompletion)
 		{
 			try
 			{
@@ -329,25 +343,25 @@ namespace AutocompleteVs
 
                 RemoveAdornment();
 
-				if (viewSuggestionText == null || string.IsNullOrEmpty(viewSuggestionText.Trim()))
+				if (autocompletion.IsEmpty)
 					return;
 
 				SetupLabel();
 
-				// Add virtual spaces to the text, if needed
-				// It seems VS keeps cursor position in new line, adding virtual spaces that are not yet added to the current line
-				// So, to get rigth suggestion / suggestion insertion, virtual spaces are needed. So, here are the damn spaces:
-				//string virtualSpaces = new string(' ', View.Caret.Position.VirtualBufferPosition.VirtualSpaces);
-				//CurrentSuggestionText = virtualSpaces + viewSuggestionText;
+                // Add virtual spaces to the text, if needed
+                // It seems VS keeps cursor position in new line, adding virtual spaces that are not yet added to the current line
+                // So, to get rigth suggestion / suggestion insertion, virtual spaces are needed. So, here are the damn spaces:
+                //string virtualSpaces = new string(' ', View.Caret.Position.VirtualBufferPosition.VirtualSpaces);
+                //CurrentSuggestionText = virtualSpaces + viewSuggestionText;
 
-				CurrentSuggestionText = viewSuggestionText;
+                CurrentAutocompletion = autocompletion;
 
 				// Get caret position and line
 				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
 				IdxSuggestionPosition = View.Caret.Position.BufferPosition;
 
 				// Text to show in adornment
-				string suggestionTextToShow = CurrentSuggestionText;
+				string suggestionTextToShow = autocompletion.Text;
 
                 // Two cases: 1) In the middle of a non empty line, 2) At the end of a line, or in a empty line
                 string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
@@ -371,10 +385,10 @@ namespace AutocompleteVs
                     LabelAdornment.Height = geometry.Bounds.Height;
 
                     // If suggestion is multiline, suggest only the first line
-                    int idx = CurrentSuggestionText.IndexOf('\n');
+                    int idx = autocompletion.Text.IndexOf('\n');
                     if (idx >= 0)
-                        CurrentSuggestionText = CurrentSuggestionText.Substring(0, idx);
-                    suggestionTextToShow = CurrentSuggestionText;
+                        CurrentAutocompletion.Text = CurrentAutocompletion.Text.Substring(0, idx);
+                    suggestionTextToShow = CurrentAutocompletion.Text;
                 }
 				else
 				{
@@ -387,8 +401,8 @@ namespace AutocompleteVs
                     // Put current space up to the caret position
                     // TODO: Tabs may not be 4 spaces, as it is configurable !!!
                     string padding = lineTextBeforeCaret.Replace("\t", "    ");
-                    suggestionTextToShow = new string(' ', padding.Length) + CurrentSuggestionText;
-
+                    suggestionTextToShow = new string(' ', padding.Length) + CurrentAutocompletion.Text;
+					
                     // Add a transform to the line to see all the autocmpletion, if needed
                     LabelAdornment.Height = AddMultilineSuggestionTransform(suggestionTextToShow, caretLine, View.LineHeight);
 
@@ -453,13 +467,13 @@ namespace AutocompleteVs
 			bool inVirtualSpace = View.Caret.InVirtualSpace;
 
 			// Remove adorment BEFORE doing any change. Otherwise, references to buffers and lines will go invalid
-			string currentSuggestion = CurrentSuggestionText;
+			string currentSuggestion = CurrentAutocompletion.Text;
 			RemoveAdornment();
 
 			string textToInsert;
 			if (singleWord)
 			{
-				textToInsert = GetNextWordToInsert();
+				textToInsert = CurrentAutocompletion.GetNextWordToInsert();
 			}
 			else
 				textToInsert = currentSuggestion;
@@ -471,6 +485,7 @@ namespace AutocompleteVs
 				// Disable context change while we are inserting text in editor
 				HandleSuggestionsContextChange = false;
 
+				// Insert text in editor
                 // https://stackoverflow.com/questions/13788221/how-to-insert-the-text-in-the-editor-in-the-textadornment-template-in-visual-stu
                 ITextEdit textEdit = View.TextBuffer.CreateEdit();
 				textEdit.Insert(View.Caret.Position.BufferPosition, textToInsert);
@@ -486,8 +501,12 @@ namespace AutocompleteVs
 				{
 					// Re-add suggestion for remaining words
 					string newSuggestion = currentSuggestion.Substring(textToInsert.Length);
-					if (!string.IsNullOrWhiteSpace(newSuggestion))
-						AutocompletionGenerationFinished(newSuggestion);
+                    if (!string.IsNullOrWhiteSpace(newSuggestion))
+					{
+                        GenerationParameters parms = ViewGenerationParameters();
+                        Autocompletion newAutocompletion = new Autocompletion(newSuggestion, parms);
+                        AutocompletionGenerationFinished(newAutocompletion);
+                    }
 				}
 
 				// Close VS autocompletion tooltip
@@ -508,31 +527,24 @@ namespace AutocompleteVs
             return text.Replace("\r\n", "\n").Replace('\r', '\n').Replace("\n", Environment.NewLine);
         }
 
-		private string GetNextWordToInsert()
-		{
-			int idx = 0;
+        /*internal void CharTyped(char typedChar)
+        {
+            if(!SuggstionAdornmentVisible)
+                return;
 
-			// Spaces previous to word
-			while (idx < CurrentSuggestionText.Length && Char.IsWhiteSpace(CurrentSuggestionText[idx]))
-				idx++;
-
-			if(idx >= CurrentSuggestionText.Length)
+			Debug.WriteLine($"Char type: {typedChar}, Next expected char: {CurrentSuggestionText[0]}");
+			if (CurrentSuggestionText.Length > 0 && CurrentSuggestionText[0] == typedChar)
 			{
-				// All text was spaces
-				return CurrentSuggestionText;
-			}
+				string currentSuggestion = CurrentSuggestionText;
+                // Do not cancel suggestion, continue with the current one
+                Debug.WriteLine($"Expected");
+                IgnoreNextTextBufferChange = true;
+				RemoveAdornment();
 
-			char wordStart = CurrentSuggestionText[idx];
-            if (Char.IsLetterOrDigit(wordStart))
-            {
-				// A word / number / identifier
-				while (idx < CurrentSuggestionText.Length && Char.IsLetterOrDigit(CurrentSuggestionText[idx]))
-					idx++;
-				return CurrentSuggestionText.Substring(0, idx);
-			}
-
-            // Otherwise is a punctuation
-            return CurrentSuggestionText.Substring(0, idx + 1);
-        }
-	}
+                string newSuggestion = currentSuggestion.Substring(1);
+                if (!string.IsNullOrWhiteSpace(newSuggestion))
+                    AutocompletionGenerationFinished(newSuggestion, true);
+            }
+        }*/
+    }
 }
