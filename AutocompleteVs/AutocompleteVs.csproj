@@ -48,20 +48,24 @@
   <ItemGroup>
     <Compile Include="ExecutionTime.cs" />
     <Compile Include="Keyboard\AutocompleteCommandHandler.cs" />
-    <Compile Include="Keyboard\AutocompleteKeyProcesor.cs" />
     <Compile Include="Keyboard\AutocompleteKeyProcessorProvider.cs" />
     <Compile Include="AutocompleteCommandFilter.cs" />
     <Compile Include="LIneTransforms\MultiLineCompletionTransformSource.cs" />
     <Compile Include="LIneTransforms\MultiLineCompletionTransformSourceProvider.cs" />
+    <Compile Include="OutputPaneHandler.cs" />
     <Compile Include="Settings.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="SuggestionGeneration\Autocompletion.cs" />
     <Compile Include="SuggestionGeneration\GenerationParameters.cs" />
     <Compile Include="SuggestionGeneration\Prompt.cs" />
+    <Compile Include="SuggestionGeneration\GeneratorType.cs" />
+    <Compile Include="SuggestionGeneration\IGenerator.cs" />
+    <Compile Include="SuggestionGeneration\OllamaGenerator.cs" />
+    <Compile Include="SuggestionGeneration\OpenAiGenerator.cs" />
     <Compile Include="ViewAutocompleteHandler.cs" />
     <Compile Include="AutocompleteCommand.cs" />
-    <Compile Include="SuggestionGeneration\AutocompletionGeneration.cs" />
+    <Compile Include="SuggestionGeneration\AutocompletionsGenerator.cs" />
     <Compile Include="TestIntraTextAdorments\CaretTagger.cs" />
     <Compile Include="TestIntraTextAdorments\CaretTaggerProvider.cs" />
     <Compile Include="TestIntraTextAdorments\LabelAdornment.cs" />
@@ -114,6 +118,9 @@
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.11.66" />
+    <PackageReference Include="OpenAI">
+      <Version>2.1.0</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <VSCTCompile Include="AutocompleteVsPackage.vsct">

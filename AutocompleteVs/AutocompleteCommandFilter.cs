@@ -80,8 +80,9 @@ namespace AutocompleteVs
 			}
 			catch(Exception ex)
 			{
-				Debug.WriteLine(ex.ToString());
+				OutputPaneHandler.Instance.Log(ex);
 			}
+
 			return NextTarget?.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut) ?? VSConstants.S_OK;
 		}
 

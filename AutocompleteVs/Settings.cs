@@ -11,6 +11,8 @@ namespace AutocompleteVs
 {
     // https://learn.microsoft.com/en-us/visualstudio/extensibility/creating-an-options-page?view=vs-2022
 
+    // TODO: Organize this in categories, it's a mess
+
     /// <summary>
     /// Package settings
     /// </summary>
@@ -88,6 +90,14 @@ namespace AutocompleteVs
             "The remaining % will be characters after caret position. Between 0 and 100")]
         public double? InfillPrefixPercentage { get; set; } = 75.0;
 
+        [Category(Category)]
+        [DisplayName("Generator type")]
+        public GeneratorType GeneratorType { get; set; } = GeneratorType.Ollama;
+
+        [Category(Category)]
+        [DisplayName("OpenAI key")]
+        public string OpenAiKey { get; set; }
+
         [Browsable(false)]
         public double? InfillSuffixPercentage => 100.0 - InfillPrefixPercentage;
 
@@ -96,7 +106,7 @@ namespace AutocompleteVs
             base.OnApply(e);
 
             // Update the ollama client
-            AutocompletionGeneration.Instance.ApplySettings(true);
+            AutocompletionsGenerator.Instance.ApplySettings(true);
         }
 
     }

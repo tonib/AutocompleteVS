@@ -82,12 +82,11 @@ namespace AutocompleteVs
 			{
 				Debug.WriteLine("View closed");
 				// Cancel current generation, do not touch UI
-				AutocompletionGeneration.Instance?.CancelCurrentGeneration();
+				AutocompletionsGenerator.Instance?.CancelCurrentGeneration();
 			}
 			catch(Exception ex)
 			{
-				// TODO: Log exception
-				Debug.WriteLine(ex.ToString());
+				OutputPaneHandler.Instance.Log(ex);
 			}
 		}
 
@@ -170,9 +169,8 @@ namespace AutocompleteVs
 			}
 			catch(Exception ex)
 			{
-                // TODO: Log exception
-                Debug.WriteLine(ex.ToString());
-            }
+                OutputPaneHandler.Instance.Log(ex);
+			}
         }
 
         /// <summary>
@@ -180,7 +178,7 @@ namespace AutocompleteVs
         /// </summary>
         public void CancelCurrentAutocompletion()
 		{
-            AutocompletionGeneration.Instance?.CancelCurrentGeneration();
+            AutocompletionsGenerator.Instance?.CancelCurrentGeneration();
             RemoveAdornment();
         }
 
@@ -220,7 +218,7 @@ namespace AutocompleteVs
 			catch (Exception ex)
 			{
 				// TODO: Log exception
-				Debug.WriteLine(ex.ToString());
+				OutputPaneHandler.Instance.Log(ex);
 			}
 		}
 
@@ -259,7 +257,7 @@ namespace AutocompleteVs
 
             // Start generation
             GenerationParameters parms = ViewGenerationParameters();
-            AutocompletionGeneration.Instance?.StartAutocompletion(parms);
+            AutocompletionsGenerator.Instance?.StartAutocompletion(parms);
 		}
 
 		/// <summary>
@@ -421,7 +419,7 @@ namespace AutocompleteVs
 			catch (Exception ex)
 			{
 				// TODO: Log exceptions
-				Debug.WriteLine(ex.ToString());
+				OutputPaneHandler.Instance.Log(ex);
 			}
 		}
 
