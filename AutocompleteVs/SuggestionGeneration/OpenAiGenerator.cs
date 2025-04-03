@@ -40,6 +40,8 @@ namespace AutocompleteVs.SuggestionGeneration
 			// TODO: The catch is duplicated in Ollama generator, unify code
 			try
 			{
+				await OutputPaneHandler.Instance.LogAsync("Starting new suggestion", LogLevel.Debug);
+
 				// TODO: Check if any of the ollama generation parms is appliable to OpenAI API (topk, topp, etc)
 
 				// TODO: Configure this:
@@ -59,9 +61,22 @@ namespace AutocompleteVs.SuggestionGeneration
 					new UserChatMessage(userPrompt)
 				};
 
-				ChatCompletion completion = await ChatClient
-					.CompleteChatAsync(messages, cancellationToken: cancellationToken)
-					.ConfigureAwait(false);
+				// Write prompt to debug:
+				await OutputPaneHandler.Instance.LogAsync("System prompt:", LogLevel.Debug);
+				await OutputPaneHandler.Instance.LogAsync(systemPrompt, LogLevel.Debug);
+				await OutputPaneHandler.Instance.LogAsync("User prompt:", LogLevel.Debug);
+				await OutputPaneHandler.Instance.LogAsync(userPrompt, LogLevel.Debug);
+
+				ChatCompletion completion;
+				using (var exeTime = new ExecutionTime($"Autocompletion generation, " +
+					$"prefix chars: {parameters.ModelPrompt.PrefixText.Length}, " +
+					$"suffix chars: {parameters.ModelPrompt.SuffixText.Length}", false))
+				{
+					completion = await ChatClient
+						.CompleteChatAsync(messages, cancellationToken: cancellationToken)
+						.ConfigureAwait(false);
+					await exeTime.WriteElapsedTimeAsync();
+				}
 
 				string autocompleteText = completion.Content[0].Text;
 
@@ -72,7 +87,7 @@ namespace AutocompleteVs.SuggestionGeneration
 			}
 			catch (TaskCanceledException)
 			{
-				Debug.WriteLine("Suggestion cancelled");
+				await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
 			}
 			catch (Exception ex)
 			{
@@ -85,7 +100,7 @@ namespace AutocompleteVs.SuggestionGeneration
 				}
 				else
 				{
-					Debug.WriteLine("Suggestion cancelled");
+					await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
 				}
 			}
 		}

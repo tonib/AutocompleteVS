@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AutocompleteVs.Logging;
+using OllamaSharp.Models.Chat;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
