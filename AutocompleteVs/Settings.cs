@@ -1,4 +1,5 @@
-﻿using AutocompleteVs.SuggestionGeneration;
+﻿using AutocompleteVs.Logging;
+using AutocompleteVs.SuggestionGeneration;
 using Microsoft.VisualStudio.Shell;
 using System;
 using System.Collections.Generic;
@@ -101,12 +102,17 @@ namespace AutocompleteVs
         [Browsable(false)]
         public double? InfillSuffixPercentage => 100.0 - InfillPrefixPercentage;
 
+        [Category(Category)]
+        [DisplayName("Log level")]
+        public LogLevel LogLevel { get; set; } = LogLevel.Warning;
+
         protected override void OnApply(PageApplyEventArgs e)
         {
             base.OnApply(e);
 
             // Update the ollama client
             AutocompletionsGenerator.Instance.ApplySettings(true);
+            OutputPaneHandler.Instance.LogLevel = AutocompleteVsPackage.Instance.Settings.LogLevel;
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using EnvDTE;
+﻿using AutocompleteVs.Logging;
+using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using System;
@@ -71,6 +72,8 @@ namespace AutocompleteVs
 			Instance = this;
 			ServiceProvider = (IServiceProvider)this;
 			DTE = await GetServiceAsync(typeof(DTE)) as DTE;
+
+			OutputPaneHandler.Instance.LogLevel = Settings.LogLevel;
 		}
 
 		/// <summary>

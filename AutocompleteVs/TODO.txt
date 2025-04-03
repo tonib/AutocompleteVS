@@ -1,9 +1,11 @@
 ﻿
+Replace all Debug.WriteLine for calls to the VS output pane
+Add categories for settings
 Option to log to output pane the generation stats (with a log level)
 Install current version and use it (own dog food eating)
 Make a end trim of suggestion (unwanted line breaks)
 Re-suggest in the same place: Try an alternative suggestion with a different topk, topp, temperature
-support for openai api
+configuration for openai api
 multiline suggestions: tab characters are replaced by 4 spaces. Read the number of spaces to place from vs settings
 Check read only editors (ex git history): Do not handle autocompletion here
 Check diff editor (ex git current changes): autocompletion should be handled here
@@ -25,7 +27,7 @@ Related to previous: Support for non infill models. Option to do not infill
 Validate settings in the options page
 Add a timeout after stop typing before running suggestion? (performance)
 ERROR: Suggestions indentation is plain wrong
-
+Option to suggest in the middle of a line
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING

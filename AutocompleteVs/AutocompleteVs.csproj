@@ -46,13 +46,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ExecutionTime.cs" />
+    <Compile Include="Logging\ExecutionTime.cs" />
     <Compile Include="Keyboard\AutocompleteCommandHandler.cs" />
     <Compile Include="Keyboard\AutocompleteKeyProcessorProvider.cs" />
     <Compile Include="AutocompleteCommandFilter.cs" />
     <Compile Include="LIneTransforms\MultiLineCompletionTransformSource.cs" />
     <Compile Include="LIneTransforms\MultiLineCompletionTransformSourceProvider.cs" />
-    <Compile Include="OutputPaneHandler.cs" />
+    <Compile Include="Logging\LogLevel.cs" />
+    <Compile Include="Logging\OutputPaneHandler.cs" />
     <Compile Include="Settings.cs">
       <SubType>Component</SubType>
     </Compile>

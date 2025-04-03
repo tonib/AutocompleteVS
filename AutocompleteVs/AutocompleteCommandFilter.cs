@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio;
+﻿using AutocompleteVs.Logging;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;

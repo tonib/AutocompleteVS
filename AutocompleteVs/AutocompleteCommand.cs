@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.AI;
+﻿using AutocompleteVs.Logging;
+using Microsoft.Extensions.AI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using OllamaSharp;

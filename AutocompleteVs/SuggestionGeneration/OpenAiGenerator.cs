@@ -1,4 +1,5 @@
-﻿using OllamaSharp;
+﻿using AutocompleteVs.Logging;
+using OllamaSharp;
 using OpenAI;
 using OpenAI.Chat;
 using System;

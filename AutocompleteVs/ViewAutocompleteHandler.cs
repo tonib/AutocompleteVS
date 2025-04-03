@@ -1,5 +1,6 @@
 ﻿using AutocompleteVs.Keyboard;
 using AutocompleteVs.LIneTransforms;
+using AutocompleteVs.Logging;
 using AutocompleteVs.SuggestionGeneration;
 using AutocompleteVs.TestIntraTextAdorments;
 using Microsoft.VisualStudio.Language.Intellisense;

@@ -1,4 +1,5 @@
-﻿using OllamaSharp;
+﻿using AutocompleteVs.Logging;
+using OllamaSharp;
 using OllamaSharp.Models;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace AutocompleteVs.SuggestionGeneration
         {
             try
             {
-                Debug.WriteLine("Starting new suggestion");
+                await OutputPaneHandler.Instance.LogAsync("Starting new suggestion");
 
                 var request = new GenerateRequest();
 
@@ -54,11 +55,18 @@ namespace AutocompleteVs.SuggestionGeneration
                 request.Prompt = parameters.ModelPrompt.PrefixText;
                 request.Suffix = parameters.ModelPrompt.SuffixText;
 
+                // Debug prompt
+                await OutputPaneHandler.Instance.LogAsync("Prefix:", LogLevel.Debug);
+                await OutputPaneHandler.Instance.LogAsync(parameters.ModelPrompt.PrefixText, LogLevel.Debug);
+                await OutputPaneHandler.Instance.LogAsync("Suffix:", LogLevel.Debug);
+                await OutputPaneHandler.Instance.LogAsync(parameters.ModelPrompt.SuffixText, LogLevel.Debug);
+
                 // TODO: Currently, there is no need to get the response as a stream
                 string autocompleteText = "";
                 GenerateResponseStream lastResponse = null;
-                using (new ExecutionTime($"Autocompletion generation, prefix chars: {parameters.ModelPrompt.PrefixText.Length}, " +
-                    $"suffix chars: {parameters.ModelPrompt.SuffixText.Length}"))
+                using (var exeTime = new ExecutionTime($"Autocompletion generation, " +
+                    $"prefix chars: {parameters.ModelPrompt.PrefixText.Length}, " +
+                    $"suffix chars: {parameters.ModelPrompt.SuffixText.Length}", false))
                 {
                     // Debug.WriteLine("---------------");
                     var enumerator = OLlamaClient.GenerateAsync(request, cancellationToken).GetAsyncEnumerator();
@@ -71,11 +79,13 @@ namespace AutocompleteVs.SuggestionGeneration
                         autocompleteText += newToken;
                     }
                     // Debug.WriteLine("---------------");
+
+                    await exeTime.WriteElapsedTimeAsync();
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                PrintResponseStats(autocompleteText, lastResponse);
+                await PrintResponseStatsAsync(autocompleteText, lastResponse);
 
                 // Notify the view the autocompletion has finished.
                 // Run it in the UI thread. Otherwise it will trhow an excepcion
@@ -84,7 +94,7 @@ namespace AutocompleteVs.SuggestionGeneration
             }
             catch (TaskCanceledException)
             {
-                Debug.WriteLine("Suggestion cancelled");
+                await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
             }
             catch (Exception ex)
             {
@@ -97,20 +107,21 @@ namespace AutocompleteVs.SuggestionGeneration
                 }
                 else
                 {
-                    Debug.WriteLine("Suggestion cancelled");
+                    await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
                 }
             }
         }
 
         private static string NanoToMiliseconds(long ns) => (ns / 1000000.0).ToString("0.00") + " ms";
 
-        private static void PrintResponseStats(string autocompleteText, GenerateResponseStream lastResponse)
+        async private static Task PrintResponseStatsAsync(string autocompleteText, GenerateResponseStream lastResponse)
         {
-            Debug.WriteLine($"Suggestion finished, {autocompleteText.Length} chars.");
+            await OutputPaneHandler.Instance.LogAsync($"Suggestion finished, {autocompleteText.Length} chars.");
             // Debug.WriteLine($"Suggestion: {autocompleteText}");
             if (lastResponse is GenerateDoneResponseStream doneResponse)
             {
-                Debug.WriteLine($"Total duration: {NanoToMiliseconds(doneResponse.TotalDuration)}, " +
+                await OutputPaneHandler.Instance.LogAsync(
+                    $"Total duration: {NanoToMiliseconds(doneResponse.TotalDuration)}, " +
                     $"n. tokens prompt: {doneResponse.PromptEvalCount}, " +
                     $"n. tokens response: {doneResponse.EvalCount}, " +
                     $"Load duration: {NanoToMiliseconds(doneResponse.LoadDuration)}, " +
