@@ -153,30 +153,46 @@ namespace AutocompleteVs
 					return;
 
                 if (AutocompleteVsPackage.Instance?.Settings.AutomaticSuggestions ?? false)
-				{
+                {
                     // Check if we are in a valid position to start a new suggestion
-                    // By now, if we are at a line end
-                    ITextViewLine caretLine;
-					try
-					{
-                        // This is trowing nullexception when closing editors, inside ContainingTextViewLine property call
-                        caretLine = View.Caret.ContainingTextViewLine;
-					}
-					catch (NullReferenceException)
-					{
-						return;
-					}
-
-					string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
-					string lineTextAfterCaret = caretLineText.Substring(View.Caret.Position.BufferPosition - caretLine.Start);
-					if (string.IsNullOrWhiteSpace(lineTextAfterCaret))
-						StartGeneration();
-				}
-			}
+                    TryStartNewGeneration();
+                }
+            }
 			catch(Exception ex)
 			{
                 OutputPaneHandler.Instance.Log(ex);
 			}
+        }
+
+        private void TryStartNewGeneration()
+        {
+            // Get the line where caret is placed
+            ITextViewLine caretLine;
+            try
+            {
+                // This is trowing nullexception when closing editors, inside ContainingTextViewLine property call
+                caretLine = View.Caret.ContainingTextViewLine;
+            }
+            catch (NullReferenceException)
+            {
+                return;
+            }
+
+            string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
+            int caretPosition = View.Caret.Position.BufferPosition - caretLine.Start;
+
+            string lineTextAfterCaret = caretLineText.Substring(caretPosition);
+            if (string.IsNullOrWhiteSpace(lineTextAfterCaret))
+            {
+                // We are at a line end, so we could make a suggestion. Check some undesirable cases
+                string textBeforeCaret = caretLineText.Substring(0, caretPosition).Trim();
+                if (textBeforeCaret.EndsWith("}") || textBeforeCaret.EndsWith("{") || textBeforeCaret.EndsWith(";"))
+                {
+                    // At block start/end or line. Do not make suggestions here
+                    return;
+                }
+                StartGeneration();
+            }
         }
 
         /// <summary>
