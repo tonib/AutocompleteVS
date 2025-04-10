@@ -62,35 +62,47 @@ namespace AutocompleteVs.SuggestionGeneration
                 await OutputPaneHandler.Instance.LogAsync(parameters.ModelPrompt.SuffixText, LogLevel.Debug);
 
                 // TODO: Currently, there is no need to get the response as a stream
-                string autocompleteText = "";
+                var sb = new SuggestionStringBuilder();
                 GenerateResponseStream lastResponse = null;
                 using (var exeTime = new ExecutionTime($"Autocompletion generation, " +
                     $"prefix chars: {parameters.ModelPrompt.PrefixText.Length}, " +
                     $"suffix chars: {parameters.ModelPrompt.SuffixText.Length}", false))
                 {
-                    // Debug.WriteLine("---------------");
-                    var enumerator = OLlamaClient.GenerateAsync(request, cancellationToken).GetAsyncEnumerator();
-                    // ConfigureAwait(false) is required to avoid to get this task running to the UI thread
-                    while (await enumerator.MoveNextAsync().ConfigureAwait(false))
+
+                    IAsyncEnumerator<GenerateResponseStream> enumerator = null;
+                    try
                     {
-                        lastResponse = enumerator.Current;
-                        string newToken = lastResponse.Response;
-                        // Debug.Write(newToken);
-                        autocompleteText += newToken;
+                        // Start generating
+                        enumerator = OLlamaClient
+                            .GenerateAsync(request, cancellationToken)
+                            .GetAsyncEnumerator();
+
+                        // ConfigureAwait(false) is required to avoid to get this task running in the UI thread
+                        while (await enumerator.MoveNextAsync().ConfigureAwait(false))
+                        {
+                            lastResponse = enumerator.Current;
+                            sb.Add(lastResponse.Response);
+                            if (sb.StopGeneration)
+                                break;
+                        }
                     }
-                    // Debug.WriteLine("---------------");
+                    finally
+                    {
+                        if(enumerator != null)
+                            await enumerator.DisposeAsync();
+                    }
 
                     await exeTime.WriteElapsedTimeAsync();
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await PrintResponseStatsAsync(autocompleteText, lastResponse);
+                await PrintResponseStatsAsync(sb.ToString(), lastResponse);
 
                 // Notify the view the autocompletion has finished.
                 // Run it in the UI thread. Otherwise it will trhow an excepcion
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                parameters.View.AutocompletionGenerationFinished(new Autocompletion(autocompleteText, parameters));
+                parameters.View.AutocompletionGenerationFinished(new Autocompletion(sb.ToString(), parameters));
             }
             catch (TaskCanceledException)
             {

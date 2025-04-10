@@ -28,7 +28,8 @@ namespace AutocompleteVs.SuggestionGeneration
 
         public Autocompletion(string text, GenerationParameters parameters)
         {
-            Text = text;
+            // Trim end, if any
+            Text = text.TrimEnd();
             Parameters = parameters;
         }
 
