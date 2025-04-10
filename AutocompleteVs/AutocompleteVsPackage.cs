@@ -32,7 +32,7 @@ namespace AutocompleteVs
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 	[Guid(AutocompleteVsPackage.PackageGuidString)]
 	[ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideOptionPage(typeof(Settings), Settings.Category, Settings.Category, 0, 0, true)]
+    [ProvideOptionPage(typeof(Settings), Settings.PageCategory, Settings.PageCategory, 0, 0, true)]
     public sealed class AutocompleteVsPackage : AsyncPackage
 	{
 		/// <summary>
