@@ -80,5 +80,18 @@ namespace AutocompleteVs
 		/// Package settings
 		/// </summary>
         internal Settings Settings => (Settings)GetDialogPage(typeof(Settings));
+
+        /// <summary>
+        /// Shows a message box
+        /// </summary>
+        /// <param name="message">Message to show</param>
+        /// <param name="title">Window title</param>
+        /// <param name="icon">Icon to show</param>
+        public void MessageBox(string message, string title, Microsoft.VisualStudio.Shell.Interop.OLEMSGICON icon)
+        {
+            VsShellUtilities.ShowMessageBox(ServiceProvider, message, title, icon,
+                Microsoft.VisualStudio.Shell.Interop.OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                Microsoft.VisualStudio.Shell.Interop.OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+        }
     }
 }

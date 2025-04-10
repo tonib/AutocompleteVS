@@ -114,8 +114,22 @@ namespace AutocompleteVs
 
         protected override void OnApply(PageApplyEventArgs e)
         {
+            if (InfillPrefixPercentage != null)
+            {
+                if (InfillPrefixPercentage < 0 || InfillPrefixPercentage > 100)
+                {
+                    e.ApplyBehavior = ApplyKind.Cancel;
+                    AutocompleteVsPackage.Instance.MessageBox(
+                        "'Prefix % when max. characters is reached' must to be between 0 and 100",
+                        "Error", 
+                        Microsoft.VisualStudio.Shell.Interop.OLEMSGICON.OLEMSGICON_CRITICAL);
+                    return;
+                }
+            }
+
             base.OnApply(e);
 
+            
             // Update the ollama client
             AutocompletionsGenerator.Instance.ApplySettings(true);
             OutputPaneHandler.Instance.LogLevel = AutocompleteVsPackage.Instance.Settings.LogLevel;
