@@ -47,8 +47,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Logging\ExecutionTime.cs" />
-    <Compile Include="Keyboard\AutocompleteCommandHandler.cs" />
-    <Compile Include="Keyboard\AutocompleteKeyProcessorProvider.cs" />
     <Compile Include="AutocompleteCommandFilter.cs" />
     <Compile Include="LIneTransforms\MultiLineCompletionTransformSource.cs" />
     <Compile Include="LIneTransforms\MultiLineCompletionTransformSourceProvider.cs" />
@@ -67,18 +65,8 @@
     <Compile Include="ViewAutocompleteHandler.cs" />
     <Compile Include="AutocompleteCommand.cs" />
     <Compile Include="SuggestionGeneration\AutocompletionsGenerator.cs" />
-    <Compile Include="TestIntraTextAdorments\CaretTagger.cs" />
-    <Compile Include="TestIntraTextAdorments\CaretTaggerProvider.cs" />
-    <Compile Include="TestIntraTextAdorments\LabelAdornment.cs" />
-    <Compile Include="TestIntraTextAdorments\LabelAdornmentTagger.cs" />
-    <Compile Include="TestIntraTextAdorments\LabelAdornmentTaggerProvider.cs" />
-    <Compile Include="TestIntraTextAdorments\LabelTag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AutocompleteVsPackage.cs" />
-    <Compile Include="TestIntraTextAdorments\Support\IntraTextAdornmentTagger.cs" />
-    <Compile Include="TestIntraTextAdorments\Support\IntraTextAdornmentTagTransformer.cs" />
-    <Compile Include="Test\TextAdornment1.cs" />
-    <Compile Include="Test\TextAdornment1TextViewCreationListener.cs" />
     <Compile Include="TextEditorUtils.cs" />
     <Compile Include="VsTextViewListener.cs" />
   </ItemGroup>

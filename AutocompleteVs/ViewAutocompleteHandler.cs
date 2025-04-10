@@ -1,11 +1,8 @@
-﻿using AutocompleteVs.Keyboard;
-using AutocompleteVs.LIneTransforms;
+﻿using AutocompleteVs.LIneTransforms;
 using AutocompleteVs.Logging;
 using AutocompleteVs.SuggestionGeneration;
-using AutocompleteVs.TestIntraTextAdorments;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using System;
@@ -15,7 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 
 namespace AutocompleteVs
