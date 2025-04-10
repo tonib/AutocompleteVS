@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutocompleteVs.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace AutocompleteVs.SuggestionGeneration
                 Debug.Assert(prefixLengthToKeep + suffixLengthToKeep == settings.MaxPromptCharacters);
 
                 // Crop text
-                Debug.WriteLine($"Prompt cropped to {settings.MaxPromptCharacters} chars");
+                OutputPaneHandler.Instance.Log($"Prompt cropped to {settings.MaxPromptCharacters} chars", LogLevel.Debug);
                 croppedParms.PrefixText = croppedParms.PrefixText.Substring(croppedParms.PrefixText.Length - prefixLengthToKeep);
                 croppedParms.SuffixText = croppedParms.SuffixText.Substring(0, suffixLengthToKeep);
 

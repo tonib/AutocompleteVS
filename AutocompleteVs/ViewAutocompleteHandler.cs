@@ -77,7 +77,7 @@ namespace AutocompleteVs
 		{
 			try
 			{
-				Debug.WriteLine("View closed");
+                OutputPaneHandler.Instance.Log("View closed", LogLevel.Debug);
 				// Cancel current generation, do not touch UI
 				AutocompletionsGenerator.Instance?.CancelCurrentGeneration();
 			}
@@ -188,7 +188,7 @@ namespace AutocompleteVs
 			{
 				if (!SuggstionAdornmentVisible)
 					return;
-				// Debug.WriteLine("View_LayoutChanged");
+                OutputPaneHandler.Instance.Log("View_LayoutChanged", LogLevel.Debug);
 
 				// This does not work. line.IdentityTag.Equals(AdornmentLineIdentityTag) neither. So, not really identity ???
 				//foreach (ITextViewLine line in e.NewOrReformattedLines)
@@ -206,7 +206,7 @@ namespace AutocompleteVs
 				{
 					if (line == caretLine)
 					{
-						// Debug.WriteLine("View_LayoutChanged: Re-adding adornment");
+                        OutputPaneHandler.Instance.Log("View_LayoutChanged: Re-adding adornment", LogLevel.Debug);
 						AddAdornment();
 						return;
 					}

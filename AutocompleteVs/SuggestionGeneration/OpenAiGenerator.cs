@@ -72,7 +72,7 @@ namespace AutocompleteVs.SuggestionGeneration
 			}
 			catch (TaskCanceledException)
 			{
-				Debug.WriteLine("Suggestion cancelled");
+				await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
 			}
 			catch (Exception ex)
 			{
@@ -85,7 +85,7 @@ namespace AutocompleteVs.SuggestionGeneration
 				}
 				else
 				{
-					Debug.WriteLine("Suggestion cancelled");
+                    await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
 				}
 			}
 		}

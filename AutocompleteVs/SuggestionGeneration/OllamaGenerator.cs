@@ -117,7 +117,6 @@ namespace AutocompleteVs.SuggestionGeneration
         async private static Task PrintResponseStatsAsync(string autocompleteText, GenerateResponseStream lastResponse)
         {
             await OutputPaneHandler.Instance.LogAsync($"Suggestion finished, {autocompleteText.Length} chars.");
-            // Debug.WriteLine($"Suggestion: {autocompleteText}");
             if (lastResponse is GenerateDoneResponseStream doneResponse)
             {
                 await OutputPaneHandler.Instance.LogAsync(

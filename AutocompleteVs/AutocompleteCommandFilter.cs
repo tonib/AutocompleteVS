@@ -42,16 +42,16 @@ namespace AutocompleteVs
 		{
 			try
 			{
-				// Debug.WriteLine(nCmdID);
+                OutputPaneHandler.Instance.Log("Command: " + nCmdID.ToString(), LogLevel.Debug);
 
 				if (pguidCmdGroup == typeof(VSConstants.VSStd2KCmdID).GUID)
 				{
 					switch ((VSConstants.VSStd2KCmdID)nCmdID)
 					{
 						case VSConstants.VSStd2KCmdID.OPENLINEABOVE:
-							// Ctrl + Enter: Add suggestion
-							// Debug.WriteLine("OPENLINEABOVE");
-							if (ViewAutocompleteHandler.AddCurrentSuggestionToView(false))
+                            // Ctrl + Enter: Add suggestion
+                            OutputPaneHandler.Instance.Log("OPENLINEABOVE", LogLevel.Debug);
+                            if (ViewAutocompleteHandler.AddCurrentSuggestionToView(false))
 							{
 								// Suggestion added: Command has been consumed
 								return VSConstants.S_OK;
