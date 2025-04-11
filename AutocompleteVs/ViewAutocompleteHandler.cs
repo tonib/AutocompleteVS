@@ -155,7 +155,7 @@ namespace AutocompleteVs
                 if (AutocompleteVsPackage.Instance?.Settings.AutomaticSuggestions ?? false)
                 {
                     // Check if we are in a valid position to start a new suggestion
-                    TryStartNewGeneration();
+                    CheckStartNewGeneration();
                 }
             }
 			catch(Exception ex)
@@ -164,7 +164,11 @@ namespace AutocompleteVs
 			}
         }
 
-        private void TryStartNewGeneration()
+
+		/// <summary>
+		/// Check if we are in a valid position to start a new suggestion automatically
+		/// </summary>
+        private void CheckStartNewGeneration()
         {
             // Get the line where caret is placed
             ITextViewLine caretLine;
@@ -185,8 +189,15 @@ namespace AutocompleteVs
             if (string.IsNullOrWhiteSpace(lineTextAfterCaret))
             {
                 // We are at a line end, so we could make a suggestion. Check some undesirable cases
-                string textBeforeCaret = caretLineText.Substring(0, caretPosition).Trim();
-                if (textBeforeCaret.EndsWith("}") || textBeforeCaret.EndsWith("{") || textBeforeCaret.EndsWith(";"))
+                string textBeforeCaret = caretLineText.Substring(0, caretPosition);
+				if (textBeforeCaret.Length > 0 && !Char.IsWhiteSpace(textBeforeCaret[textBeforeCaret.Length-1]))
+				{
+					// At the end of a word, do not make suggestions here
+					return;
+				}
+
+                string textBeforeCaretTrimed = textBeforeCaret.Trim();
+                if (textBeforeCaretTrimed.EndsWith("}") || textBeforeCaretTrimed.EndsWith("{") || textBeforeCaretTrimed.EndsWith(";"))
                 {
                     // At block start/end or line. Do not make suggestions here
                     return;

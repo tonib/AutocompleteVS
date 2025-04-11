@@ -10,6 +10,7 @@ ERROR:
 
 Option to stop generating prompt after line break (performance, for in middle of line filling)
 	For single line generations, check if if has repeated text at the line end. In this case, remove it
+	Same for multi line generations. Check if there are repeated lines
 Support for non infill models. Option to do not infill
 Re-suggest in the same place: Try an alternative suggestion with a different topk, topp, temperature
 openai api: 

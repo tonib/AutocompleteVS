@@ -35,7 +35,7 @@ namespace AutocompleteVs.SuggestionGeneration
         {
             try
             {
-                await OutputPaneHandler.Instance.LogAsync("Starting new suggestion", LogLevel.Debug);
+                await OutputPaneHandler.Instance.LogAsync("Starting new suggestion");
 
                 var request = new GenerateRequest();
 

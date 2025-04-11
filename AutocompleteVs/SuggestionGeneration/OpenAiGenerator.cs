@@ -40,7 +40,7 @@ namespace AutocompleteVs.SuggestionGeneration
 			// TODO: The catch is duplicated in Ollama generator, unify code
 			try
 			{
-				await OutputPaneHandler.Instance.LogAsync("Starting new suggestion", LogLevel.Debug);
+				await OutputPaneHandler.Instance.LogAsync("Starting new suggestion");
 
 				// TODO: Check if any of the ollama generation parms is appliable to OpenAI API (topk, topp, etc)
 
