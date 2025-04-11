@@ -41,7 +41,7 @@ namespace AutocompleteVs
 		public const string PackageGuidString = "05fd51b7-1fda-4eda-b9f9-d12f95255b5b";
 
 		/// <summary>
-		/// The package instance
+		/// The package instance. It will be null until extension is initialized.
 		/// </summary>
 		static public AutocompleteVsPackage Instance { get; private set; }
 

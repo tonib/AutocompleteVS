@@ -34,8 +34,15 @@ namespace AutocompleteVs.SuggestionGeneration
         /// <param name="settings">Autocompletion settings</param>
         /// <returns>The new parameters. If this prompt length is under the max, return this instance. 
         /// Otherwise, return a new instance with the cropped text</returns>
-        public Prompt CropToSettings(Settings settings)
+        public Prompt AsModelPrompt(Settings settings)
         {
+            if (!settings?.IsInfillModel ?? false)
+            {
+                // Not an infill model, so don't crop the prompt. Suffix makes no sense
+                return new Prompt(PrefixText, "");
+            }
+
+            // Is an infill model, so crop the prompt, if needed
             if (settings?.MaxPromptCharacters != null && (PrefixText.Length + SuffixText.Length) > (int)settings.MaxPromptCharacters)
             {
                 Prompt croppedParms = new Prompt(PrefixText, SuffixText);

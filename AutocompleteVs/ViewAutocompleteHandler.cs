@@ -263,10 +263,12 @@ namespace AutocompleteVs
             else
                 suffixText = View.TextBuffer.CurrentSnapshot.GetText(caretIdx, View.TextBuffer.CurrentSnapshot.Length - caretIdx);
 
-			Prompt originalPrompt = new Prompt(prefixText, suffixText);
-
             Settings settings = AutocompleteVsPackage.Instance?.Settings;
-            return new GenerationParameters(this, originalPrompt, originalPrompt.CropToSettings(settings));
+            Prompt originalPrompt = new Prompt(prefixText, suffixText);
+			// Prompt to feed the model:
+			Prompt modelPrompt = originalPrompt.AsModelPrompt(settings);
+
+            return new GenerationParameters(this, originalPrompt, modelPrompt);
         }
 
 		/// <summary>

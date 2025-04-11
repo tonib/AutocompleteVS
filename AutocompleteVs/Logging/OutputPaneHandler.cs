@@ -54,8 +54,10 @@ namespace AutocompleteVs.Logging
 
             // Create pane for output messages
             // https://learn.microsoft.com/en-us/visualstudio/extensibility/extending-the-output-window?view=vs-2019
-            IVsOutputWindow outputWindow = (IVsOutputWindow)AutocompleteVsPackage.Instance.ServiceProvider
+            IVsOutputWindow outputWindow = (IVsOutputWindow)AutocompleteVsPackage.Instance?.ServiceProvider
                 .GetService(typeof(SVsOutputWindow));
+			if (outputWindow == null)
+				return;
 
             outputWindow.GetPane(ref PaneGuid, out Output);
             if (Output != null)
