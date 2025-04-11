@@ -75,5 +75,20 @@ namespace AutocompleteVs.SuggestionGeneration
             else
                 return this;
         }
+
+        /// <summary>
+        /// Gets the text before the caret, in the caret line
+        /// </summary>
+        public string CurentLinePrefix
+        {
+            get
+            {
+                int lineStartIdx = PrefixText.LastIndexOf(Environment.NewLine);
+                if (lineStartIdx == -1)
+                    return "";
+                
+                return PrefixText.Substring(lineStartIdx + Environment.NewLine.Length);
+            }
+        }
     }
 }

@@ -30,11 +30,24 @@ namespace AutocompleteVs.SuggestionGeneration
         /// </summary>
         public Prompt ModelPrompt;
 
-        public GenerationParameters(ViewAutocompleteHandler view, Prompt originalPrompt, Prompt modelPrompt)
+        /// <summary>
+        /// Whether the generation should be limited to a single line
+        /// </summary>
+        public bool GenerateSingleLine;
+        
+        /// <summary>
+        /// Creates a new instance of the <see cref="GenerationParameters"/> class
+        /// </summary>
+        /// <param name="view">The VS view where the autocompletion request is being made</param>
+        /// <param name="originalPrompt">The original prompt (the entire file)</param>
+        /// <param name="modelPrompt">The prompt to feed to the model. It may be cropped by a maximum length</param>
+        /// <param name="singleLine">Whether the generation should be limited to a single line</param>
+        public GenerationParameters(ViewAutocompleteHandler view, Prompt originalPrompt, Prompt modelPrompt, bool singleLine)
         {
             this.View = view;
             this.OriginalPrompt = originalPrompt;
             this.ModelPrompt = modelPrompt;
+            this.GenerateSingleLine = singleLine;
         }
 
     }

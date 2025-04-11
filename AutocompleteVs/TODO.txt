@@ -8,14 +8,14 @@ ERROR:
    en AutocompleteVs.ViewAutocompleteHandler.AddAdornment()
    en AutocompleteVs.ViewAutocompleteHandler.View_LayoutChanged(Object sender, TextViewLayoutChangedEventArgs e)
 
-Option to stop generating prompt after line break (performance, for in middle of line filling)
+Option to stop generating prompt after line break (performance, for in middle of line filling) [DONE]
 	For single line generations, check if if has repeated text at the line end. In this case, remove it
 	Same for multi line generations. Check if there are repeated lines
-Support for non infill models. Option to do not infill
 Re-suggest in the same place: Try an alternative suggestion with a different topk, topp, temperature
 openai api: 
 	apply all configuration
 	use streaming and stop early (use SuggestionStringBuilder)
+	test single line generation
 multiline suggestions: tab characters are replaced by 4 spaces. Read the number of spaces to place from vs settings
 Check read only editors (ex git history): Do not handle autocompletion here
 Check diff editor (ex git current changes): autocompletion should be handled here

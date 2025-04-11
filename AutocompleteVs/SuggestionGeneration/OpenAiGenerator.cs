@@ -3,6 +3,7 @@ using OllamaSharp;
 using OpenAI;
 using OpenAI.Chat;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace AutocompleteVs.SuggestionGeneration
 	{
 		// https://github.com/openai/openai-dotnet?tab=readme-ov-file
 
-
+		const string CURSOR_TOKEN = "[CURSOR]";
 		private OpenAIClient OpenAiClient;
 		private ChatClient ChatClient;
 
@@ -46,14 +47,18 @@ namespace AutocompleteVs.SuggestionGeneration
 
 				// TODO: Configure this:
 				string systemPrompt = "You are an code autocompletion tool. User will give you a piece of C# code he/she " +
-					"is editing, with a token <|CURSOR|> where the cursor is currently located in text editor. You must write " +
+                    $"is editing, with a token {CURSOR_TOKEN} where the cursor is currently located in text editor. You must write " +
 					"the most probable text expected in that cursor position (code, comments, string literals, etc). " +
 					"You will not make any comment, nor use markdown, just write the code in plain text. " +
 					"You will not repeat existing code, and respect " +
 					"current indentations You can use classes not included in current using statements: If they are needed," +
-					"user will add them later";
+					"user will add them later.";
+				if(parameters.GenerateSingleLine)
+				{
+					systemPrompt += " " + "Generate a single code line.";
+				}
 
-				string userPrompt = parameters.ModelPrompt.PrefixText + "<|CURSOR|>" + parameters.ModelPrompt.SuffixText;
+				string userPrompt = parameters.ModelPrompt.PrefixText + CURSOR_TOKEN + parameters.ModelPrompt.SuffixText;
 
 				List<ChatMessage> messages = new List<ChatMessage>
 				{
@@ -78,7 +83,7 @@ namespace AutocompleteVs.SuggestionGeneration
 					await exeTime.WriteElapsedTimeAsync();
 				}
 
-				string autocompleteText = completion.Content[0].Text;
+				string autocompleteText = SuggestionStringBuilder.NormalizeLineBreaks(completion.Content[0].Text);
 
 				// Notify the view the autocompletion has finished.
 				// Run it in the UI thread. Otherwise it will trhow an excepcion

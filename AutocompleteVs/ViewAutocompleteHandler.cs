@@ -96,11 +96,11 @@ namespace AutocompleteVs
 			// Check if we have typed something that follows the current suggestion
 			if(TextAddedFollowingAutocompletion())
 			{
-				// It did it. Do not cancell the current autocompletion
+				// It did it. Do not cancel the current autocompletion
 				return;
 			}
 
-			SuggestionContextChanged();
+			SuggestionContextChanged(false);
 		}
 
         private bool TextAddedFollowingAutocompletion()
@@ -134,12 +134,13 @@ namespace AutocompleteVs
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => SuggestionContextChanged();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => SuggestionContextChanged(true);
 
         /// <summary>
         /// Called when suggestion context has changed. This will cancel current suggestion and, if configured, start a new one
         /// </summary>
-        private void SuggestionContextChanged()
+		/// <param name="isCaretPositonChanged">True if context has changed due to caret relocation</param>
+        private void SuggestionContextChanged(bool isCaretPositonChanged)
 		{
 			try
 			{
@@ -155,7 +156,7 @@ namespace AutocompleteVs
                 if (AutocompleteVsPackage.Instance?.Settings.AutomaticSuggestions ?? false)
                 {
                     // Check if we are in a valid position to start a new suggestion
-                    CheckStartNewGeneration();
+                    CheckStartNewGeneration(isCaretPositonChanged);
                 }
             }
 			catch(Exception ex)
@@ -168,7 +169,8 @@ namespace AutocompleteVs
 		/// <summary>
 		/// Check if we are in a valid position to start a new suggestion automatically
 		/// </summary>
-        private void CheckStartNewGeneration()
+		/// <param name="isCaretPositonChanged">True if context has changed due to caret relocation</param>
+        private void CheckStartNewGeneration(bool isCaretPositonChanged)
         {
             // Get the line where caret is placed
             ITextViewLine caretLine;
@@ -190,9 +192,10 @@ namespace AutocompleteVs
             {
                 // We are at a line end, so we could make a suggestion. Check some undesirable cases
                 string textBeforeCaret = caretLineText.Substring(0, caretPosition);
-				if (textBeforeCaret.Length > 0 && !Char.IsWhiteSpace(textBeforeCaret[textBeforeCaret.Length-1]))
+				if (isCaretPositonChanged && textBeforeCaret.Length > 0 && 
+					!Char.IsWhiteSpace(textBeforeCaret[textBeforeCaret.Length-1]))
 				{
-					// At the end of a word, do not make suggestions here
+					// Caret has moved to the end of a word, do not make suggestions here
 					return;
 				}
 
@@ -278,8 +281,10 @@ namespace AutocompleteVs
             Prompt originalPrompt = new Prompt(prefixText, suffixText);
 			// Prompt to feed the model:
 			Prompt modelPrompt = originalPrompt.AsModelPrompt(settings);
+			// If current line is not empty, limit suggestion generation to a single line
+			bool singleLineSuggestion = originalPrompt.CurentLinePrefix.Trim() != "";
 
-            return new GenerationParameters(this, originalPrompt, modelPrompt);
+            return new GenerationParameters(this, originalPrompt, modelPrompt, singleLineSuggestion);
         }
 
 		/// <summary>
@@ -509,8 +514,6 @@ namespace AutocompleteVs
 			else
 				textToInsert = currentSuggestion;
 
-			textToInsert = NormalizeLineBreaks(textToInsert);
-
 			try
 			{
 				// Disable context change while we are inserting text in editor
@@ -550,14 +553,6 @@ namespace AutocompleteVs
 
 			return true;
 		}
-
-		// TODO: Move this to Autocompletion class
-		private string NormalizeLineBreaks(string text)
-		{
-            // Sometimes i get wrong line breaks. Normalize them
-            // TODO: Check if there is some setting in editor for line breaks character
-            return text.Replace("\r\n", "\n").Replace('\r', '\n').Replace("\n", Environment.NewLine);
-        }
 
     }
 }
