@@ -1,10 +1,70 @@
 ﻿
 using LLama;
+using LLama.Batched;
 using LLama.Common;
 using LLama.Sampling;
 using LLama.Transformers;
 
-await TestChatAsync();
+// await TestChatAsync();
+await TestAutocompletion();
+
+async static Task TestAutocompletion()
+{
+    // Codequen
+    var parameters = new ModelParams(@"C:\Users\Toni Bennasar\Documents\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf");
+    parameters.ContextSize = 4096;
+    parameters.GpuLayerCount = 32;
+    using LLamaWeights model = await LLamaWeights.LoadFromFileAsync(parameters);
+    using LLamaContext context = model.CreateContext(parameters);
+
+    // https://github.com/QwenLM/Qwen2.5-Coder
+    // prompt = '<|fim_prefix|>' + prefix_code + '<|fim_suffix|>' + suffix_code + '<|fim_middle|>'
+
+    var executor = new StatelessExecutor(model, parameters);
+
+    // Print some info
+    var name = model.Metadata.GetValueOrDefault("general.name", "unknown model name");
+    Console.WriteLine($"Created executor with model: {name}");
+
+    var inferenceParams = new InferenceParams
+    {
+        SamplingPipeline = new DefaultSamplingPipeline
+        {
+            Temperature = 0.6f
+        },
+
+        MaxTokens = -1
+    };
+
+    string prompt =
+@"
+<|fim_prefix|>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LoremIpsum
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Write the lorem ipsum text to the console
+            <|fim_suffix|>
+        }
+    }
+}
+<|fim_middle|>";
+
+    await foreach (var text in executor.InferAsync(prompt, inferenceParams))
+    {
+        Console.Write(text);
+    }
+    Console.Read();
+}
+
 
 async static Task TestChatAsync()
 {
