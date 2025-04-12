@@ -28,7 +28,7 @@ Suppor for Ctrl + < ??? (undo adding word)
 Codeqwen: Support for <|cursor|> Check WTF is this (cursor position???)
 Check larger models (performance)
 If when keep typing, the text keeps the suggestion, suggestion should not be removed
-	Partially fixed
+	Partially fixed, sometimes prefix is shinked
 Add a timeout after stop typing before running suggestion? (performance)
 ERROR: Suggestions indentation is plain wrong
 Option to suggest in the middle of a line
