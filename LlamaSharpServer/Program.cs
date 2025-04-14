@@ -1,12 +1,25 @@
 ﻿
+using AutocompleteVs.Client;
 using LLama;
 using LLama.Batched;
 using LLama.Common;
 using LLama.Sampling;
 using LLama.Transformers;
 
+try
+{
+    var inferenceClient = new InferenceClient();
+    await inferenceClient.ConnectAsync();
+    Console.WriteLine(await inferenceClient.PingAsync());
+}
+catch(Exception ex)
+{
+    Console.WriteLine(ex);
+}
+Console.ReadLine();
+
 // await TestChatAsync();
-await TestAutocompletion();
+// await TestAutocompletion();
 
 async static Task TestAutocompletion()
 {

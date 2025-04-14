@@ -1,0 +1,6 @@
+@AutoocompleteVs.Server_HostAddress = http://localhost:5118
+
+GET {{AutoocompleteVs.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

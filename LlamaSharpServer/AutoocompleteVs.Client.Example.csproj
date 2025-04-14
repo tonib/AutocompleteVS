@@ -12,4 +12,8 @@
     <PackageReference Include="LLamaSharp.Backend.Cuda12" Version="0.23.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AutocompleteVs.Client\AutocompleteVs.Client.csproj" />
+  </ItemGroup>
+
 </Project>
