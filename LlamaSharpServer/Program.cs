@@ -40,6 +40,15 @@ static async Task TestServer()
         var inferenceClient = new InferenceClient();
         await inferenceClient.ConnectAsync();
         Console.WriteLine(await inferenceClient.PingAsync());
+        await RunGeneration(inferenceClient);
+        await RunGeneration(inferenceClient);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex);
+    }
+    // Console.ReadLine();
+}
 
         string token = await inferenceClient.StartInferenceAsync("Qwen2.5-Coder-1.5B", PROMPT);
         while (token != null)
