@@ -10,7 +10,7 @@ namespace AutoocompleteVs.Server.Models
     /// </summary>
     public class GenerationSession : IAsyncDisposable
     {
-        private StatelessExecutor Executor;
+        private LoadedModel Model;
 
         private InferenceParams InferenceParams;
 
@@ -20,15 +20,16 @@ namespace AutoocompleteVs.Server.Models
 
         public GenerationSession(LoadedModel model)
         {
-            // TODO: This is really slow
-            Executor = new StatelessExecutor(model.Model, model.Params);
+            Model = model;
 
             // TODO: Make this a config
             InferenceParams = new InferenceParams
             {
                 SamplingPipeline = new DefaultSamplingPipeline
                 {
-                    Temperature = 0.6f
+                    Temperature = 0.6f,
+                    TopK = 1,
+                    Seed = 1
                 },
 
                 MaxTokens = -1
@@ -38,7 +39,7 @@ namespace AutoocompleteVs.Server.Models
         public async Task<string?> StartGenerateAsync(string prompt, CancellationToken cancellationToken = default)
         {
             CancellationToken = cancellationToken;
-            InferenceProcess = Executor.InferAsync(prompt, InferenceParams, CancellationToken).GetAsyncEnumerator();
+            InferenceProcess = Model.Executor.InferAsync(prompt, InferenceParams, CancellationToken).GetAsyncEnumerator();
             if (!await InferenceProcess.MoveNextAsync())
                 return null;
             return InferenceProcess.Current;
@@ -56,6 +57,7 @@ namespace AutoocompleteVs.Server.Models
 
         public async ValueTask DisposeAsync()
         {
+            // TODO: Should we dispose the IAsyncEnumerable? right now only the IAsyncEnumerator
             if (InferenceProcess == null)
                 return;
             await InferenceProcess.DisposeAsync();

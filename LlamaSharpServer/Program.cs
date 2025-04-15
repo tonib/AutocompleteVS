@@ -5,6 +5,7 @@ using LLama.Batched;
 using LLama.Common;
 using LLama.Sampling;
 using LLama.Transformers;
+using System.Text;
 
 const string PROMPT =
 @"
@@ -22,7 +23,7 @@ namespace LoremIpsum
         static void Main(string[] args)
         {
             // Write the lorem ipsum text to the console
-            <|fim_suffix|>
+            const string lorenImpsum = <|fim_suffix|>
         }
     }
 }
@@ -50,18 +51,16 @@ static async Task TestServer()
     // Console.ReadLine();
 }
 
-        string token = await inferenceClient.StartInferenceAsync("Qwen2.5-Coder-1.5B", PROMPT);
-        while (token != null)
-        {
-            Console.WriteLine(token);
-            token = await inferenceClient.ContinueInferenceAsync();
-        }
-    }
-    catch (Exception ex)
+static async Task RunGeneration(InferenceClient inferenceClient)
+{
+    StringBuilder sb = new StringBuilder();
+    string token = await inferenceClient.StartInferenceAsync("Qwen2.5-Coder-1.5B", PROMPT);
+    while (token != null)
     {
-        Console.WriteLine(ex);
+        sb.Append(token);
+        token = await inferenceClient.ContinueInferenceAsync();
     }
-    Console.ReadLine();
+    Console.WriteLine(sb.ToString());
 }
 
 async static Task TestAutocompletion()
