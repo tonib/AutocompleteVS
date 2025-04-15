@@ -6,50 +6,7 @@ using LLama.Common;
 using LLama.Sampling;
 using LLama.Transformers;
 
-try
-{
-    var inferenceClient = new InferenceClient();
-    await inferenceClient.ConnectAsync();
-    Console.WriteLine(await inferenceClient.PingAsync());
-}
-catch(Exception ex)
-{
-    Console.WriteLine(ex);
-}
-Console.ReadLine();
-
-// await TestChatAsync();
-// await TestAutocompletion();
-
-async static Task TestAutocompletion()
-{
-    // Codequen
-    var parameters = new ModelParams(@"C:\Users\Toni Bennasar\Documents\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf");
-    parameters.ContextSize = 4096;
-    parameters.GpuLayerCount = 32;
-    using LLamaWeights model = await LLamaWeights.LoadFromFileAsync(parameters);
-    using LLamaContext context = model.CreateContext(parameters);
-
-    // https://github.com/QwenLM/Qwen2.5-Coder
-    // prompt = '<|fim_prefix|>' + prefix_code + '<|fim_suffix|>' + suffix_code + '<|fim_middle|>'
-
-    var executor = new StatelessExecutor(model, parameters);
-
-    // Print some info
-    var name = model.Metadata.GetValueOrDefault("general.name", "unknown model name");
-    Console.WriteLine($"Created executor with model: {name}");
-
-    var inferenceParams = new InferenceParams
-    {
-        SamplingPipeline = new DefaultSamplingPipeline
-        {
-            Temperature = 0.6f
-        },
-
-        MaxTokens = -1
-    };
-
-    string prompt =
+const string PROMPT =
 @"
 <|fim_prefix|>
 using System;
@@ -71,7 +28,61 @@ namespace LoremIpsum
 }
 <|fim_middle|>";
 
-    await foreach (var text in executor.InferAsync(prompt, inferenceParams))
+await TestServer();
+
+// await TestChatAsync();
+// await TestAutocompletion();
+
+static async Task TestServer()
+{
+    try
+    {
+        var inferenceClient = new InferenceClient();
+        await inferenceClient.ConnectAsync();
+        Console.WriteLine(await inferenceClient.PingAsync());
+
+        string token = await inferenceClient.StartInferenceAsync("Qwen2.5-Coder-1.5B", PROMPT);
+        while (token != null)
+        {
+            Console.WriteLine(token);
+            token = await inferenceClient.ContinueInferenceAsync();
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex);
+    }
+    Console.ReadLine();
+}
+
+async static Task TestAutocompletion()
+{
+    // Codequen
+    var parameters = new ModelParams(@"C:\Users\Toni Bennasar\Documents\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf");
+    parameters.ContextSize = 4096;
+    parameters.GpuLayerCount = 32;
+    using LLamaWeights model = await LLamaWeights.LoadFromFileAsync(parameters);
+
+    // https://github.com/QwenLM/Qwen2.5-Coder
+    // prompt = '<|fim_prefix|>' + prefix_code + '<|fim_suffix|>' + suffix_code + '<|fim_middle|>'
+
+    var executor = new StatelessExecutor(model, parameters);
+
+    // Print some info
+    var name = model.Metadata.GetValueOrDefault("general.name", "unknown model name");
+    Console.WriteLine($"Created executor with model: {name}");
+
+    var inferenceParams = new InferenceParams
+    {
+        SamplingPipeline = new DefaultSamplingPipeline
+        {
+            Temperature = 0.6f
+        },
+
+        MaxTokens = -1
+    };
+
+    await foreach (var text in executor.InferAsync(PROMPT, inferenceParams))
     {
         Console.Write(text);
     }

@@ -8,7 +8,7 @@ namespace AutocompleteVs.Client
     /// <summary>
     /// A client for the inference service
     /// </summary>
-    public class InferenceClient
+    public class InferenceClient : IInferenceHub
     {
         private readonly HubConnection _connection;
 
@@ -27,7 +27,17 @@ namespace AutocompleteVs.Client
 
         async public Task<string> PingAsync()
         {
-            return await _connection.InvokeAsync<string>("Ping");
+            return await _connection.InvokeAsync<string>(nameof(PingAsync));
+        }
+
+        async public Task<string> StartInferenceAsync(string modelId, string prompt)
+        {
+            return await _connection.InvokeAsync<string>(nameof(StartInferenceAsync), modelId, prompt);
+        }
+
+        async public Task<string> ContinueInferenceAsync()
+        {
+            return await _connection.InvokeAsync<string>(nameof(ContinueInferenceAsync));
         }
 
         private Task _connection_Closed(Exception error)
