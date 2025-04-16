@@ -28,7 +28,7 @@ namespace AutoocompleteVs.Client.Example.Tests
             // TODO: Try to remove a conversation
 
             // Add conversation prompts
-            string[] prompts = { Program.CODE_PROMPT1, Program.CODE_PROMPT2 };
+            string[] prompts = { Program.CODE_PROMPT1, Program.CODE_PROMPT2, Program.CODE_PROMPT1 };
             List<ConversationData> conversations = new List<ConversationData>();
             foreach (string prompt in prompts)
             {
@@ -36,6 +36,7 @@ namespace AutoocompleteVs.Client.Example.Tests
             }
 
             // Start to infer. It looks like only a single inference can be done at a time
+            int nInference = 0;
             using var sampler = new GreedySamplingPipeline();
             while (true)
             {
@@ -80,6 +81,13 @@ namespace AutoocompleteVs.Client.Example.Tests
                 if (conversations.All(c => c.IsComplete))
                     break;
 
+                nInference++;
+                if (nInference == 5)
+                {
+                    var conversation = conversations[0];
+                    conversation.Dispose();
+                    conversations.RemoveAt(0);
+                }
             }
 
             Console.WriteLine("-----------------");
