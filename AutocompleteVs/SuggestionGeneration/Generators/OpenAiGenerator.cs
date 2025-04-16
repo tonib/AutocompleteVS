@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutocompleteVs.SuggestionGeneration
+namespace AutocompleteVs.SuggestionGeneration.Generators
 {
 	/// <summary>
 	/// Suggestions generation with OpenAI API

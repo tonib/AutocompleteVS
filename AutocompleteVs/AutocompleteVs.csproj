@@ -60,8 +60,8 @@
     <Compile Include="SuggestionGeneration\Prompt.cs" />
     <Compile Include="SuggestionGeneration\GeneratorType.cs" />
     <Compile Include="SuggestionGeneration\IGenerator.cs" />
-    <Compile Include="SuggestionGeneration\OllamaGenerator.cs" />
-    <Compile Include="SuggestionGeneration\OpenAiGenerator.cs" />
+    <Compile Include="SuggestionGeneration\Generators\OllamaGenerator.cs" />
+    <Compile Include="SuggestionGeneration\Generators\OpenAiGenerator.cs" />
     <Compile Include="SuggestionGeneration\SuggestionStringBuilder.cs" />
     <Compile Include="ViewAutocompleteHandler.cs" />
     <Compile Include="AutocompleteCommand.cs" />

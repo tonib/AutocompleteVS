@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using System.Threading;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using AutocompleteVs.Logging;
+using AutocompleteVs.SuggestionGeneration.Generators;
 
 namespace AutocompleteVs.SuggestionGeneration
 {
