@@ -10,6 +10,8 @@ ERROR:
    en AutocompleteVs.ViewAutocompleteHandler.AddAdornment()
    en AutocompleteVs.ViewAutocompleteHandler.View_LayoutChanged(Object sender, TextViewLayoutChangedEventArgs e)
 
+allow inline generations if current line ends only with: ", ', ), ;
+	rationale: autoclosed characters by VS
 Option to stop generating prompt after line break (performance, for in middle of line filling) [DONE]
 	For single line generations, check if if has repeated text at the line end. In this case, remove it
 	Same for multi line generations. Check if there are repeated lines
