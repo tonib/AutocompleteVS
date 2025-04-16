@@ -8,27 +8,43 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LLama.Sampling;
+using System.Diagnostics;
 
 namespace AutoocompleteVs.Client.Example.Tests
 {
-    class BatchedExeTests
+    class BatchedExeTests : IDisposable
     {
+        private ModelParams parameters;
+        private LLamaWeights model;
+        private BatchedExecutor executor;
+        private List<ConversationData> conversations = new List<ConversationData>();
 
-        
-        static public async Task TestBatchedInference()
+        public async Task SetupAsync()
         {
-            var parameters = new ModelParams(Program.CODEQWEN_PATH);
-            parameters.ContextSize = 4096;
-            parameters.GpuLayerCount = 32;
-            using LLamaWeights model = await LLamaWeights.LoadFromFileAsync(parameters);
+            parameters = new ModelParams(Program.CODEQWEN_PATH);
+            parameters.ContextSize = 2048;
+            parameters.GpuLayerCount = 37;
+            // parameters.Threads = 8;
 
+            model = await LLamaWeights.LoadFromFileAsync(parameters);
             // Create an executor that can evaluate a batch of conversations together
-            using var executor = new BatchedExecutor(model, parameters);
+            executor = new BatchedExecutor(model, parameters);
+        }
 
-            // TODO: Try to remove a conversation
+        public void Dispose()
+        {
+            model?.Dispose();
+            executor?.Dispose();
+        }
+
+        public async Task TestBatchedInference()
+        {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
 
             // Add conversation prompts
-            string[] prompts = { Program.CODE_PROMPT1, Program.CODE_PROMPT2, Program.CODE_PROMPT1 };
+            string[] prompts = { Program.CODE_PROMPT1, Program.CODE_PROMPT2 , Program.CODE_PROMPT1
+            , Program.CODE_PROMPT1, Program.CODE_PROMPT1, Program.CODE_PROMPT1 };
             List<ConversationData> conversations = new List<ConversationData>();
             foreach (string prompt in prompts)
             {
@@ -37,11 +53,19 @@ namespace AutoocompleteVs.Client.Example.Tests
 
             // Start to infer. It looks like only a single inference can be done at a time
             int nInference = 0;
+            bool first = true;
             using var sampler = new GreedySamplingPipeline();
             while (true)
             {
                 // Run inference for all conversations in the batch which have pending tokens.
                 DecodeResult decodeResult = await executor.Infer();
+                if(first)
+                {
+                    first = false;
+                    watch.Stop();
+                    Console.WriteLine($"First token: {watch.ElapsedMilliseconds} ms");
+                    watch.Start();
+                }
 
                 // Inference can fail, always check the return value!
                 // NoKvSlot is not a fatal error, it just means that there's not enough memory available in the KV cache to process everything. You can force
@@ -50,6 +74,8 @@ namespace AutoocompleteVs.Client.Example.Tests
                 // saving the conversation to disk and loading it up again later once some other conversations have finished.
                 if (decodeResult == DecodeResult.NoKvSlot)
                 {
+                    //  TODO: This is weird. Can you slide the kv cache BEFORE getting this error?
+                    //  TODO: It happens always when you reach the context size? ???
                     conversations.FirstOrDefault(a => !a.IsComplete)?.MarkComplete(failed: true);
                     continue;
                 }
@@ -81,21 +107,34 @@ namespace AutoocompleteVs.Client.Example.Tests
                 if (conversations.All(c => c.IsComplete))
                     break;
 
+                // NO diference:
+                //var toRemove = conversations.Where(c => c.IsComplete).ToList();
+                //foreach(var c in toRemove)
+                //{
+                //    c.Dispose();
+                //    conversations.Remove(c);
+                //}
+
                 nInference++;
-                if (nInference == 5)
-                {
-                    var conversation = conversations[0];
-                    conversation.Dispose();
-                    conversations.RemoveAt(0);
-                }
+                //if (nInference == 5)
+                //{
+                //    var conversation = conversations[0];
+                //    conversation.Dispose();
+                //    conversations.RemoveAt(0);
+                //}
             }
+
+            watch.Stop();
+            Console.WriteLine($"Total, {nInference} inferences: {watch.ElapsedMilliseconds} ms, mean: {watch.ElapsedMilliseconds / nInference} ms");
 
             Console.WriteLine("-----------------");
             foreach (ConversationData conversation in conversations)
             {
                 Console.WriteLine(conversation.GeneratedText);
                 Console.WriteLine("-----------------");
+                conversation.Dispose();
             }
+            conversations.Clear();
             Console.WriteLine("-----------------");
 
         }

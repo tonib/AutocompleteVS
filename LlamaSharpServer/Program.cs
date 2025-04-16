@@ -7,13 +7,15 @@ using LLama.Common;
 using LLama.Native;
 using LLama.Sampling;
 using LLama.Transformers;
+using System.Diagnostics;
 using System.Text;
 
 namespace AutoocompleteVs.Client.Example
 {
     class Program
     {
-        public const string CODEQWEN_PATH = @"C:\Users\Toni Bennasar\Documents\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf";
+        // public const string CODEQWEN_PATH = @"C:\Users\Toni Bennasar\Documents\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf";
+        public const string CODEQWEN_PATH = @"C:\Users\Toni Bennasar\Documents\Models\qwen2.5-coder-3b-q8_0.gguf";
 
         public const string CODE_PROMPT1 =
         @"
@@ -30,11 +32,26 @@ namespace LoremIpsum
     {
         static void Main(string[] args)
         {
-            // Write the lorem ipsum text to the console
+            // Write a VERY short version of the ""lorem ipsum"" text to the console
             const string lorenImpsum = <|fim_suffix|>
         }
     }
 }
+
+/*
+    Loren ipsum text:
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore 
+        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
+        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore 
+        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
+        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+        ...
+*/
 <|fim_middle|>";
 
         public const string CODE_PROMPT2 =
@@ -65,17 +82,25 @@ namespace HelloWorld
         {
             try
             {
-                BatchedExeTests.TestBatchedInference().Wait();
+                TestBatched().Wait();
 
                 // await TestServer();
                 // await TestChatAsync();
                 // await TestAutocompletion();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
             Console.ReadKey();
+        }
+
+        private static async Task TestBatched()
+        {
+            var test = new BatchedExeTests();
+            await test.SetupAsync();
+            for(int i=0; i<100; i++)
+                await test.TestBatchedInference();
         }
 
         static async Task TestServer()
