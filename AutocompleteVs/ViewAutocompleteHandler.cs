@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.CodeAnalysis.Text;
 
 namespace AutocompleteVs
 {
@@ -284,7 +285,11 @@ namespace AutocompleteVs
 			// If current line is not empty, limit suggestion generation to a single line
 			bool singleLineSuggestion = originalPrompt.CurentLinePrefix.Trim() != "";
 
-            return new GenerationParameters(this, originalPrompt, modelPrompt, singleLineSuggestion);
+			// Get the Roslyn document from the view:
+            // https://stackoverflow.com/questions/45653203/how-do-i-retrieve-text-from-the-visual-studio-editor-for-use-with-roslyn-syntaxt
+            // TODO: It seems there can be more than one document. Right now supporting only one (where there can be more than one???)
+            Microsoft.CodeAnalysis.Document doc = View.TextSnapshot.GetRelatedDocumentsWithChanges().FirstOrDefault();
+            return new GenerationParameters(this, originalPrompt, modelPrompt, singleLineSuggestion, doc);
         }
 
 		/// <summary>

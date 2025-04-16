@@ -9,6 +9,7 @@ namespace AutocompleteVs.SuggestionGeneration
 	public enum GeneratorType
 	{
 		Ollama = 0,
-		OpenAi = 1
+		OpenAi = 1,
+		CustomServer = 2
 	}
 }

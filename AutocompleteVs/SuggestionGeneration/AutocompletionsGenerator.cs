@@ -111,6 +111,9 @@ namespace AutocompleteVs.SuggestionGeneration
 				case GeneratorType.OpenAi:
 					Generator = new OpenAiGenerator(Settings);
 					break;
+				case GeneratorType.CustomServer:
+					Generator = new CustomServerGenerator(Settings);
+					break;
 				default:
 					throw new Exception($"Unknown {Settings.GeneratorType} suggestions generator");
 			}
