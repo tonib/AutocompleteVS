@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutocompleteVs.SuggestionGeneration
+namespace AutocompleteVs.SuggestionGeneration.Generators
 {
 	internal class OllamaGenerator : IGenerator
 	{

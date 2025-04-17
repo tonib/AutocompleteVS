@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using System.Threading;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using AutocompleteVs.Logging;
+using AutocompleteVs.SuggestionGeneration.Generators;
 
 namespace AutocompleteVs.SuggestionGeneration
 {
@@ -109,6 +110,9 @@ namespace AutocompleteVs.SuggestionGeneration
 					break;
 				case GeneratorType.OpenAi:
 					Generator = new OpenAiGenerator(Settings);
+					break;
+				case GeneratorType.CustomServer:
+					Generator = new CustomServerGenerator(Settings);
 					break;
 				default:
 					throw new Exception($"Unknown {Settings.GeneratorType} suggestions generator");
