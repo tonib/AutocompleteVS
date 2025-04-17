@@ -22,6 +22,8 @@ namespace AutocompleteVs.SuggestionGeneration
         /// </summary>
         public string SuffixText;
 
+        public string FullText => PrefixText + SuffixText;
+
         public Prompt(string prefixText, string suffixText)
         {
             PrefixText = prefixText;

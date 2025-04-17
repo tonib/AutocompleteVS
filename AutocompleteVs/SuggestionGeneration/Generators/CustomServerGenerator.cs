@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,15 +30,17 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
             if(parameters.Document == null)
             {
                 return;
-            }
+            };
 
-            // TODO: If is not a C# document (ex Visual Studio) then do nothing
+			// TODO: If is not a C# document (ex Visual Studio) then do nothing
+			Document editableDoc = parameters.Document.Project
+                .AddDocument("test.cs", SourceText.From(parameters.OriginalPrompt.FullText));
 
             CompletionService completionService = CompletionService.GetService(parameters.Document);
 
             // https://www.strathweb.com/2018/12/using-roslyn-c-completion-service-programmatically/
             CompletionList completions = await completionService
-                .GetCompletionsAsync(parameters.Document, parameters.OriginalPrompt.PrefixText.Length);
+                .GetCompletionsAsync(editableDoc, parameters.OriginalPrompt.PrefixText.Length);
             if (completions == null)
             {
                 return;
