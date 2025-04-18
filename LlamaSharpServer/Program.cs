@@ -15,7 +15,7 @@ namespace AutoocompleteVs.Client.Example
     class Program
     {
         // public const string CODEQWEN_PATH = @"C:\Users\Toni Bennasar\Documents\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf";
-        public const string CODEQWEN_PATH = @"C:\Users\Toni Bennasar\Documents\Models\qwen2.5-coder-3b-q8_0.gguf";
+        public const string CODEQWEN_PATH = @"..\..\..\..\Models\qwen2.5-coder-1.5b-q8_0.gguf";
 
         public const string CODE_PROMPT1 =
         @"
@@ -44,12 +44,6 @@ namespace LoremIpsum
         magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
         consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
         Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore 
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
         ...
 */
 <|fim_middle|>";

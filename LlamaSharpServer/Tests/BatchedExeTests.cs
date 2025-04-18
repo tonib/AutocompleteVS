@@ -42,10 +42,11 @@ namespace AutoocompleteVs.Client.Example.Tests
             Stopwatch watch = new Stopwatch();
             watch.Start();
 
-            // Add conversation prompts
-            string[] prompts = { Program.CODE_PROMPT1, Program.CODE_PROMPT2 , Program.CODE_PROMPT1
-            , Program.CODE_PROMPT1, Program.CODE_PROMPT1, Program.CODE_PROMPT1 };
-            List<ConversationData> conversations = new List<ConversationData>();
+			// Add conversation prompts
+			string[] prompts = { Program.CODE_PROMPT1, Program.CODE_PROMPT2 , Program.CODE_PROMPT1
+			, Program.CODE_PROMPT1, Program.CODE_PROMPT1, Program.CODE_PROMPT1 };
+
+			List<ConversationData> conversations = new List<ConversationData>();
             foreach (string prompt in prompts)
             {
                 conversations.Add(new ConversationData(executor, prompt));

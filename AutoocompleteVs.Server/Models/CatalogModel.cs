@@ -8,7 +8,7 @@
     {
         static public readonly Dictionary<string, CatalogModel> Catalog = new()
         {
-            {"Qwen2.5-Coder-1.5B", new CatalogModel("Qwen2.5-Coder-1.5B", @"C:\Users\Toni Bennasar\Documents\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf")}
+            {"Qwen2.5-Coder-1.5B", new CatalogModel("Qwen2.5-Coder-1.5B", @"..\..\..\..\..\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf")}
         };
 
         /// <summary>
