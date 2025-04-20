@@ -1,4 +1,5 @@
-﻿using LLama;
+﻿using AutoocompleteVs.Server.Models.BatchExecution;
+using LLama;
 using LLama.Common;
 using System.Collections.Concurrent;
 using System.Security.Cryptography.X509Certificates;
@@ -12,20 +13,17 @@ namespace AutoocompleteVs.Server.Models
     {
         static private ConcurrentDictionary<string, LoadedModel> _models = new();
 
-        private CatalogModel CatalogModel;
-
         private ModelParams Params;
 
         private LLamaWeights Model;
 
-        public StatelessExecutor Executor { get; private set; }
+        public Executor Executor { get; private set; }
 
-        private LoadedModel(CatalogModel catalogModel, ModelParams @params, LLamaWeights model)
+        private LoadedModel(ModelParams @params, LLamaWeights model)
         {
-            CatalogModel = catalogModel;
             Params = @params;
             Model = model;
-            Executor = new StatelessExecutor(Model, Params);
+            Executor = new Executor(Model, Params);
         }
         
         async static public Task<LoadedModel> LoadOrGetModelAsync(string modelId)
@@ -39,18 +37,12 @@ namespace AutoocompleteVs.Server.Models
             return loaded;
         }
 
-        private static async Task<LoadedModel> LoadModelAsync(string modelId)
+        private static async Task<LoadedModel> LoadModelAsync(string modelFileName)
         {
-            CatalogModel catalogModel = CatalogModel.Catalog[modelId];
-
-            // TODO: Configure this
-            var parameters = new ModelParams(catalogModel.Path);
-            parameters.ContextSize = 2048;
-            parameters.GpuLayerCount = 32;
-
+            var parameters = CatalogModel.GetModelParms(modelFileName);
             LLamaWeights weights = await LLamaWeights.LoadFromFileAsync(parameters);
             
-            return new LoadedModel(catalogModel, parameters, weights);
+            return new LoadedModel(parameters, weights);
         }
 
         public void Dispose()

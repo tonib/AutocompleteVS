@@ -1,4 +1,6 @@
-﻿namespace AutoocompleteVs.Server.Models
+﻿using LLama.Common;
+
+namespace AutoocompleteVs.Server.Models
 {
     /// <summary>
     /// Catalog of available models
@@ -6,26 +8,31 @@
     /// </summary>
     public class CatalogModel
     {
-        static public readonly Dictionary<string, CatalogModel> Catalog = new()
+        static private Dictionary<string, ModelParams>? Catalog;
+        
+        static public ModelParams GetModelParms(string modelFileName)
         {
-            {"Qwen2.5-Coder-1.5B", new CatalogModel("Qwen2.5-Coder-1.5B", @"..\..\..\..\..\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf")}
-        };
+            SetupCatalog();
 
-        /// <summary>
-        /// The name of the model
-        /// </summary>
-        public string Id { get; set; }
+            if(!Catalog!.TryGetValue(modelFileName, out ModelParams? modelParams))
+			{
+				throw new Exception($"Model {modelFileName} not found in catalog");
+			}
+            return modelParams;
+		}
 
-        /// <summary>
-        /// The path to the model file
-        /// </summary>
-        public string Path { get; set; }
-
-        private CatalogModel(string id, string path)
+        static private void SetupCatalog()
         {
-            Id = id;
-            Path = path;
-        }
+			// TODO: Load this from appsettings.json
+			if (Catalog != null)
+                return;
 
-    }
+			Catalog = new Dictionary<string, ModelParams>();
+
+			ModelParams modelParams = new ModelParams(@"..\Models\qwen2.5-coder-1.5b-q8_0.gguf");
+            modelParams.ContextSize = 2048;
+			modelParams.GpuLayerCount = 32;
+            Catalog["qwen2.5-coder-1.5b-q8_0.gguf"] = modelParams;
+		}
+	}
 }

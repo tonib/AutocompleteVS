@@ -14,9 +14,9 @@ namespace AutocompleteVs.Client
         /// <returns>"Pong" string</returns>
         Task<string> PingAsync();
 
-        Task<string> StartInferenceAsync(string modelId, string prompt);
+        Task<string> StartInferenceAsync(string modelId, string prompt, string[] validWords);
 
-        Task<string> ContinueInferenceAsync();
+        Task<string> ContinueInferenceAsync(string[] validWords);
 
 
     }

@@ -76,9 +76,9 @@ namespace HelloWorld
         {
             try
             {
-                TestBatched().Wait();
+                // TestBatched().Wait();
 
-                // await TestServer();
+                TestServer().Wait();
                 // await TestChatAsync();
                 // await TestAutocompletion();
             }
@@ -117,11 +117,11 @@ namespace HelloWorld
         static async Task RunGeneration(InferenceClient inferenceClient)
         {
             StringBuilder sb = new StringBuilder();
-            string token = await inferenceClient.StartInferenceAsync("Qwen2.5-Coder-1.5B", CODE_PROMPT1);
+            string token = await inferenceClient.StartInferenceAsync("qwen2.5-coder-1.5b-q8_0.gguf", CODE_PROMPT1, null);
             while (token != null)
             {
                 sb.Append(token);
-                token = await inferenceClient.ContinueInferenceAsync();
+                token = await inferenceClient.ContinueInferenceAsync(null);
             }
             Console.WriteLine(sb.ToString());
         }

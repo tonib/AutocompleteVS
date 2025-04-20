@@ -30,14 +30,14 @@ namespace AutocompleteVs.Client
             return await _connection.InvokeAsync<string>(nameof(PingAsync));
         }
 
-        async public Task<string> StartInferenceAsync(string modelId, string prompt)
+        async public Task<string> StartInferenceAsync(string modelId, string prompt, string[] validWords)
         {
-            return await _connection.InvokeAsync<string>(nameof(StartInferenceAsync), modelId, prompt);
+            return await _connection.InvokeAsync<string>(nameof(StartInferenceAsync), modelId, prompt, null);
         }
 
-        async public Task<string> ContinueInferenceAsync()
+        async public Task<string> ContinueInferenceAsync(string[] validWords)
         {
-            return await _connection.InvokeAsync<string>(nameof(ContinueInferenceAsync));
+            return await _connection.InvokeAsync<string>(nameof(ContinueInferenceAsync), null);
         }
 
         private Task _connection_Closed(Exception error)

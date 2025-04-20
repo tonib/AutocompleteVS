@@ -14,28 +14,28 @@ namespace AutoocompleteVs.Server.Hubs
 
         public Task<string> PingAsync() => Task.FromResult("Pong");
 
-        async public Task<string?> StartInferenceAsync(string modelId, string prompt)
+        async public Task<string?> StartInferenceAsync(string modelId, string prompt, string[]? validWords)
         {
             LoadedModel model = await LoadedModel.LoadOrGetModelAsync(modelId);
             GenerationSession session = new GenerationSession(model);
             _sessions[this.Context.ConnectionId] = session;
 
-            return await session.StartGenerateAsync(prompt);
+            return await session.StartGenerateAsync(prompt, validWords);
         }
 
-        async public Task<string?> ContinueInferenceAsync()
+        async public Task<string?> ContinueInferenceAsync(string[]? validWords)
         {
             if(!_sessions.TryGetValue(Context.ConnectionId, out GenerationSession? session))
                 throw new InvalidOperationException("No active inference session");
 
-            return await session.ContinueGenerateAsync();
+            return await session.ContinueGenerateAsync(validWords);
         }
 
         async public override Task OnDisconnectedAsync(Exception? exception)
         {
             if(_sessions.TryRemove(Context.ConnectionId, out GenerationSession? session))
             {
-                await session.DisposeAsync();
+                session.Dispose();
             }
 
             await base.OnDisconnectedAsync(exception);
