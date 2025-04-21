@@ -28,6 +28,7 @@ namespace AutocompleteVs
         private const string GeneralCategory = "General";
         private const string OllamaCategory = "Ollama";
         private const string OpenAiCategory = "OpenAI";
+        private const string CustomServerCategory = "CustomServer";
 
         [Category(GeneralCategory)]
         [DisplayName("Automatic suggestions")]
@@ -80,9 +81,17 @@ namespace AutocompleteVs
             "The remaining % will be characters after caret position. Between 0 and 100")]
         public double? InfillPrefixPercentage { get; set; } = 75.0;
 
+        [Browsable(false)]
+        public double? InfillSuffixPercentage => 100.0 - InfillPrefixPercentage;
+
         [Category(GeneralCategory)]
         [DisplayName("Generator type")]
         public GeneratorType GeneratorType { get; set; } = GeneratorType.Ollama;
+
+        [Category(GeneralCategory)]
+        [DisplayName("Log level")]
+        [Description("Log level for this extension messages. Log is written to Output > AutocompleteVS pane")]
+        public LogLevel LogLevel { get; set; } = LogLevel.Warning;
 
         [Category(OllamaCategory)]
         [DisplayName("Ollama URL")]
@@ -110,13 +119,10 @@ namespace AutocompleteVs
         [DisplayName("OpenAI key")]
         public string OpenAiKey { get; set; }
 
-        [Browsable(false)]
-        public double? InfillSuffixPercentage => 100.0 - InfillPrefixPercentage;
-
-        [Category(GeneralCategory)]
-        [DisplayName("Log level")]
-        [Description("Log level for this extension messages. Log is written to Output > AutocompleteVS pane")]
-        public LogLevel LogLevel { get; set; } = LogLevel.Warning;
+        [Category(CustomServerCategory)]
+        [DisplayName("Custorm server URL")]
+        [Description("URL for custom AutocompleteVs server")]
+        public string CustomServerUrl { get; set; } = "http://localhost:5118/InferenceHub";
 
         protected override void OnApply(PageApplyEventArgs e)
         {

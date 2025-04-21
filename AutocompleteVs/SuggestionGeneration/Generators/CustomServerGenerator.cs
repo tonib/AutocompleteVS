@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using AutocompleteVs.Client;
+using AutocompleteVs.Logging;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
 using Microsoft.CodeAnalysis.Text;
 using System;
@@ -22,10 +24,48 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
 
         public void Dispose()
         {
-            
+        
         }
 
         async public Task GetAutocompletionInternalAsync(GenerationParameters parameters, CancellationToken cancellationToken)
+		{
+			try
+			{
+                await OutputPaneHandler.Instance.LogAsync("Starting new suggestion");
+                InferenceClient client = null;
+                try
+				{
+                    client = new InferenceClient(Settings.CustomServerUrl);
+                    await client.ConnectAsync();
+
+                }
+                finally
+				{
+                    await client.DisposeAsync();
+                    client = null;
+				}
+            }
+            catch (TaskCanceledException)
+            {
+                await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
+            }
+            catch (Exception ex)
+            {
+                // Somethimes is giving me IOException inside "await enumerator.MoveNextAsync()" instead a TaskCanceledException
+                // So check if process was canceled
+                bool isCanceled = cancellationToken.IsCancellationRequested;
+                if (!isCanceled)
+                {
+                    await OutputPaneHandler.Instance.LogAsync(ex);
+                }
+                else
+                {
+                    await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
+                }
+            }
+        }
+
+        async public Task TestRoslynAutocompletionsAsync(GenerationParameters parameters, CancellationToken cancellationToken)
         {
             if(parameters.Document == null)
             {

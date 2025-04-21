@@ -17,9 +17,8 @@ namespace AutoocompleteVs.Client.Example
         // public const string CODEQWEN_PATH = @"C:\Users\Toni Bennasar\Documents\Models\Qwen2.5-Coder-1.5B.Q8_0.gguf";
         public const string CODEQWEN_PATH = @"..\..\..\..\Models\qwen2.5-coder-1.5b-q8_0.gguf";
 
-        public const string CODE_PROMPT1 =
-        @"
-<|fim_prefix|>
+        public const string PREFIX1 =
+@"
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +32,10 @@ namespace LoremIpsum
         static void Main(string[] args)
         {
             // Write a VERY short version of the ""lorem ipsum"" text to the console
-            const string lorenImpsum = <|fim_suffix|>
+            const string lorenImpsum = ";
+
+        public const string SUFFIX1 =
+@"
         }
     }
 }
@@ -46,7 +48,13 @@ namespace LoremIpsum
         Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         ...
 */
-<|fim_middle|>";
+
+";
+
+        public const string CODE_PROMPT1 =
+        $@"
+<|fim_prefix|>{PREFIX1}<|fim_suffix|>
+{SUFFIX1}<|fim_middle|>";
 
         public const string CODE_PROMPT2 =
             @"
@@ -113,11 +121,16 @@ namespace HelloWorld
             }
             // Console.ReadLine();
         }
-
+        
         static async Task RunGeneration(InferenceClient inferenceClient)
         {
             StringBuilder sb = new StringBuilder();
-            string token = await inferenceClient.StartInferenceAsync("qwen2.5-coder-1.5b-q8_0.gguf", CODE_PROMPT1, null);
+            var request = new InferenceRequest
+            {
+                Prompt = PREFIX1,
+                Suffix = SUFFIX1,
+            };
+            string token = await inferenceClient.StartInferenceAsync("qwen2.5-coder-1.5b-q8_0.gguf", request, null);
             while (token != null)
             {
                 sb.Append(token);

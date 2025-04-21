@@ -8,7 +8,7 @@ namespace AutocompleteVs.Client
     /// <summary>
     /// A client for the inference service
     /// </summary>
-    public class InferenceClient : IInferenceHub
+    public class InferenceClient : IInferenceHub, IAsyncDisposable
     {
         private readonly HubConnection _connection;
 
@@ -30,14 +30,14 @@ namespace AutocompleteVs.Client
             return await _connection.InvokeAsync<string>(nameof(PingAsync));
         }
 
-        async public Task<string> StartInferenceAsync(string modelId, string prompt, string[] validWords)
+        async public Task<string> StartInferenceAsync(string modelId, InferenceRequest prompt, string[] validWords)
         {
-            return await _connection.InvokeAsync<string>(nameof(StartInferenceAsync), modelId, prompt, null);
+            return await _connection.InvokeAsync<string>(nameof(StartInferenceAsync), modelId, prompt, validWords);
         }
 
         async public Task<string> ContinueInferenceAsync(string[] validWords)
         {
-            return await _connection.InvokeAsync<string>(nameof(ContinueInferenceAsync), null);
+            return await _connection.InvokeAsync<string>(nameof(ContinueInferenceAsync), validWords);
         }
 
         private Task _connection_Closed(Exception error)
@@ -45,5 +45,10 @@ namespace AutocompleteVs.Client
             Debug.WriteLine(error.ToString());
             return Task.CompletedTask;
         }
-    }
+
+		async public ValueTask DisposeAsync()
+		{
+            await _connection.DisposeAsync();
+        }
+	}
 }

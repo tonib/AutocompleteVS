@@ -1,10 +1,12 @@
-﻿using AutoocompleteVs.Server.Models.BatchExecution;
+﻿using AutocompleteVs.Client;
+using AutoocompleteVs.Server.Models.BatchExecution;
 using LLama;
 using LLama.Batched;
 using LLama.Common;
 using LLama.Native;
 using LLama.Sampling;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace AutoocompleteVs.Server.Models
 {
@@ -41,9 +43,9 @@ namespace AutoocompleteVs.Server.Models
             };
         }
 
-        public async Task<string?> StartGenerateAsync(string prompt, string[]? validWords)
+		public async Task<string?> StartGenerateAsync(InferenceRequest prompt, string[]? validWords)
         {
-            Conversation = Model.Executor.CreateConversation(prompt);
+            Conversation = Model.Executor.CreateConversation(prompt.PromptString());
 
             if(validWords != null)
                 throw new NotImplementedException("Valid words not implemented yet");

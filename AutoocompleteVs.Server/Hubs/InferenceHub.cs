@@ -14,7 +14,7 @@ namespace AutoocompleteVs.Server.Hubs
 
         public Task<string> PingAsync() => Task.FromResult("Pong");
 
-        async public Task<string?> StartInferenceAsync(string modelId, string prompt, string[]? validWords)
+        async public Task<string?> StartInferenceAsync(string modelId, InferenceRequest prompt, string[]? validWords)
         {
             LoadedModel model = await LoadedModel.LoadOrGetModelAsync(modelId);
             GenerationSession session = new GenerationSession(model);
