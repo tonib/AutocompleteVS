@@ -42,7 +42,7 @@ namespace AutocompleteVs.Client
 
         private Task _connection_Closed(Exception error)
         {
-            Debug.WriteLine(error.ToString());
+            Debug.WriteLine(error?.ToString() ?? "Connection closed without exception");
             return Task.CompletedTask;
         }
 

@@ -5,6 +5,7 @@ using LLama.Batched;
 using LLama.Common;
 using LLama.Native;
 using LLama.Sampling;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -24,6 +25,8 @@ namespace AutoocompleteVs.Server.Models
         private ConversationData? Conversation;
 
         private GreedySamplingPipeline Sampler = new GreedySamplingPipeline();
+
+        public int NMaxGeneratedTokens = 128;
 
         public GenerationSession(LoadedModel model)
         {
@@ -45,6 +48,7 @@ namespace AutoocompleteVs.Server.Models
 
 		public async Task<string?> StartGenerateAsync(InferenceRequest prompt, string[]? validWords)
         {
+            Model.Executor.ClearConversations();
             Conversation = Model.Executor.CreateConversation(prompt.PromptString());
 
             if(validWords != null)
@@ -66,38 +70,49 @@ namespace AutoocompleteVs.Server.Models
 
         private async Task<string?> SimpleGenerationAsync()
         {
-			var decodeResult = await Model.Executor.BatchedExecutor.Infer();
-
-			// Inference can fail, always check the return value!
-			// NoKvSlot is not a fatal error, it just means that there's not enough memory available in the KV cache to process everything. You can force
-			// this to happen by setting a small value for ContextSize in the ModelParams at the top of this file (e.g. 512).
-			// In this case it's handled by ending a conversation (which will free up some space) and trying again. You could also handle this by
-			// saving the conversation to disk and loading it up again later once some other conversations have finished.
-			if (decodeResult == DecodeResult.NoKvSlot)
-			{
-                Conversation!.Dispose();
-                Conversation = null;
-                throw new Exception("No KV slot available");
-			}
-
-			// A generic error, this is fatal and the batch can no longer be used. This should never occur and generally indicates
-			// a bug in LLamaSharp, llama.cpp or a hardware error.
-			if (decodeResult == DecodeResult.Error)
+            try
             {
-				Conversation!.Dispose();
-				Conversation = null;
-				throw new Exception($"Unknown error occurred while inferring, result: {decodeResult}");
-			}
+                if (NMaxGeneratedTokens > 0 && Conversation!.GeneratedTokens.Count >= NMaxGeneratedTokens)
+                    return null;
 
-			// Use the sampling pipeline to choose a single token for this conversation.
-			LLamaToken token = Conversation!.Conversation.Sample(Sampler);
-            string tokenText = Conversation.Add(token);
-			if (tokenText == null)
-			{
-				Conversation!.Dispose();
-				Conversation = null;
+			    var decodeResult = await Model.Executor.BatchedExecutor.Infer();
+
+			    // Inference can fail, always check the return value!
+			    // NoKvSlot is not a fatal error, it just means that there's not enough memory available in the KV cache to process everything. You can force
+			    // this to happen by setting a small value for ContextSize in the ModelParams at the top of this file (e.g. 512).
+			    // In this case it's handled by ending a conversation (which will free up some space) and trying again. You could also handle this by
+			    // saving the conversation to disk and loading it up again later once some other conversations have finished.
+			    if (decodeResult == DecodeResult.NoKvSlot)
+			    {
+                    Conversation!.Dispose();
+                    Conversation = null;
+                    throw new Exception("No KV slot available");
+			    }
+
+			    // A generic error, this is fatal and the batch can no longer be used. This should never occur and generally indicates
+			    // a bug in LLamaSharp, llama.cpp or a hardware error.
+			    if (decodeResult == DecodeResult.Error)
+                {
+				    Conversation!.Dispose();
+				    Conversation = null;
+				    throw new Exception($"Unknown error occurred while inferring, result: {decodeResult}");
+			    }
+
+			    // Use the sampling pipeline to choose a single token for this conversation.
+			    LLamaToken token = Conversation!.Conversation.Sample(Sampler);
+                string? tokenText = Conversation.Add(token);
+			    if (tokenText == null)
+			    {
+				    Conversation!.Dispose();
+				    Conversation = null;
+			    }
+			    return tokenText;
 			}
-			return tokenText;
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                return null;
+            }
 		}
 
         public void Dispose()

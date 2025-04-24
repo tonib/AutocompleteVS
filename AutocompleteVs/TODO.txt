@@ -1,6 +1,8 @@
 ﻿
 Use BatchedExecutor
 
+Settings > Context size must to be in ollama category
+
 ERROR:
 [10/04/2025 11:55:23] System.ArgumentException: El Visual especificado ya es un objeto secundario de otro Visual o la raíz de un CompositionTarget.
    en System.Windows.Media.VisualCollection.Add(Visual visual)

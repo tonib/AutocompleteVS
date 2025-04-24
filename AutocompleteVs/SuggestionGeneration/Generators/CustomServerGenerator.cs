@@ -35,9 +35,41 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                 InferenceClient client = null;
                 try
 				{
-                    client = new InferenceClient(Settings.CustomServerUrl);
-                    await client.ConnectAsync();
+                    var sb = new SuggestionStringBuilder(parameters);
 
+                    using (var exeTime = new ExecutionTime($"Autocompletion generation, " +
+                        $"prefix chars: {parameters.ModelPrompt.PrefixText.Length}, " +
+                        $"suffix chars: {parameters.ModelPrompt.SuffixText.Length}", false))
+                    {
+                        client = new InferenceClient(Settings.CustomServerUrl);
+                        await client.ConnectAsync();
+
+                        var request = new InferenceRequest
+                        {
+                            Prompt = parameters.ModelPrompt.PrefixText,
+                            Suffix = parameters.ModelPrompt.SuffixText
+                        };
+
+                        // TODO: Change client to support cancelation token
+                        string token = await client.StartInferenceAsync("qwen2.5-coder-1.5b-q8_0.gguf", request, null);
+                        while(token != null)
+					    {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            sb.Add(token);
+                            if (sb.StopGeneration)
+                                break;
+                            token = await client.ContinueInferenceAsync(null);
+					    }
+
+                        await exeTime.WriteElapsedTimeAsync();
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    // Notify the view the autocompletion has finished.
+                    // Run it in the UI thread. Otherwise it will trhow an excepcion
+                    await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    parameters.View.AutocompletionGenerationFinished(new Autocompletion(sb.ToString(), parameters));
                 }
                 finally
 				{

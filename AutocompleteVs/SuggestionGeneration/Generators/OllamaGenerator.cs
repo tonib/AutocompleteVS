@@ -61,7 +61,6 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                 await OutputPaneHandler.Instance.LogAsync("Suffix:", LogLevel.Debug);
                 await OutputPaneHandler.Instance.LogAsync(parameters.ModelPrompt.SuffixText, LogLevel.Debug);
 
-                // TODO: Currently, there is no need to get the response as a stream
                 var sb = new SuggestionStringBuilder(parameters);
                 GenerateResponseStream lastResponse = null;
                 using (var exeTime = new ExecutionTime($"Autocompletion generation, " +
