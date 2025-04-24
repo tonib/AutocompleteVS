@@ -1,4 +1,4 @@
-﻿using AutocompleteVs.Client;
+﻿// using AutocompleteVs.Client;
 using AutocompleteVs.Logging;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
@@ -29,6 +29,8 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
 
         async public Task GetAutocompletionInternalAsync(GenerationParameters parameters, CancellationToken cancellationToken)
 		{
+            // Removed reference to custom server: Problems with VS 2019, with Microsoft.Bcl.AsyncInterfaces AGAIN...
+            /*
 			try
 			{
                 await OutputPaneHandler.Instance.LogAsync("Starting new suggestion");
@@ -95,6 +97,7 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                     await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
                 }
             }
+            */
         }
 
         async public Task TestRoslynAutocompletionsAsync(GenerationParameters parameters, CancellationToken cancellationToken)
