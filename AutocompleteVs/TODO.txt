@@ -1,4 +1,6 @@
 ﻿
+CustomServer: Fix version references to work in Vs 2019
+
 Error:
 	[26/04/2025 13:01:33] Starting new suggestion
 	[26/04/2025 13:01:33] System.InvalidOperationException: Unable to get TextViewLine containing insertion point.

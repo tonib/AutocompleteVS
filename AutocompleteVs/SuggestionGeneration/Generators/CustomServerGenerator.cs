@@ -1,4 +1,5 @@
 ﻿// using AutocompleteVs.Client;
+using AutocompleteVs.Client;
 using AutocompleteVs.Logging;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
@@ -30,7 +31,6 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
         async public Task GetAutocompletionInternalAsync(GenerationParameters parameters, CancellationToken cancellationToken)
 		{
             // Removed reference to custom server: Problems with VS 2019, with Microsoft.Bcl.AsyncInterfaces AGAIN...
-            /*
 			try
 			{
                 await OutputPaneHandler.Instance.LogAsync("Starting new suggestion");
@@ -53,6 +53,7 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                         };
 
                         // TODO: Change client to support cancelation token
+                        // TODO: Store model to use in settings
                         string token = await client.StartInferenceAsync("qwen2.5-coder-1.5b-q8_0.gguf", request, null);
                         while(token != null)
 					    {
@@ -97,7 +98,6 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                     await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
                 }
             }
-            */
         }
 
         async public Task TestRoslynAutocompletionsAsync(GenerationParameters parameters, CancellationToken cancellationToken)
