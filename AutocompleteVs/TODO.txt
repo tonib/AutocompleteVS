@@ -1,4 +1,13 @@
 ﻿
+Error:
+	[26/04/2025 13:01:33] Starting new suggestion
+	[26/04/2025 13:01:33] System.InvalidOperationException: Unable to get TextViewLine containing insertion point.
+	   en Microsoft.VisualStudio.Text.MultiSelection.Implementation.SelectionUIProperties.get_ContainingTextViewLine()
+	   en Microsoft.VisualStudio.Text.Editor.Implementation.CaretElement.get_ContainingTextViewLine()
+	   en AutocompleteVs.ViewAutocompleteHandler.CheckStartNewGeneration(Boolean isCaretPositonChanged)
+	   en AutocompleteVs.ViewAutocompleteHandler.SuggestionContextChanged(Boolean isCaretPositonChanged)
+	[26/04/2025 13:01:33] Suggestion cancelled
+
 Use BatchedExecutor
 
 Settings > Context size must to be in ollama category
