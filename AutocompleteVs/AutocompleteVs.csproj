@@ -57,7 +57,8 @@
     </Compile>
     <Compile Include="SuggestionGeneration\Autocompletion.cs" />
     <Compile Include="SuggestionGeneration\GenerationParameters.cs" />
-    <Compile Include="SuggestionGeneration\Generators\CustomServerGenerator.cs" />
+    <Compile Include="SuggestionGeneration\Generators\CustomServer\ContextValidWords.cs" />
+    <Compile Include="SuggestionGeneration\Generators\CustomServer\CustomServerGenerator.cs" />
     <Compile Include="SuggestionGeneration\Prompt.cs" />
     <Compile Include="SuggestionGeneration\GeneratorType.cs" />
     <Compile Include="SuggestionGeneration\IGenerator.cs" />

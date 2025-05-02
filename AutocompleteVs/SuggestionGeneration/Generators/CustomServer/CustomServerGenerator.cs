@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutocompleteVs.SuggestionGeneration.Generators
+namespace AutocompleteVs.SuggestionGeneration.Generators.CustomServer
 {
     class CustomServerGenerator : IGenerator
     {
@@ -54,13 +54,21 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
 
                         // TODO: Change client to support cancelation token
                         // TODO: Store model to use in settings
+                        ContextValidWords ctxWords = new ContextValidWords(parameters, sb);
+                        string[] validWords = await ctxWords.GetValidWordsAsync();
+
+                        // Generate first word
                         string token = await client.StartInferenceAsync("qwen2.5-coder-1.5b-q8_0.gguf", request, null);
-                        while(token != null)
+                        while (token != null)
 					    {
                             cancellationToken.ThrowIfCancellationRequested();
                             sb.Add(token);
+                            Debug.WriteLine(token);
                             if (sb.StopGeneration)
                                 break;
+
+                            // Generate next word
+                            validWords = await ctxWords.GetValidWordsAsync();
                             token = await client.ContinueInferenceAsync(null);
 					    }
 

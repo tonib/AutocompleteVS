@@ -1,17 +1,12 @@
-﻿using Microsoft.Extensions.AI;
-using OllamaSharp.Models;
-using OllamaSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using Microsoft.VisualStudio.Text.Editor;
 using System.Threading;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using AutocompleteVs.Logging;
 using AutocompleteVs.SuggestionGeneration.Generators;
+using AutocompleteVs.SuggestionGeneration.Generators.CustomServer;
 
 namespace AutocompleteVs.SuggestionGeneration
 {

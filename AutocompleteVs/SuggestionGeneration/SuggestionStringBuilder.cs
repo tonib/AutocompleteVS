@@ -43,7 +43,7 @@ namespace AutocompleteVs.SuggestionGeneration
                     // This is a single line. Do not include it and stop here
                     sb.Append(textToAppend.Substring(0, i));
                     StopGeneration = true;
-                    OutputPaneHandler.Instance.Log("Suggestion generation stopped by linea break", LogLevel.Debug);
+                    OutputPaneHandler.Instance.Log("Suggestion generation stopped by line break", LogLevel.Debug);
                     return;
                 }
 
