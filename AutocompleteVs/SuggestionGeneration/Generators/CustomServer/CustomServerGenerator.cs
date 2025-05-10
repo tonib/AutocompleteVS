@@ -57,7 +57,7 @@ namespace AutocompleteVs.SuggestionGeneration.Generators.CustomServer
                         ContextValidWords ctxWords = new ContextValidWords(parameters, sb);
                         string[] validWords = await ctxWords.GetValidWordsAsync();
 
-                        // Generate first word
+                        // Generate first token
                         string token = await client.StartInferenceAsync("qwen2.5-coder-1.5b-q8_0.gguf", request, null);
                         while (token != null)
 					    {
@@ -67,7 +67,7 @@ namespace AutocompleteVs.SuggestionGeneration.Generators.CustomServer
                             if (sb.StopGeneration)
                                 break;
 
-                            // Generate next word
+                            // Generate next token
                             validWords = await ctxWords.GetValidWordsAsync();
                             token = await client.ContinueInferenceAsync(null);
 					    }

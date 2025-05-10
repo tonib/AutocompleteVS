@@ -1,4 +1,5 @@
-﻿using LLama;
+﻿using AutocompleteVs.Client;
+using LLama;
 using LLama.Batched;
 using LLama.Common;
 
@@ -15,9 +16,9 @@ namespace AutoocompleteVs.Server.Models.BatchExecution
 			BatchedExecutor = new BatchedExecutor(weights, parameters);
 		}
 
-		public ConversationData CreateConversation(string prompt)
+		public ConversationData CreateConversation(InferenceRequest request)
 		{
-			var conversation = new ConversationData(BatchedExecutor, prompt);
+			var conversation = new ConversationData(BatchedExecutor, request);
 			Conversations.Add(conversation);
 			return conversation;
 		}

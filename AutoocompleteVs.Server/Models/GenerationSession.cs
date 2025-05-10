@@ -49,12 +49,9 @@ namespace AutoocompleteVs.Server.Models
 		public async Task<string?> StartGenerateAsync(InferenceRequest prompt, string[]? validWords)
         {
             Model.Executor.ClearConversations();
-            Conversation = Model.Executor.CreateConversation(prompt.PromptString());
+            Conversation = Model.Executor.CreateConversation(prompt);
 
-            if(validWords != null)
-                throw new NotImplementedException("Valid words not implemented yet");
-
-            return await SimpleGenerationAsync();
+            return await SimpleGenerationAsync(validWords);
 		}
 
         public async Task<string?> ContinueGenerateAsync(string[]? validWords)
@@ -62,13 +59,10 @@ namespace AutoocompleteVs.Server.Models
             if(Conversation == null)
                 throw new InvalidOperationException("Inference process not started");
 
-			if (validWords != null)
-				throw new NotImplementedException("Valid words not implemented yet");
-
-			return await SimpleGenerationAsync();
+			return await SimpleGenerationAsync(validWords);
 		}
 
-        private async Task<string?> SimpleGenerationAsync()
+        private async Task<string?> SimpleGenerationAsync(string[]? validWords)
         {
             try
             {
@@ -106,7 +100,7 @@ namespace AutoocompleteVs.Server.Models
                     if (Conversation!.Conversation.RequiresSampling)
                     {
                         LLamaToken token = Conversation!.Conversation.Sample(Sampler);
-                        string? tokenText = Conversation.Add(token);
+                        string? tokenText = Conversation.Add(token, validWords);
                         if (tokenText == null)
                         {
                             Conversation!.Dispose();

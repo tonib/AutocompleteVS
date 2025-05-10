@@ -1,4 +1,11 @@
 ﻿
+Show somewhere in UI the progress of current suggestion
+	See https://learn.microsoft.com/en-us/visualstudio/extensibility/extending-the-status-bar?view=vs-2022
+
+Error: Sometimes suggestions are ALWAYS cancelled. 
+	Show in log the cancellation reason (cursor moved, buffer changed)
+	I think it is buffer changed event. If is this, confirm buffer really changed
+
 CustomServer: Fix version references to work in Vs 2019
 
 Error:
