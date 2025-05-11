@@ -67,9 +67,24 @@ namespace AutocompleteVs
 
 			View.LayoutChanged += View_LayoutChanged;
 			View.Caret.PositionChanged += Caret_PositionChanged;
+            // View.TextBuffer.Changed += TextBuffer_Changed;
             View.TextBuffer.PostChanged += TextBuffer_PostChanged;
+			// This has problems with cursor position
+            // View.TextBuffer.ChangedLowPriority += TextBuffer_PostChanged;
             View.Closed += View_Closed;
 		}
+
+		// DO NOT REMOVE THIS, MAYBE USEFUL IN FUTURE (DEBUG)
+        /*private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
+        {
+			string ev = $"{e.EditTag} / {e.Options} / {e.BeforeVersion} / {e.AfterVersion} / {e.Changes.Count}";
+			List<string> changes = new List<string>();
+            foreach (ITextChange change in e.Changes)
+			{
+				changes.Add($"['{change.OldText}' / '{change.NewText}'");
+			}
+            OutputPaneHandler.Instance.Log($"TextBuffer_Changed: {ev}, {string.Join(", ", changes)}", LogLevel.Debug);
+        }*/
 
         /// <summary>
         /// View has been closed
@@ -94,7 +109,7 @@ namespace AutocompleteVs
 		/// </summary>
 		private void TextBuffer_PostChanged(object sender, EventArgs e)
 		{
-            OutputPaneHandler.Instance.Log("Text buffer post changed", LogLevel.Debug);
+            OutputPaneHandler.Instance.Log("TextBuffer_PostChanged", LogLevel.Debug);
 
             // TODO: Still now working: It fails sometimes because prompt srinks (I dont know why yet)
             // Check if we have typed something that follows the current suggestion
@@ -114,9 +129,14 @@ namespace AutocompleteVs
 
             GenerationParameters currentParms = ViewGenerationParameters();
 
+            OutputPaneHandler.Instance.Log($"TextAddedFollowingAutocompletion: View.TextBuffer.CurrentSnapshot.Length: " +
+				$"{View.TextBuffer.CurrentSnapshot.Length}, View.TextSnapshot.Length: {View.TextSnapshot.Length}", LogLevel.Debug);
+            
+
             string textAdded = CurrentAutocompletion.TextFollowsAutocompletion(currentParms.OriginalPrompt.PrefixText);
             if (textAdded == null)
 				return false;
+			OutputPaneHandler.Instance.Log($"TextAddedFollowingAutocompletion: Text added following autocompletion: [{textAdded}]", LogLevel.Debug);
 
 			string newAutocompletionText = CurrentAutocompletion.Text.Substring(textAdded.Length);
 			if(newAutocompletionText.Length == 0)
@@ -235,7 +255,7 @@ namespace AutocompleteVs
 			{
 				if (!SuggstionAdornmentVisible)
 					return;
-                OutputPaneHandler.Instance.Log("View_LayoutChanged", LogLevel.Debug);
+                // OutputPaneHandler.Instance.Log("View_LayoutChanged", LogLevel.Debug);
 
 				// This does not work. line.IdentityTag.Equals(AdornmentLineIdentityTag) neither. So, not really identity ???
 				//foreach (ITextViewLine line in e.NewOrReformattedLines)

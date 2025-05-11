@@ -67,20 +67,23 @@ namespace AutocompleteVs.SuggestionGeneration
         /// <summary>
         /// Checks whether a given text follows this autocompletion
         /// </summary>
-        /// <param name="text">Text to check</param>
+        /// <param name="newPrefix">Text to check</param>
         /// <returns>null if the text does not follow the autocompletion. If it follows it, is the text following the autocompletion
         /// that has been added</returns>
-        public string TextFollowsAutocompletion(string text)
+        public string TextFollowsAutocompletion(string newPrefix)
         {
-            if (text.Length <= Parameters.OriginalPrompt.PrefixText.Length)
+            if (newPrefix.Length < Parameters.OriginalPrompt.PrefixText.Length)
             {
                 // The prefix has changed (srinked)
+                // TODO: This must to be handled: VS REMOVES and re-adds typed characteres. I dont understand why, but it does it
+                // TODO: So, it must to be handled. Instead of returning the added text, return an int with the number of
+                // TODO: Characters added (positive) or removed (negative)
                 OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: The prefix has changed (srinked)", LogLevel.Debug);
                 return null;
             }
 
             // Length of text added after the prefix
-            int lengthIncrease = text.Length - Parameters.OriginalPrompt.PrefixText.Length;
+            int lengthIncrease = newPrefix.Length - Parameters.OriginalPrompt.PrefixText.Length;
             if (lengthIncrease > Text.Length)
             {
                 // Text added is larger than the autocompletion
@@ -88,14 +91,14 @@ namespace AutocompleteVs.SuggestionGeneration
                 return null;
             }
 
-            if (!text.StartsWith(Parameters.OriginalPrompt.PrefixText))
+            if (!newPrefix.StartsWith(Parameters.OriginalPrompt.PrefixText))
             {
                 // Prefix has changed
                 OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: Prefix has changed", LogLevel.Debug);
                 return null;
             }
 
-            string textAdded = text.Substring(Parameters.OriginalPrompt.PrefixText.Length);
+            string textAdded = newPrefix.Substring(Parameters.OriginalPrompt.PrefixText.Length);
             if(!Text.StartsWith(textAdded))
             {
                 // Text added is not a prefix of the autocompletion

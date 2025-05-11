@@ -42,7 +42,7 @@ namespace AutocompleteVs
 		{
 			try
 			{
-                OutputPaneHandler.Instance.Log("Command: " + nCmdID.ToString(), LogLevel.Debug);
+                // OutputPaneHandler.Instance.Log("Command: " + nCmdID.ToString(), LogLevel.Debug);
 
 				if (pguidCmdGroup == typeof(VSConstants.VSStd2KCmdID).GUID)
 				{

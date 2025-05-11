@@ -2,11 +2,15 @@
 Show somewhere in UI the progress of current suggestion
 	See https://learn.microsoft.com/en-us/visualstudio/extensibility/extending-the-status-bar?view=vs-2022
 
+Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
+	Stop in a safe place: Don't stop if a block / line is open
+
 Error: Sometimes suggestions are ALWAYS cancelled. 
 	Show in log the cancellation reason (cursor moved, buffer changed)
 	I think it is buffer changed event. If is this, confirm buffer really changed
 
 CustomServer: Fix version references to work in Vs 2019
+	Remove asp.net / signal, will not work in VS 2019: Use a plain socket server instead
 
 Error:
 	[26/04/2025 13:01:33] Starting new suggestion
@@ -20,6 +24,9 @@ Error:
 Use BatchedExecutor
 
 Settings > Context size must to be in ollama category
+
+ERROR: Sometimes, when you type space or point, following current suggestions, a new suggestion is restarted (prefix srinked)
+	It seems internally VS removes / re-adds typed characters. Handle this case
 
 ERROR:
 [10/04/2025 11:55:23] System.ArgumentException: El Visual especificado ya es un objeto secundario de otro Visual o la raíz de un CompositionTarget.
