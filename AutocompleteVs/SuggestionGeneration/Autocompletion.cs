@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutocompleteVs.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -74,6 +75,7 @@ namespace AutocompleteVs.SuggestionGeneration
             if (text.Length <= Parameters.OriginalPrompt.PrefixText.Length)
             {
                 // The prefix has changed (srinked)
+                OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: The prefix has changed (srinked)", LogLevel.Debug);
                 return null;
             }
 
@@ -82,12 +84,14 @@ namespace AutocompleteVs.SuggestionGeneration
             if (lengthIncrease > Text.Length)
             {
                 // Text added is larger than the autocompletion
+                OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: Text added is larger than the autocompletion", LogLevel.Debug);
                 return null;
             }
 
             if (!text.StartsWith(Parameters.OriginalPrompt.PrefixText))
             {
-                // The prefix has changed
+                // Prefix has changed
+                OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: Prefix has changed", LogLevel.Debug);
                 return null;
             }
 
@@ -95,6 +99,7 @@ namespace AutocompleteVs.SuggestionGeneration
             if(!Text.StartsWith(textAdded))
             {
                 // Text added is not a prefix of the autocompletion
+                OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: Text added is not a prefix of the autocompletion", LogLevel.Debug);
                 return null;
             }
 

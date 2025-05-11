@@ -79,6 +79,7 @@ namespace AutocompleteVs
 			try
 			{
                 OutputPaneHandler.Instance.Log("View closed", LogLevel.Debug);
+
 				// Cancel current generation, do not touch UI
 				AutocompletionsGenerator.Instance?.CancelCurrentGeneration();
 			}
@@ -93,9 +94,11 @@ namespace AutocompleteVs
 		/// </summary>
 		private void TextBuffer_PostChanged(object sender, EventArgs e)
 		{
-			// TODO: Still now working: It fails sometimes because prompt srinks (I dont know why yet)
-			// Check if we have typed something that follows the current suggestion
-			if(TextAddedFollowingAutocompletion())
+            OutputPaneHandler.Instance.Log("Text buffer post changed", LogLevel.Debug);
+
+            // TODO: Still now working: It fails sometimes because prompt srinks (I dont know why yet)
+            // Check if we have typed something that follows the current suggestion
+            if (TextAddedFollowingAutocompletion())
 			{
 				// It did it. Do not cancel the current autocompletion
 				return;
@@ -130,12 +133,16 @@ namespace AutocompleteVs
             return true;
         }
 
-        /// <summary>
-        /// Caret position changed in view
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => SuggestionContextChanged(true);
+		/// <summary>
+		/// Caret position changed in view
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+		{
+			OutputPaneHandler.Instance.Log("Caret position changed", LogLevel.Debug);
+			SuggestionContextChanged(true);
+		}
 
         /// <summary>
         /// Called when suggestion context has changed. This will cancel current suggestion and, if configured, start a new one
