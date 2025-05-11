@@ -1,5 +1,4 @@
 ﻿// using AutocompleteVs.Client;
-using AutocompleteVs.Client;
 using AutocompleteVs.Logging;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;
@@ -28,6 +27,10 @@ namespace AutocompleteVs.SuggestionGeneration.Generators.CustomServer
         
         }
 
+        async public Task GetAutocompletionInternalAsync(GenerationParameters parameters, CancellationToken cancellationToken)
+        { }
+
+        /*
         async public Task GetAutocompletionInternalAsync(GenerationParameters parameters, CancellationToken cancellationToken)
 		{
             // Removed reference to custom server: Problems with VS 2019, with Microsoft.Bcl.AsyncInterfaces AGAIN...
@@ -136,5 +139,6 @@ namespace AutocompleteVs.SuggestionGeneration.Generators.CustomServer
             }
             // List<string> textItems = completions.Items.Select(i => i.DisplayText).ToList();
         }
+        */
     }
 }
