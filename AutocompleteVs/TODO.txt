@@ -12,6 +12,10 @@ Error: Sometimes suggestions are ALWAYS cancelled.
 CustomServer: Fix version references to work in Vs 2019
 	Remove asp.net / signal, will not work in VS 2019: Use a plain socket server instead
 
+Inline suggestions: Try again to use inline adorments
+
+Error: When using Ctrl + >, if identifier contains "_", only adds text up the "_", not the entire identifier
+
 Error:
 	[26/04/2025 13:01:33] Starting new suggestion
 	[26/04/2025 13:01:33] System.InvalidOperationException: Unable to get TextViewLine containing insertion point.

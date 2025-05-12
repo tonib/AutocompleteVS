@@ -22,6 +22,11 @@ namespace AutocompleteVs
 	/// </summary>
 	internal sealed class ViewAutocompleteHandler
 	{
+		/// <summary>
+		/// The characters autoclosed by VS
+		/// </summary>
+		static private char[] AutoclosingChars = new char[] { ')', ']', '"', '\'' };
+
         /// <summary>
         /// The layer of the adornment.
         /// </summary>
@@ -234,6 +239,13 @@ namespace AutocompleteVs
                     return;
                 }
                 StartGeneration();
+            }
+			else
+			{
+				// We are in the middle of a line. Usually you don't want to make suggestions here.
+				// Exception: All text after the caret are autoclosing characters, probably auto-added by VS
+				if(lineTextAfterCaret.All(c => AutoclosingChars.Contains(c) || char.IsWhiteSpace(c)))
+                    StartGeneration();
             }
         }
 
