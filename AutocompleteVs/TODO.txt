@@ -1,6 +1,7 @@
 ﻿
 Show somewhere in UI the progress of current suggestion
 	See https://learn.microsoft.com/en-us/visualstudio/extensibility/extending-the-status-bar?view=vs-2022
+	Add to configuration each # of token generated
 
 Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
 	Stop in a safe place: Don't stop if a block / line is open

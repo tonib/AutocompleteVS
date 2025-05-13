@@ -2,9 +2,11 @@
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Task = System.Threading.Tasks.Task;
 
 namespace AutocompleteVs
@@ -92,6 +94,24 @@ namespace AutocompleteVs
             VsShellUtilities.ShowMessageBox(ServiceProvider, message, title, icon,
                 Microsoft.VisualStudio.Shell.Interop.OLEMSGBUTTON.OLEMSGBUTTON_OK,
                 Microsoft.VisualStudio.Shell.Interop.OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+        }
+
+        /// <summary>
+        /// Get the VS status bar (only from the UI thread)
+        /// </summary>
+        public IVsStatusbar GetStatusBar()
+		{
+            ThreadHelper.ThrowIfNotOnUIThread();
+            return (IVsStatusbar)ServiceProvider.GetService(typeof(SVsStatusbar));
+		}
+
+        /// <summary>
+        /// Get the VS status bar
+        /// </summary>
+        public async Task<IVsStatusbar> GetStatusBarAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+			return GetStatusBar();
         }
     }
 }
