@@ -52,10 +52,10 @@ namespace AutocompleteVs.SuggestionGeneration
             }
 
             char wordStart = Text[idx];
-            if (Char.IsLetterOrDigit(wordStart))
+            if (IsWordChar(wordStart))
             {
                 // A word / number / identifier
-                while (idx < Text.Length && Char.IsLetterOrDigit(Text[idx]))
+                while (idx < Text.Length && IsWordChar(Text[idx]))
                     idx++;
                 return Text.Substring(0, idx);
             }
@@ -63,6 +63,8 @@ namespace AutocompleteVs.SuggestionGeneration
             // Otherwise is a punctuation
             return Text.Substring(0, idx + 1);
         }
+
+        static private bool IsWordChar(char c) => Char.IsLetterOrDigit(c) || c == '_';
 
         /// <summary>
         /// Checks whether a given text follows this autocompletion

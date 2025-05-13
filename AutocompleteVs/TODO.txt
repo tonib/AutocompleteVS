@@ -1,6 +1,7 @@
 ﻿
 Show somewhere in UI the progress of current suggestion
 	See https://learn.microsoft.com/en-us/visualstudio/extensibility/extending-the-status-bar?view=vs-2022
+	Add to configuration each # of token generated
 
 Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
 	Stop in a safe place: Don't stop if a block / line is open
@@ -13,8 +14,6 @@ CustomServer: Fix version references to work in Vs 2019
 	Remove asp.net / signal, will not work in VS 2019: Use a plain socket server instead
 
 Inline suggestions: Try again to use inline adorments
-
-Error: When using Ctrl + >, if identifier contains "_", only adds text up the "_", not the entire identifier
 
 Error:
 	[26/04/2025 13:01:33] Starting new suggestion
@@ -41,8 +40,6 @@ ERROR:
    en AutocompleteVs.ViewAutocompleteHandler.AddAdornment()
    en AutocompleteVs.ViewAutocompleteHandler.View_LayoutChanged(Object sender, TextViewLayoutChangedEventArgs e)
 
-allow inline generations if current line ends only with: ", ', ), ;
-	rationale: autoclosed characters by VS
 Option to stop generating prompt after line break (performance, for in middle of line filling) [DONE]
 	For single line generations, check if if has repeated text at the line end. In this case, remove it
 	Same for multi line generations. Check if there are repeated lines

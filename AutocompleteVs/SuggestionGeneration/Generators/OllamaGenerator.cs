@@ -1,4 +1,6 @@
 ﻿using AutocompleteVs.Logging;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using OllamaSharp;
 using OllamaSharp.Models;
 using System;
@@ -8,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace AutocompleteVs.SuggestionGeneration.Generators
 {
@@ -36,6 +39,8 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
             try
             {
                 await OutputPaneHandler.Instance.LogAsync("Starting new suggestion");
+                IVsStatusbar statusBar = await AutocompleteVsPackage.Instance?.GetStatusBarAsync(cancellationToken);
+                statusBar?.SetText("Generating suggestion...");
 
                 var request = new GenerateRequest();
 
@@ -83,6 +88,13 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                             sb.Add(lastResponse.Response);
                             if (sb.StopGeneration)
                                 break;
+
+                            // TODO: This can make UI unresponsive. Make this number configurable
+                            if ((sb.NTokens % 100) == 0)
+                            {
+                                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+                                statusBar?.SetText($"Generating suggestion ({sb.NTokens} tokens)...");
+                            }
                         }
                     }
                     finally
@@ -120,6 +132,11 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                 {
                     await OutputPaneHandler.Instance.LogAsync("Suggestion cancelled");
                 }
+            }
+            finally
+            {
+                IVsStatusbar statusBar = await AutocompleteVsPackage.Instance?.GetStatusBarAsync();
+                statusBar?.SetText("");
             }
         }
 

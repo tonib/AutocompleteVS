@@ -22,6 +22,11 @@ namespace AutocompleteVs.SuggestionGeneration
         public bool StopGeneration { get; private set; }
 
         /// <summary>
+        /// Number of tokens in the suggestion string
+        /// </summary>
+        public int NTokens { get; private set; }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="parameters">Generation parameters</param>
@@ -35,6 +40,8 @@ namespace AutocompleteVs.SuggestionGeneration
         /// </summary>
         public void Add(string textToAppend)
         {
+            NTokens++;
+
             char[] lineBreaks = new char[] { '\n', '\r' };
             for(int i=0; i<textToAppend.Length; i++)
             {
