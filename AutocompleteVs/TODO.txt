@@ -14,8 +14,6 @@ CustomServer: Fix version references to work in Vs 2019
 
 Inline suggestions: Try again to use inline adorments
 
-Error: When using Ctrl + >, if identifier contains "_", only adds text up the "_", not the entire identifier
-
 Error:
 	[26/04/2025 13:01:33] Starting new suggestion
 	[26/04/2025 13:01:33] System.InvalidOperationException: Unable to get TextViewLine containing insertion point.
@@ -41,8 +39,6 @@ ERROR:
    en AutocompleteVs.ViewAutocompleteHandler.AddAdornment()
    en AutocompleteVs.ViewAutocompleteHandler.View_LayoutChanged(Object sender, TextViewLayoutChangedEventArgs e)
 
-allow inline generations if current line ends only with: ", ', ), ;
-	rationale: autoclosed characters by VS
 Option to stop generating prompt after line break (performance, for in middle of line filling) [DONE]
 	For single line generations, check if if has repeated text at the line end. In this case, remove it
 	Same for multi line generations. Check if there are repeated lines
