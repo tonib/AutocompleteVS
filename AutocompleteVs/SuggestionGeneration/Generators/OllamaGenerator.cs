@@ -1,6 +1,7 @@
 ﻿using AutocompleteVs.Logging;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 using OllamaSharp;
 using OllamaSharp.Models;
 using System;
@@ -91,18 +92,25 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                         // ConfigureAwait(false) is required to avoid to get this task running in the UI thread
                         while (await enumerator.MoveNextAsync().ConfigureAwait(false))
                         {
+                            // ThreadHelper.ThrowIfOnUIThread(); // Be sure running this on background thread
+
                             lastResponse = enumerator.Current;
                             sb.Add(lastResponse.Response);
                             if (sb.StopGeneration)
                                 break;
 
-                            // TODO: This makes UI unresponsive after called for first time.
-                            // TODO. WHY??? Fix it
-                            // TODO: Make this number configurable
-                            if ((sb.NTokens % 100) == 0 && statusBar != null)
+                            if ((sb.NTokens % Settings.NumTokensProgress) == 0 && statusBar != null)
                             {
-                                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-                                statusBar.SetText($"Generating suggestion ({sb.NTokens} tokens)...");
+                                // This makes UI unresponsive after called for first time.
+                                //await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+                                //statusBar.SetText($"Generating suggestion ({sb.NTokens} tokens)...");
+
+                                // This seems fine (https://microsoft.github.io/vs-threading/analyzers/VSTHRD001.html)
+                                await ThreadHelper.JoinableTaskFactory.RunAsync(async delegate
+                                {
+                                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+                                    statusBar.SetText($"Generating suggestion ({sb.NTokens} tokens)...");
+                                });
                             }
                         }
                     }
