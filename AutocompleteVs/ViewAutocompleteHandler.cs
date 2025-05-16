@@ -65,6 +65,10 @@ namespace AutocompleteVs
 		/// </summary>
 		internal ICompletionBroker CompletionBroker;
 
+		/// <summary>
+		/// The VS intellisense autocompletion broker: Called when the view is created
+		/// </summary>
+		/// <param name="view">The created view</param>
         private ViewAutocompleteHandler(IWpfTextView view)
 		{
 			View = view;
@@ -80,7 +84,7 @@ namespace AutocompleteVs
 		}
 
 		// DO NOT REMOVE THIS, MAYBE USEFUL IN FUTURE (DEBUG)
-        /*private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
+		/*private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
         {
 			string ev = $"{e.EditTag} / {e.Options} / {e.BeforeVersion} / {e.AfterVersion} / {e.Changes.Count}";
 			List<string> changes = new List<string>();
@@ -336,6 +340,13 @@ namespace AutocompleteVs
 		/// </summary>
 		public void StartGeneration()
 		{
+			// If current position is read only, do nothing
+			if (View.TextBuffer.IsReadOnly(View.Caret.Position.BufferPosition))
+			{
+				OutputPaneHandler.Instance.Log("Current position is read only, do not launch generation", LogLevel.Debug);
+				return;
+			}
+
             // Cancel current generation / suggestion
             CancelCurrentAutocompletion();
 
