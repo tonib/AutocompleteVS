@@ -1,8 +1,4 @@
 ﻿
-Show somewhere in UI the progress of current suggestion
-	See https://learn.microsoft.com/en-us/visualstudio/extensibility/extending-the-status-bar?view=vs-2022
-	Add to configuration each # of token generated
-
 Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
 	Stop in a safe place: Don't stop if a block / line is open
 
@@ -25,8 +21,6 @@ Error:
 	[26/04/2025 13:01:33] Suggestion cancelled
 
 Use BatchedExecutor
-
-Settings > Context size must to be in ollama category
 
 ERROR: Sometimes, when you type space or point, following current suggestions, a new suggestion is restarted (prefix srinked)
 	It seems internally VS removes / re-adds typed characters. Handle this case
@@ -51,7 +45,6 @@ openai api:
 multiline suggestions: tab characters are replaced by 4 spaces. Read the number of spaces to place from vs settings
 Check read only editors (ex git history): Do not handle autocompletion here
 Check diff editor (ex git current changes): autocompletion should be handled here
-Show something on the UI (adorment or something else), if autocompletions generation is running
 ERROR: If you type "public bool IsOut(Point p)" and you ask a suggestion, if between the codelens info si added, the suggestion
 	appears in the codelens suggestion, and not in the real code line
 Refactoring: Move all MEF Exports to ViewAutocompleteHandler ???
@@ -62,11 +55,17 @@ If when keep typing, the text keeps the suggestion, suggestion should not be rem
 	Partially fixed, sometimes prefix is shinked
 Add a timeout after stop typing before running suggestion? (performance)
 ERROR: Suggestions indentation is plain wrong
-Option to suggest in the middle of a line
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING
 
+Sometimes suggestions are displayed out of place. I guess it's due to race conditions:
+	* Cursor is locate at some place
+	* Generation starts
+	* Cursor is moved
+	* Suggestion ends, and suggestion is displayed << THIS SHOWS THE SUGGESTION ON THE WRONG PLACE
+	* Cursor moved event is fired
+	Solution should be check if cursor is at the same place where it was when generation started, when displaying the suggestion
 
 How to show formatted code:
 	https://stackoverflow.com/questions/64061612/how-to-implement-the-default-outlining-tool-tip-in-visual-studio-extension
