@@ -30,15 +30,12 @@ namespace AutocompleteVs
         private const string OpenAiCategory = "OpenAI";
         private const string CustomServerCategory = "CustomServer";
 
+        #region General
+
         [Category(GeneralCategory)]
         [DisplayName("Automatic suggestions")]
         [Description("If true, suggestions will be generated automatically when typing or moving the caret in editor")]
         public bool AutomaticSuggestions { get; set; } = true;
-
-        [Category(GeneralCategory)]
-        [DisplayName("Context size")]
-        [Description("Number of tokens in context size. Empty == use default")]
-        public int? NumCtx { get; set; } = 2048;
 
         [Category(GeneralCategory)]
         [DisplayName("Top K")]
@@ -93,6 +90,24 @@ namespace AutocompleteVs
         [Description("Log level for this extension messages. Log is written to Output > AutocompleteVS pane")]
         public LogLevel LogLevel { get; set; } = LogLevel.Warning;
 
+        /// <summary>
+        /// If > 0, a status bar message will be displayed, when each this number of tokens is generated
+        /// </summary>
+        [Category(GeneralCategory)]
+        [DisplayName("Generation progress each # tokens")]
+        [Description("If > 0, a message will be displayed in status bar when genenerating suggestions, updating progress each this " +
+            "token number multiple. If <= 0, no status bar message will be displayed")]
+        public int NumTokensProgress { get; set; } = 100;
+
+        #endregion
+
+        #region Ollama
+
+        [Category(OllamaCategory)]
+        [DisplayName("Context size")]
+        [Description("Number of tokens in context size. Empty == use default")]
+        public int? NumCtx { get; set; } = 2048;
+
         [Category(OllamaCategory)]
         [DisplayName("Ollama URL")]
         [Description("Ollama URL")]
@@ -115,6 +130,8 @@ namespace AutocompleteVs
             "False if model only accepts text before cursor")]
         public bool IsInfillModel { get; set; } = true;
 
+        #endregion
+
         [Category(OpenAiCategory)]
         [DisplayName("OpenAI key")]
         public string OpenAiKey { get; set; }
@@ -133,7 +150,7 @@ namespace AutocompleteVs
                     e.ApplyBehavior = ApplyKind.Cancel;
                     AutocompleteVsPackage.Instance.MessageBox(
                         "'Prefix % when max. characters is reached' must to be between 0 and 100",
-                        "Error", 
+                        "Error",
                         Microsoft.VisualStudio.Shell.Interop.OLEMSGICON.OLEMSGICON_CRITICAL);
                     return;
                 }
@@ -141,7 +158,7 @@ namespace AutocompleteVs
 
             base.OnApply(e);
 
-            
+
             // Update the ollama client
             AutocompletionsGenerator.Instance.ApplySettings(true);
             OutputPaneHandler.Instance.LogLevel = AutocompleteVsPackage.Instance.Settings.LogLevel;

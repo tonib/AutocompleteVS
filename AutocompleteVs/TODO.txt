@@ -56,7 +56,6 @@ ERROR: If you type "public bool IsOut(Point p)" and you ask a suggestion, if bet
 	appears in the codelens suggestion, and not in the real code line
 Refactoring: Move all MEF Exports to ViewAutocompleteHandler ???
 Check other models
-Suppor for Ctrl + < ??? (undo adding word)
 Codeqwen: Support for <|cursor|> Check WTF is this (cursor position???)
 Check larger models (performance)
 If when keep typing, the text keeps the suggestion, suggestion should not be removed

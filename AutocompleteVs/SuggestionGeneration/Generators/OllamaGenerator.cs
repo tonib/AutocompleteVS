@@ -14,9 +14,12 @@ using Task = System.Threading.Tasks.Task;
 
 namespace AutocompleteVs.SuggestionGeneration.Generators
 {
-	internal class OllamaGenerator : IGenerator
-	{
-		private OllamaApiClient OLlamaClient;
+    /// <summary>
+    /// Suggestion generator with Ollama
+    /// </summary>
+    internal class OllamaGenerator : IGenerator
+    {
+        private OllamaApiClient OLlamaClient;
 
         /// <summary>
         /// Package settings
@@ -24,7 +27,7 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
         Settings Settings;
 
         public OllamaGenerator(Settings settings)
-		{
+        {
             Settings = settings;
 
             var uri = new Uri(Settings.OllamaUrl);
@@ -39,8 +42,12 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
             try
             {
                 await OutputPaneHandler.Instance.LogAsync("Starting new suggestion");
-                IVsStatusbar statusBar = await AutocompleteVsPackage.Instance?.GetStatusBarAsync(cancellationToken);
-                statusBar?.SetText("Generating suggestion...");
+                IVsStatusbar statusBar = null;
+                if (Settings.NumTokensProgress > 0)
+                {
+                    statusBar = await AutocompleteVsPackage.Instance?.GetStatusBarAsync(cancellationToken);
+                    statusBar?.SetText("Generating suggestion...");
+                }
 
                 var request = new GenerateRequest();
 
@@ -89,17 +96,19 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                             if (sb.StopGeneration)
                                 break;
 
-                            // TODO: This can make UI unresponsive. Make this number configurable
-                            if ((sb.NTokens % 100) == 0)
+                            // TODO: This makes UI unresponsive after called for first time.
+                            // TODO. WHY??? Fix it
+                            // TODO: Make this number configurable
+                            if ((sb.NTokens % 100) == 0 && statusBar != null)
                             {
                                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-                                statusBar?.SetText($"Generating suggestion ({sb.NTokens} tokens)...");
+                                statusBar.SetText($"Generating suggestion ({sb.NTokens} tokens)...");
                             }
                         }
                     }
                     finally
                     {
-                        if(enumerator != null)
+                        if (enumerator != null)
                             await enumerator.DisposeAsync();
                     }
 
@@ -135,8 +144,11 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
             }
             finally
             {
-                IVsStatusbar statusBar = await AutocompleteVsPackage.Instance?.GetStatusBarAsync();
-                statusBar?.SetText("");
+                if (Settings.NumTokensProgress > 0)
+                {
+                    IVsStatusbar statusBar = await AutocompleteVsPackage.Instance?.GetStatusBarAsync();
+                    statusBar?.SetText("");
+                }
             }
         }
 
