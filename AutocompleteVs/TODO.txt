@@ -1,4 +1,5 @@
-﻿
+﻿In suggestion UI, show keys available (Ctrl + Enter, Ctrl + >)
+
 Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
 	Stop in a safe place: Don't stop if a block / line is open
 

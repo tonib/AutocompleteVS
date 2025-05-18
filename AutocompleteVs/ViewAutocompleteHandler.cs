@@ -22,6 +22,8 @@ namespace AutocompleteVs
 	/// </summary>
 	internal sealed class ViewAutocompleteHandler
 	{
+		// TODO: Move all suggestion rendering to a other class
+
 		/// <summary>
 		/// The characters autoclosed by VS
 		/// </summary>
@@ -429,23 +431,23 @@ namespace AutocompleteVs
 		{
 			try
 			{
-                // Debug text:
-                // viewSuggestionText = "COLUMN__NAME";
+				// Debug text:
+				// viewSuggestionText = "COLUMN__NAME";
 
-                RemoveAdornment();
+				RemoveAdornment();
 
 				if (autocompletion.IsEmpty)
 					return;
 
 				SetupLabel();
 
-                // Add virtual spaces to the text, if needed
-                // It seems VS keeps cursor position in new line, adding virtual spaces that are not yet added to the current line
-                // So, to get rigth suggestion / suggestion insertion, virtual spaces are needed. So, here are the damn spaces:
-                //string virtualSpaces = new string(' ', View.Caret.Position.VirtualBufferPosition.VirtualSpaces);
-                //CurrentSuggestionText = virtualSpaces + viewSuggestionText;
+				// Add virtual spaces to the text, if needed
+				// It seems VS keeps cursor position in new line, adding virtual spaces that are not yet added to the current line
+				// So, to get rigth suggestion / suggestion insertion, virtual spaces are needed. So, here are the damn spaces:
+				//string virtualSpaces = new string(' ', View.Caret.Position.VirtualBufferPosition.VirtualSpaces);
+				//CurrentSuggestionText = virtualSpaces + viewSuggestionText;
 
-                CurrentAutocompletion = autocompletion;
+				CurrentAutocompletion = autocompletion;
 
 				// Get caret position and line
 				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
@@ -454,60 +456,63 @@ namespace AutocompleteVs
 				// Text to show in adornment
 				string suggestionTextToShow = autocompletion.Text;
 
-                // Two cases: 1) In the middle of a non empty line, 2) At the end of a line, or in a empty line
-                string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
-                string lineTextAfterCaret = caretLineText.Substring(IdxSuggestionPosition - caretLine.Start);
-				if(!string.IsNullOrWhiteSpace(lineTextAfterCaret))
+				// Two cases: 1) In the middle of a non empty line, 2) At the end of a line, or in a empty line
+				string caretLineText = View.TextSnapshot.GetText(caretLine.Start, caretLine.Length);
+				string lineTextAfterCaret = caretLineText.Substring(IdxSuggestionPosition - caretLine.Start);
+				if (!string.IsNullOrWhiteSpace(lineTextAfterCaret))
 				{
-                    // Case 1: In the middle of a non empty line
+					// Case 1: In the middle of a non empty line
 
 					// Get line geometry for caret position
-                    var caretSpan = new SnapshotSpan(View.TextSnapshot,
-                    Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition + 1));
-                    Geometry geometry = View.TextViewLines.GetMarkerGeometry(caretSpan);
+					var caretSpan = new SnapshotSpan(View.TextSnapshot,
+					Span.FromBounds(IdxSuggestionPosition, IdxSuggestionPosition + 1));
+					Geometry geometry = View.TextViewLines.GetMarkerGeometry(caretSpan);
 
-                    // Caret in middle of text. Render text in previous line.
-                    // TODO: This could hide text, so do it only if suggestion has been fired manually
-                    SetLabelSolid(true);
-                    // Align left with caret, in upper line
-                    Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
-                    Canvas.SetTop(LabelAdornment, geometry.Bounds.Top - geometry.Bounds.Height);
+					// Caret in middle of text. Render text in previous line.
+					// TODO: This could hide text, so do it only if suggestion has been fired manually
+					SetLabelSolid(true);
+					// Align left with caret, in upper line
+					Canvas.SetLeft(LabelAdornment, geometry.Bounds.Left);
+					Canvas.SetTop(LabelAdornment, geometry.Bounds.Top - geometry.Bounds.Height);
 
-                    LabelAdornment.Height = geometry.Bounds.Height;
+					LabelAdornment.Height = geometry.Bounds.Height;
 
-                    // If suggestion is multiline, suggest only the first line
-                    int idx = autocompletion.Text.IndexOf('\n');
-                    if (idx >= 0)
-                        CurrentAutocompletion.Text = CurrentAutocompletion.Text.Substring(0, idx);
-                    suggestionTextToShow = CurrentAutocompletion.Text;
-                }
+					// If suggestion is multiline, suggest only the first line
+					int idx = autocompletion.Text.IndexOf('\n');
+					if (idx >= 0)
+						CurrentAutocompletion.Text = CurrentAutocompletion.Text.Substring(0, idx);
+					suggestionTextToShow = CurrentAutocompletion.Text;
+
+					suggestionTextToShow = AddHelpText(suggestionTextToShow);
+				}
 				else
 				{
-                    // Case 2: At the end of a line, or in a empty line
-                    SetLabelSolid(false);
+					// Case 2: At the end of a line, or in a empty line
+					SetLabelSolid(false);
 
-                    // TODO: This will render wrong if font is not monospaced, and should be rendered with two labels (unsupported)
+					// TODO: This will render wrong if font is not monospaced, and should be rendered with two labels (unsupported)
 					string lineTextBeforeCaret = caretLineText.Substring(0, IdxSuggestionPosition - caretLine.Start);
 
-                    // Put current space up to the caret position
-                    // TODO: Tabs may not be 4 spaces, as it is configurable !!!
-                    string padding = lineTextBeforeCaret.Replace("\t", "    ");
-                    suggestionTextToShow = new string(' ', padding.Length) + CurrentAutocompletion.Text;
-					
-                    // Add a transform to the line to see all the autocmpletion, if needed
-                    LabelAdornment.Height = AddMultilineSuggestionTransform(suggestionTextToShow, caretLine, View.LineHeight);
+					// Put current space up to the caret position
+					// TODO: Tabs may not be 4 spaces, as it is configurable !!!
+					lineTextBeforeCaret = lineTextBeforeCaret.Replace("\t", "    ");
+					suggestionTextToShow = new string(' ', lineTextBeforeCaret.Length) + CurrentAutocompletion.Text;
+					suggestionTextToShow = AddHelpText(suggestionTextToShow);
 
-                    // This must to be done AFTER adding the line transform: It seems the transform can change the caretLine.TextTop
-                    // In this case, is not safe to call GetMarkerGeometry, as the caret can be at the end of the document, 
-                    // and GetMarkerGeometry needs a non empty span. So calculate the position manually
-                    // Start rendering from left border
-                    Canvas.SetTop(LabelAdornment, caretLine.TextTop);
-                    Canvas.SetLeft(LabelAdornment, 0);
+					// Add a transform to the line to see all the autocmpletion, if needed
+					LabelAdornment.Height = AddMultilineSuggestionTransform(suggestionTextToShow, caretLine, View.LineHeight);
 
-                }
+					// This must to be done AFTER adding the line transform: It seems the transform can change the caretLine.TextTop
+					// In this case, is not safe to call GetMarkerGeometry, as the caret can be at the end of the document, 
+					// and GetMarkerGeometry needs a non empty span. So calculate the position manually
+					// Start rendering from left border
+					Canvas.SetTop(LabelAdornment, caretLine.TextTop);
+					Canvas.SetLeft(LabelAdornment, 0);
 
-                // Replace undescore chars ("_") by double underscores. In WPF, underscores are markers for access keys
-                LabelAdornment.Content = suggestionTextToShow.Replace("_", "__");
+				}
+
+				// Replace undescore chars ("_") by double underscores. In WPF, underscores are markers for access keys
+				LabelAdornment.Content = suggestionTextToShow.Replace("_", "__");
 
 				AddAdornment();
 			}
@@ -518,7 +523,18 @@ namespace AutocompleteVs
 			}
 		}
 
-        private double AddMultilineSuggestionTransform(string viewSuggestionText, ITextViewLine caretLine, double lineHeight)
+		private static string AddHelpText(string suggestionTextToShow)
+		{
+			// Add help info for the user in suggestion
+			if (suggestionTextToShow.Contains(Environment.NewLine))
+				suggestionTextToShow += Environment.NewLine;
+			else
+				suggestionTextToShow += " ";
+			suggestionTextToShow += "[Ctrl + Enter => Accept all / Ctrl + > => Accept word]";
+			return suggestionTextToShow;
+		}
+
+		private double AddMultilineSuggestionTransform(string viewSuggestionText, ITextViewLine caretLine, double lineHeight)
 		{
 			// Count line breaks in suggestion
 			int nLineBreaks = 0;
