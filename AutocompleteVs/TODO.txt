@@ -1,5 +1,4 @@
-﻿In suggestion UI, show keys available (Ctrl + Enter, Ctrl + >)
-
+﻿
 Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
 	Stop in a safe place: Don't stop if a block / line is open
 
@@ -54,7 +53,10 @@ Check larger models (performance)
 If when keep typing, the text keeps the suggestion, suggestion should not be removed
 	Partially fixed, sometimes prefix is shinked
 Add a timeout after stop typing before running suggestion? (performance)
-ERROR: Suggestions indentation is plain wrong
+
+Post-processing:
+	ERROR: Suggestions indentation is plain wrong
+	Repeated code at line end on inline suggestions
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING

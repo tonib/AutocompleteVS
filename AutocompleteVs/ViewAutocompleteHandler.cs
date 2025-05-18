@@ -447,6 +447,9 @@ namespace AutocompleteVs
 				//string virtualSpaces = new string(' ', View.Caret.Position.VirtualBufferPosition.VirtualSpaces);
 				//CurrentSuggestionText = virtualSpaces + viewSuggestionText;
 
+				OutputPaneHandler.Instance.Log("Suggestion:", LogLevel.Debug);
+				OutputPaneHandler.Instance.Log(autocompletion.Text, LogLevel.Debug);
+
 				CurrentAutocompletion = autocompletion;
 
 				// Get caret position and line
@@ -496,7 +499,9 @@ namespace AutocompleteVs
 					// Put current space up to the caret position
 					// TODO: Tabs may not be 4 spaces, as it is configurable !!!
 					lineTextBeforeCaret = lineTextBeforeCaret.Replace("\t", "    ");
-					suggestionTextToShow = new string(' ', lineTextBeforeCaret.Length) + CurrentAutocompletion.Text;
+					suggestionTextToShow = new string(' ', lineTextBeforeCaret.Length) + 
+						CurrentAutocompletion.Text.Replace("\t", "    ");
+
 					suggestionTextToShow = AddHelpText(suggestionTextToShow);
 
 					// Add a transform to the line to see all the autocmpletion, if needed
