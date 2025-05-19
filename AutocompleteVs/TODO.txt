@@ -2,6 +2,8 @@
 Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
 	Stop in a safe place: Don't stop if a block / line is open
 
+Check options for fine tunning
+
 Error: Sometimes suggestions are ALWAYS cancelled. 
 	Show in log the cancellation reason (cursor moved, buffer changed)
 	I think it is buffer changed event. If is this, confirm buffer really changed
@@ -55,8 +57,8 @@ If when keep typing, the text keeps the suggestion, suggestion should not be rem
 Add a timeout after stop typing before running suggestion? (performance)
 
 Post-processing:
-	ERROR: Suggestions indentation is plain wrong
-	Repeated code at line end on inline suggestions
+	Repeated code at line end on inline suggestions, avoid it
+	Do not allow generation to close parenthesis non open parentheses (inline generations)
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING

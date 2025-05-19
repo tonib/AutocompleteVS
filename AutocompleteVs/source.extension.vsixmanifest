@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="AutocompleteVs.0352ce20-e72b-49c3-bb92-7739947bfbc3" Version="0.9" Language="en-US" Publisher="Company" />
+        <Identity Id="AutocompleteVs.0352ce20-e72b-49c3-bb92-7739947bfbc3" Version="0.10" Language="en-US" Publisher="Company" />
         <DisplayName>AutocompleteVs</DisplayName>
-        <Description xml:space="preserve">Code autocompletion using OLlamaCode ao</Description>
+        <Description xml:space="preserve">Code autocompletion using OLlama</Description>
         <Preview>true</Preview>
     </Metadata>
     <Installation>
