@@ -528,13 +528,18 @@ namespace AutocompleteVs
 			}
 		}
 
+		/// <summary>
+		/// Adds help text to the suggestion
+		/// </summary>
+		/// <param name="suggestionTextToShow"></param>
+		/// <returns></returns>
 		private static string AddHelpText(string suggestionTextToShow)
 		{
 			// Add help info for the user in suggestion
 			if (suggestionTextToShow.Contains(Environment.NewLine))
-				suggestionTextToShow += Environment.NewLine;
+				suggestionTextToShow += Environment.NewLine + Environment.NewLine;
 			else
-				suggestionTextToShow += " ";
+				suggestionTextToShow += "           ";
 			suggestionTextToShow += "[Ctrl + Enter => Accept all / Ctrl + > => Accept word]";
 			return suggestionTextToShow;
 		}
