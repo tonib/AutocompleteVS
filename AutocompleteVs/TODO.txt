@@ -1,12 +1,4 @@
-﻿Unhandled exception:
-[03/07/2025 9:38:17] System.InvalidOperationException: Unable to get TextViewLine containing insertion point.
-   en Microsoft.VisualStudio.Text.MultiSelection.Implementation.SelectionUIProperties.get_ContainingTextViewLine()
---- Fin del seguimiento de la pila de la ubicación anterior donde se produjo la excepción ---
-   en Microsoft.VisualStudio.Telemetry.WindowsErrorReporting.WatsonReport.GetClrWatsonExceptionInfo(Exception exceptionObject)
-   en Microsoft.VisualStudio.Text.Editor.Implementation.CaretElement.get_ContainingTextViewLine()
-   en AutocompleteVs.ViewAutocompleteHandler.CheckStartNewGeneration(Boolean isCaretPositonChanged)
-   en AutocompleteVs.ViewAutocompleteHandler.SuggestionContextChanged(Boolean isCaretPositonChanged)
-
+﻿
 The message "[Ctrl + ...]" should be configurable (show / not show) or make it look better
 
 Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
@@ -20,15 +12,6 @@ CustomServer: Fix version references to work in Vs 2019
 	Remove asp.net / signal, will not work in VS 2019: Use a plain socket server instead
 
 Inline suggestions: Try again to use inline adorments
-
-Error:
-	[26/04/2025 13:01:33] Starting new suggestion
-	[26/04/2025 13:01:33] System.InvalidOperationException: Unable to get TextViewLine containing insertion point.
-	   en Microsoft.VisualStudio.Text.MultiSelection.Implementation.SelectionUIProperties.get_ContainingTextViewLine()
-	   en Microsoft.VisualStudio.Text.Editor.Implementation.CaretElement.get_ContainingTextViewLine()
-	   en AutocompleteVs.ViewAutocompleteHandler.CheckStartNewGeneration(Boolean isCaretPositonChanged)
-	   en AutocompleteVs.ViewAutocompleteHandler.SuggestionContextChanged(Boolean isCaretPositonChanged)
-	[26/04/2025 13:01:33] Suggestion cancelled
 
 Use BatchedExecutor
 

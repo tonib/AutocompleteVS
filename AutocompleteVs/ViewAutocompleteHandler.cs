@@ -1,6 +1,8 @@
-﻿using AutocompleteVs.LIneTransforms;
+﻿using AutocompleteVs.Extensions;
+using AutocompleteVs.LIneTransforms;
 using AutocompleteVs.Logging;
 using AutocompleteVs.SuggestionGeneration;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -13,7 +15,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Microsoft.CodeAnalysis.Text;
 
 namespace AutocompleteVs
 {
@@ -216,7 +217,10 @@ namespace AutocompleteVs
             try
             {
                 // This is trowing nullexception when closing editors, inside ContainingTextViewLine property call
-                caretLine = View.Caret.ContainingTextViewLine;
+                //caretLine = View.Caret.ContainingTextViewLine;
+                caretLine = View.CaretLine();
+				if(caretLine == null)
+                    return;
             }
             catch (NullReferenceException)
             {
@@ -275,19 +279,24 @@ namespace AutocompleteVs
 					return;
                 // OutputPaneHandler.Instance.Log("View_LayoutChanged", LogLevel.Debug);
 
-				// This does not work. line.IdentityTag.Equals(AdornmentLineIdentityTag) neither. So, not really identity ???
-				//foreach (ITextViewLine line in e.NewOrReformattedLines)
-				//{
-				//	if (line.IdentityTag == AdornmentLineIdentityTag)
-				//	{
-				//		Debug.WriteLine("View_LayoutChanged: Re-adding adornment");
-				//		AddAdornment();
-				//		return;
-				//	}
-				//}
+                // This does not work. line.IdentityTag.Equals(AdornmentLineIdentityTag) neither. So, not really identity ???
+                //foreach (ITextViewLine line in e.NewOrReformattedLines)
+                //{
+                //	if (line.IdentityTag == AdornmentLineIdentityTag)
+                //	{
+                //		Debug.WriteLine("View_LayoutChanged: Re-adding adornment");
+                //		AddAdornment();
+                //		return;
+                //	}
+                //}
 
-				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
-				foreach (ITextViewLine line in e.NewOrReformattedLines)
+                // ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
+                ITextViewLine caretLine = View.CaretLine();
+                if (caretLine == null)
+                {
+                    return;
+                }
+                foreach (ITextViewLine line in e.NewOrReformattedLines)
 				{
 					if (line == caretLine)
 					{
@@ -452,9 +461,13 @@ namespace AutocompleteVs
 
 				CurrentAutocompletion = autocompletion;
 
-				// Get caret position and line
-				ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
-				IdxSuggestionPosition = View.Caret.Position.BufferPosition;
+                // Get caret position and line
+                // ITextViewLine caretLine = View.Caret.ContainingTextViewLine;
+                ITextViewLine caretLine = View.CaretLine();
+				if (caretLine == null)
+					return;
+
+                IdxSuggestionPosition = View.Caret.Position.BufferPosition;
 
 				// Text to show in adornment
 				string suggestionTextToShow = autocompletion.Text;
