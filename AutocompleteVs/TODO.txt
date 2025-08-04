@@ -12,8 +12,6 @@ The message "[Ctrl + ...]" should be configurable (show / not show) or make it l
 Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
 	Stop in a safe place: Don't stop if a block / line is open
 
-Check options for fine tunning
-
 Error: Sometimes suggestions are ALWAYS cancelled. 
 	Show in log the cancellation reason (cursor moved, buffer changed)
 	I think it is buffer changed event. If is this, confirm buffer really changed

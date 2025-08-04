@@ -12,7 +12,7 @@ namespace AutocompleteVs.SuggestionGeneration
     /// </summary>
     class SuggestionStringBuilder
     {
-        private int NOpenBrackets;
+        private int NOpenBlockChars;
         private StringBuilder sb = new StringBuilder();
         private GenerationParameters GenerationParameters;
 
@@ -54,12 +54,13 @@ namespace AutocompleteVs.SuggestionGeneration
                     return;
                 }
 
-                if (textToAppend[i] == '{')
-                    NOpenBrackets++;
-                else if (textToAppend[i] == '}')
+                // Handle brackets and parenthesis as blocks
+                if (textToAppend[i] == '{' || textToAppend[i] == '(')
+                    NOpenBlockChars++;
+                else if (textToAppend[i] == '}' || textToAppend[i] == ')')
                 {
-                    NOpenBrackets--;
-                    if (NOpenBrackets < 0)
+                    NOpenBlockChars--;
+                    if (NOpenBlockChars < 0)
                     {
                         // This is closing the current block. Do not include it and stop here
                         sb.Append(textToAppend.Substring(0, i));
