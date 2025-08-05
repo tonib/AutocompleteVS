@@ -48,7 +48,7 @@ namespace AutocompleteVs.SuggestionGeneration
         /// <param name="modelPrompt">The prompt to feed to the model. It may be cropped by a maximum length</param>
         /// <param name="singleLine">Whether the generation should be limited to a single line</param>
         public GenerationParameters(ViewAutocompleteHandler view, Prompt originalPrompt, Prompt modelPrompt, bool singleLine,
-            Document document)
+            Document document, int caretBufferLocation)
         {
             this.Document = document;
             this.View = view;
