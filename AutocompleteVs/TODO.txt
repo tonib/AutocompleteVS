@@ -1,9 +1,6 @@
 ﻿
 The message "[Ctrl + ...]" should be configurable (show / not show) or make it look better
 
-Set a max timeout for showing a suggestion: If it's reached, stop current generation and show the suggestion
-	Stop in a safe place: Don't stop if a block / line is open
-
 Error: Sometimes suggestions are ALWAYS cancelled. 
 	Show in log the cancellation reason (cursor moved, buffer changed)
 	I think it is buffer changed event. If is this, confirm buffer really changed
@@ -53,14 +50,6 @@ Post-processing:
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING
-
-Sometimes suggestions are displayed out of place. I guess it's due to race conditions:
-	* Cursor is locate at some place
-	* Generation starts
-	* Cursor is moved
-	* Suggestion ends, and suggestion is displayed << THIS SHOWS THE SUGGESTION ON THE WRONG PLACE
-	* Cursor moved event is fired
-	Solution should be check if cursor is at the same place where it was when generation started, when displaying the suggestion
 
 How to show formatted code:
 	https://stackoverflow.com/questions/64061612/how-to-implement-the-default-outlining-tool-tip-in-visual-studio-extension

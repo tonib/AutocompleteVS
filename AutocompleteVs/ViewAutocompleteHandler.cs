@@ -343,7 +343,8 @@ namespace AutocompleteVs
             // https://stackoverflow.com/questions/45653203/how-do-i-retrieve-text-from-the-visual-studio-editor-for-use-with-roslyn-syntaxt
             // TODO: It seems there can be more than one document. Right now supporting only one (where there can be more than one???)
             Microsoft.CodeAnalysis.Document doc = View.TextSnapshot.GetRelatedDocumentsWithChanges().FirstOrDefault();
-            return new GenerationParameters(this, originalPrompt, modelPrompt, singleLineSuggestion, doc);
+            return new GenerationParameters(this, originalPrompt, modelPrompt, singleLineSuggestion, 
+				doc, caretIdx);
         }
 
 		/// <summary>
@@ -436,6 +437,11 @@ namespace AutocompleteVs
 			SuggstionAdornmentVisible = false;
 		}
 
+		/// <summary>
+		/// Called when the current suggestion is finished.
+		/// It must to be calles in UI thread
+		/// </summary>
+		/// <param name="autocompletion">Suggestion to show</param>
         public void AutocompletionGenerationFinished(Autocompletion autocompletion)
 		{
 			try
@@ -446,8 +452,19 @@ namespace AutocompleteVs
 				RemoveAdornment();
 
 				if (autocompletion.IsEmpty)
-					return;
+				{
+                    // Nothing to show
+                    OutputPaneHandler.Instance.Log("Suggestion is empty", LogLevel.Debug);
+                    return;
+				}
 
+				// If caret location has changed, suggestion is outdated. Do nothing
+				int currentCaretPosition = autocompletion.Parameters.View.View.Caret.Position.BufferPosition;
+                if (currentCaretPosition != autocompletion.Parameters.CaretBufferLocation)
+				{
+					OutputPaneHandler.Instance.Log("Caret position has changed, suggestion is outdated. Do nothing", LogLevel.Debug);
+					return;
+				}
 				SetupLabel();
 
 				// Add virtual spaces to the text, if needed

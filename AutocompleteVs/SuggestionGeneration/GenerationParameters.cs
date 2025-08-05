@@ -41,6 +41,11 @@ namespace AutocompleteVs.SuggestionGeneration
         public Document Document;
 
         /// <summary>
+        /// The location of the caret in the document when suggestion generation started
+        /// </summary>
+        public int CaretBufferLocation;
+
+        /// <summary>
         /// Creates a new instance of the <see cref="GenerationParameters"/> class
         /// </summary>
         /// <param name="view">The VS view where the autocompletion request is being made</param>
@@ -55,6 +60,7 @@ namespace AutocompleteVs.SuggestionGeneration
             this.OriginalPrompt = originalPrompt;
             this.ModelPrompt = modelPrompt;
             this.GenerateSingleLine = singleLine;
+            this.CaretBufferLocation = caretBufferLocation;
         }
 
     }
