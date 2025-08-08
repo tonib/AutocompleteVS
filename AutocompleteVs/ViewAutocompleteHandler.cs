@@ -145,18 +145,36 @@ namespace AutocompleteVs
 				$"{View.TextBuffer.CurrentSnapshot.Length}, View.TextSnapshot.Length: {View.TextSnapshot.Length}", LogLevel.Debug);
             
 
-            string textAdded = CurrentAutocompletion.TextFollowsAutocompletion(currentParms.OriginalPrompt.PrefixText);
-            if (textAdded == null)
+            string textMoved = CurrentAutocompletion.TextFollowsAutocompletion(currentParms.OriginalPrompt.PrefixText,
+				currentParms.OriginalPrompt.SuffixText, out int nCharsAdded);
+            if (textMoved == null)
 				return false;
-			OutputPaneHandler.Instance.Log($"TextAddedFollowingAutocompletion: Text added following autocompletion: [{textAdded}]", LogLevel.Debug);
 
-			string newAutocompletionText = CurrentAutocompletion.Text.Substring(textAdded.Length);
-			if(newAutocompletionText.Length == 0)
+			string logMsg = nCharsAdded >= 0 ?
+				$"TextAddedFollowingAutocompletion: Text added following autocompletion: [{textMoved}]" :
+				$"TextAddedFollowingAutocompletion: Text removed following autocompletion: [{textMoved}]";
+            OutputPaneHandler.Instance.Log(logMsg, LogLevel.Debug);
+
+			string newAutocompletionText;
+            if (nCharsAdded >= 0)
 			{
-				// All autocompletion has been added: Cancel the current generation
-				this.CancelCurrentAutocompletion();
-				return true;
+				// Typed text from suggestion: Move the text from suggestion to the current prefix
+				newAutocompletionText = CurrentAutocompletion.Text.Substring(nCharsAdded);
+				if (newAutocompletionText.Length == 0)
+				{
+					// All autocompletion has been added: Cancel the current generation
+					this.CancelCurrentAutocompletion();
+					return true;
+				}
 			}
+			else
+			{
+                // Text removed from prefix: Move the text from current prefix to the suggestion
+                newAutocompletionText = textMoved + CurrentAutocompletion.Text;
+				string prefixText = CurrentAutocompletion.Parameters.OriginalPrompt.PrefixText;
+				CurrentAutocompletion.Parameters.OriginalPrompt.PrefixText =
+                    prefixText.Substring(0, prefixText.Length + nCharsAdded);
+            }
 
             // Create the new Autocompletion
             var newAutocompletion = new Autocompletion(newAutocompletionText, currentParms);

@@ -69,24 +69,45 @@ namespace AutocompleteVs.SuggestionGeneration
         /// <summary>
         /// Checks whether a given text follows this autocompletion
         /// </summary>
-        /// <param name="newPrefix">Text to check</param>
-        /// <returns>null if the text does not follow the autocompletion. If it follows it, is the text following the autocompletion
-        /// that has been added</returns>
-        public string TextFollowsAutocompletion(string newPrefix)
+        /// <param name="newPrefix">Text before caret</param>
+        /// <param name="newSuffix">Text after caret</param>
+        /// <param name="nCharsAdded">Number of characters added (positive) / removed (negative)</param>
+        /// <returns>null if the text does not follow the autocompletion. If it follows it, 
+        /// it's the text added/removed
+        /// </returns>
+        public string TextFollowsAutocompletion(string newPrefix, string newSuffix, 
+            out int nCharsAdded)
         {
+            nCharsAdded = 0;
+
             if (newPrefix.Length < Parameters.OriginalPrompt.PrefixText.Length)
             {
                 // The prefix has changed (srinked)
                 // TODO: This must to be handled: VS REMOVES and re-adds typed characteres. I dont understand why, but it does it
                 // TODO: So, it must to be handled. Instead of returning the added text, return an int with the number of
                 // TODO: Characters added (positive) or removed (negative)
-                OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: The prefix has changed (srinked)", LogLevel.Debug);
-                return null;
+                OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: The prefix has srinked", LogLevel.Debug);
+
+                if(!Parameters.OriginalPrompt.PrefixText.StartsWith(newPrefix))
+                {
+                    OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: Prefix has changed", LogLevel.Debug);
+                    return null;
+                }
+
+                int lengthDecreased = Parameters.OriginalPrompt.PrefixText.Length - newPrefix.Length;
+                //if(Parameters.OriginalPrompt.SuffixText.Length < lengthDecreased)
+                //{
+                //    OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: Suffix has changed (too small)", LogLevel.Debug);
+                //    return null;
+                //}
+                // TODO: Return lengthDecreased
+                nCharsAdded = -lengthDecreased;
+                return Parameters.OriginalPrompt.PrefixText.Substring(newPrefix.Length, lengthDecreased);
             }
 
             // Length of text added after the prefix
-            int lengthIncrease = newPrefix.Length - Parameters.OriginalPrompt.PrefixText.Length;
-            if (lengthIncrease > Text.Length)
+            nCharsAdded = newPrefix.Length - Parameters.OriginalPrompt.PrefixText.Length;
+            if (nCharsAdded > Text.Length)
             {
                 // Text added is larger than the autocompletion
                 OutputPaneHandler.Instance.Log("TextFollowsAutocompletion: Text added is larger than the autocompletion", LogLevel.Debug);

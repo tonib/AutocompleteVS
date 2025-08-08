@@ -1,4 +1,13 @@
 ﻿
+ERROR: Suggestion text has no right alignment (by pixels)
+
+Check how to disable VS 2002 inline suggestions, or check how to know if some of these VS 
+	suggestions is visible (in this case, dont show ours)
+
+ERROR:
+	If a multiline suggestion is shown, screen makes scroll to see the suggestion end.
+	If screen resolution is small, you even dont see the caret position
+
 The message "[Ctrl + ...]" should be configurable (show / not show) or make it look better
 
 Error: Sometimes suggestions are ALWAYS cancelled. 
@@ -11,9 +20,6 @@ CustomServer: Fix version references to work in Vs 2019
 Inline suggestions: Try again to use inline adorments
 
 Use BatchedExecutor
-
-ERROR: Sometimes, when you type space or point, following current suggestions, a new suggestion is restarted (prefix srinked)
-	It seems internally VS removes / re-adds typed characters. Handle this case
 
 ERROR:
 [10/04/2025 11:55:23] System.ArgumentException: El Visual especificado ya es un objeto secundario de otro Visual o la raíz de un CompositionTarget.
@@ -46,13 +52,15 @@ Add a timeout after stop typing before running suggestion? (performance)
 
 Post-processing:
 	Repeated code at line end on inline suggestions, avoid it
-	Do not allow generation to close parenthesis non open parentheses (inline generations)
 
 Try to put again nuget ollamasharp reference:
 	IS NOT WORKING
 
 How to show formatted code:
 	https://stackoverflow.com/questions/64061612/how-to-implement-the-default-outlining-tool-tip-in-visual-studio-extension
+
+In VS 2022, current suggestions and VS suggestions are rendered at same time, at same place.
+Check if there is a way to avoid it
 
 keyboard handling (remove this, no longer needed):
 	https://learn.microsoft.com/en-us/visualstudio/extensibility/binding-keyboard-shortcuts-to-menu-items?view=vs-2022
