@@ -53,7 +53,7 @@
     <Compile Include="LIneTransforms\MultiLineCompletionTransformSourceProvider.cs" />
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Logging\OutputPaneHandler.cs" />
-    <Compile Include="Settings.cs">
+    <Compile Include="Config\Settings.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="SuggestionGeneration\Autocompletion.cs" />

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutocompleteVs
+namespace AutocompleteVs.Config
 {
     // https://learn.microsoft.com/en-us/visualstudio/extensibility/creating-an-options-page?view=vs-2022
 

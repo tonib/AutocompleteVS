@@ -7,6 +7,7 @@ using System.Threading;
 using AutocompleteVs.Logging;
 using AutocompleteVs.SuggestionGeneration.Generators;
 using AutocompleteVs.SuggestionGeneration.Generators.CustomServer;
+using AutocompleteVs.Config;
 
 namespace AutocompleteVs.SuggestionGeneration
 {
