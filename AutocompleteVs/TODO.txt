@@ -21,7 +21,7 @@ CustomServer: Fix version references to work in Vs 2019
 		https://stackoverflow.com/questions/38724344/creating-domains-and-loading-assemblies-in-visual-studio-extension
 		https://learn.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2013/hh255107(v=vs.120)?redirectedfrom=MSDN
 		https://www.visualstudiogeeks.com/visualstudio/extensions/loading-custom-assemblies-in-visual-studio-extensions
-
+	It seems is fixed: If so, remove _References directory
 
 Inline suggestions: Try again to use inline adorments
 
