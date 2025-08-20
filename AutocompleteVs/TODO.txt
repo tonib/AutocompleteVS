@@ -16,6 +16,12 @@ Error: Sometimes suggestions are ALWAYS cancelled.
 
 CustomServer: Fix version references to work in Vs 2019
 	Remove asp.net / signal, will not work in VS 2019: Use a plain socket server instead
+	See:
+		https://stackoverflow.com/questions/31246064/how-to-do-dll-bindingredirect-in-a-vsix-extension
+		https://stackoverflow.com/questions/38724344/creating-domains-and-loading-assemblies-in-visual-studio-extension
+		https://learn.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2013/hh255107(v=vs.120)?redirectedfrom=MSDN
+		https://www.visualstudiogeeks.com/visualstudio/extensions/loading-custom-assemblies-in-visual-studio-extensions
+
 
 Inline suggestions: Try again to use inline adorments
 
