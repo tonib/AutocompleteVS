@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.VisualStudio.Shell;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -31,3 +32,9 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("0.12.0.0")]
 [assembly: AssemblyFileVersion("0.12.0.0")]
+
+// Required for VS 2019: VS by default loads an older version of the BCL.AsyncInterfaces assembly
+// and Ollamasharp / OpenAI / etc needs version 9
+[assembly: ProvideBindingRedirection(AssemblyName = "Microsoft.Bcl.AsyncInterfaces",
+    NewVersion = "9.0.0.0", OldVersionLowerBound = "1.0.0.0",
+    OldVersionUpperBound = "8.0.0.0")]
