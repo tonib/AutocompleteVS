@@ -39,7 +39,7 @@ namespace AutocompleteVs.SuggestionGeneration
         /// Otherwise, return a new instance with the cropped text</returns>
         public Prompt AsModelPrompt(Settings settings)
         {
-            if (!settings?.IsInfillModel ?? false)
+            if (!settings?.AutocompleteModel?.IsInfillModel ?? false)
             {
                 // Not an infill model, so don't crop the prompt. Suffix makes no sense
                 return new Prompt(PrefixText, "");

@@ -46,6 +46,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Config\IModelConfig.cs" />
+    <Compile Include="Config\ModelType.cs" />
+    <Compile Include="Config\OllamaModelConfig.cs" />
+    <Compile Include="Config\OpenAIModelConfig.cs" />
     <Compile Include="Extensions\ITextViewExtensions.cs" />
     <Compile Include="Logging\ExecutionTime.cs" />
     <Compile Include="AutocompleteCommandFilter.cs" />

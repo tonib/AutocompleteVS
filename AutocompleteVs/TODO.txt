@@ -1,5 +1,9 @@
-﻿
+﻿When using extension for first time, create a default configuration
+
 ERROR: Suggestion text has no right alignment (by pixels)
+
+ERROR: There are issues when autocompletion is shown and you delete the current code line.
+	A inline suggestion is shown
 
 Check how to disable VS 2002 inline suggestions, or check how to know if some of these VS 
 	suggestions is visible (in this case, dont show ours)
