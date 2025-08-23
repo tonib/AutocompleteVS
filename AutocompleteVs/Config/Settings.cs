@@ -1,12 +1,14 @@
 ﻿using AutocompleteVs.Logging;
 using AutocompleteVs.SuggestionGeneration;
 using Microsoft.VisualStudio.Shell;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace AutocompleteVs.Config
 {
@@ -16,14 +18,16 @@ namespace AutocompleteVs.Config
     // TODO: Create a custom settings page: https://learn.microsoft.com/en-us/visualstudio/extensibility/creating-an-options-page?view=vs-2022#create-a-tools-options-custom-page
 
     /// <summary>
-    /// Package settings
+    /// Package settings with custom UI
     /// </summary>
-    class Settings : DialogPage
+    public class Settings : DialogPage
     {
         /// <summary>
         /// VS settings page category name
         /// </summary>
         public const string PageCategory = "AutocompleteVs";
+
+        private SettingsUserControl _control;
 
         #region General
 
@@ -67,9 +71,71 @@ namespace AutocompleteVs.Config
         public string CustomServerUrl { get; set; } = "http://localhost:5118/InferenceHub";
 
         /// <summary>
-        /// Configured models
+        /// Configured models (not persisted directly)
         /// </summary>
+        [Browsable(false)]
         public List<IModelConfig> Models { get; set; } = new List<IModelConfig>();
+
+        /// <summary>
+        /// JSON serialization of models for persistence
+        /// </summary>
+        [DisplayName("Models JSON")]
+        [Description("JSON representation of configured models (internal use)")]
+        [Browsable(false)]
+        public string ModelsJson
+        {
+            get
+            {
+                try
+                {
+                    var serializedModels = Models.Select(m => new
+                    {
+                        Type = m.Type.ToString(),
+                        Data = m
+                    }).ToList();
+                    return JsonConvert.SerializeObject(serializedModels, Formatting.Indented);
+                }
+                catch
+                {
+                    return "[]";
+                }
+            }
+            set
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        Models = new List<IModelConfig>();
+                        return;
+                    }
+
+                    var serializedModels = JsonConvert.DeserializeObject<dynamic[]>(value);
+                    Models = new List<IModelConfig>();
+                    
+                    foreach (var item in serializedModels)
+                    {
+                        string type = item.Type;
+                        var data = item.Data;
+                        
+                        if (type == "Ollama")
+                        {
+                            var model = JsonConvert.DeserializeObject<OllamaModelConfig>(data.ToString());
+                            Models.Add(model);
+                        }
+                        else if (type == "OpenAi")
+                        {
+                            var model = JsonConvert.DeserializeObject<OpenAIModelConfig>(data.ToString());
+                            Models.Add(model);
+                        }
+                    }
+                }
+                catch
+                {
+                    Models = new List<IModelConfig>();
+                }
+            }
+        }
 
         /// <summary>
         /// Id of model to use for autocomplete. Identifies the model in Models list.
@@ -80,8 +146,37 @@ namespace AutocompleteVs.Config
         /// <summary>
         /// Model to use for autocomplete
         /// </summary>
+        [Browsable(false)]
         public IModelConfig AutocompleteModel => 
             Models.FirstOrDefault(m => m.Id == AutocompleteModelId);
+
+        /// <summary>
+        /// Gets the Windows Forms control that hosts the custom options UI
+        /// </summary>
+        protected override IWin32Window Window
+        {
+            get
+            {
+                if (_control == null)
+                {
+                    _control = new SettingsUserControl();
+                    _control.Initialize(this);
+                }
+                return _control;
+            }
+        }
+
+        /// <summary>
+        /// Called when the options page loads its state
+        /// </summary>
+        public override void LoadSettingsFromStorage()
+        {
+            base.LoadSettingsFromStorage();
+            if (_control != null)
+            {
+                _control.Initialize(this);
+            }
+        }
 
         protected override void OnApply(PageApplyEventArgs e)
         {
@@ -99,7 +194,6 @@ namespace AutocompleteVs.Config
             }
 
             base.OnApply(e);
-
 
             // Update the ollama client
             AutocompletionsGenerator.Instance.ApplySettings(true);

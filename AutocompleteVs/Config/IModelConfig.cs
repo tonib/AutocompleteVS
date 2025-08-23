@@ -10,7 +10,7 @@ namespace AutocompleteVs.Config
     /// <summary>
     /// Settings for a model
     /// </summary>
-    internal interface IModelConfig
+    public interface IModelConfig
     {
         /// <summary>
         /// Model configuration id

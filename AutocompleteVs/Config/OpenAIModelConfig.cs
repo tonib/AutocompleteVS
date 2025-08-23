@@ -16,7 +16,7 @@ namespace AutocompleteVs.Config
         /// </summary>
         public string Id { get; set; }
 
-        public ModelType Type => ModelType.Ollama;
+        public ModelType Type => ModelType.OpenAi;
 
         public string OpenAiKey { get; set; }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AutocompleteVs.Config
 {
-    internal enum ModelType
+    public enum ModelType
     {
         Ollama = 0,
         OpenAi = 1
