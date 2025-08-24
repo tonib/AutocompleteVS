@@ -39,20 +39,22 @@ namespace AutocompleteVs.SuggestionGeneration
         /// Otherwise, return a new instance with the cropped text</returns>
         public Prompt AsModelPrompt(Settings settings)
         {
-            if (!settings?.AutocompleteModel?.IsInfillModel ?? false)
+            AutocompleteConfig autumpleteConfig = settings?.AutocompleteConfig;
+
+            if (!autumpleteConfig?.ModelConfig?.IsInfillModel ?? false)
             {
                 // Not an infill model, so don't crop the prompt. Suffix makes no sense
                 return new Prompt(PrefixText, "");
             }
 
             // Is an infill model, so crop the prompt, if needed
-            if (settings?.MaxPromptCharacters != null && (PrefixText.Length + SuffixText.Length) > (int)settings.MaxPromptCharacters)
+            if (autumpleteConfig?.MaxPromptCharacters != null && (PrefixText.Length + SuffixText.Length) > (int)autumpleteConfig.MaxPromptCharacters)
             {
                 Prompt croppedParms = new Prompt(PrefixText, SuffixText);
 
                 // Text must be cropped. Calculate theoerical lengths to keep
-                int prefixLengthToKeep = (int)(settings.MaxPromptCharacters * (settings.InfillPrefixPercentage / 100.0));
-                int suffixLengthToKeep = (int)settings.MaxPromptCharacters - prefixLengthToKeep;
+                int prefixLengthToKeep = (int)(autumpleteConfig.MaxPromptCharacters * (autumpleteConfig.InfillPrefixPercentage / 100.0));
+                int suffixLengthToKeep = (int)autumpleteConfig.MaxPromptCharacters - prefixLengthToKeep;
 
                 if (suffixLengthToKeep > croppedParms.SuffixText.Length)
                 {
@@ -66,10 +68,10 @@ namespace AutocompleteVs.SuggestionGeneration
                     suffixLengthToKeep += prefixLengthToKeep - croppedParms.PrefixText.Length;
                     prefixLengthToKeep = croppedParms.PrefixText.Length;
                 }
-                Debug.Assert(prefixLengthToKeep + suffixLengthToKeep == settings.MaxPromptCharacters);
+                Debug.Assert(prefixLengthToKeep + suffixLengthToKeep == autumpleteConfig.MaxPromptCharacters);
 
                 // Crop text
-                OutputPaneHandler.Instance.Log($"Prompt cropped to {settings.MaxPromptCharacters} chars", LogLevel.Debug);
+                OutputPaneHandler.Instance.Log($"Prompt cropped to {autumpleteConfig.MaxPromptCharacters} chars", LogLevel.Debug);
                 croppedParms.PrefixText = croppedParms.PrefixText.Substring(croppedParms.PrefixText.Length - prefixLengthToKeep);
                 croppedParms.SuffixText = croppedParms.SuffixText.Substring(0, suffixLengthToKeep);
 

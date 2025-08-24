@@ -36,7 +36,7 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
         public OllamaGenerator(Settings settings)
         {
             Settings = settings;
-            ModelConfig = (OllamaModelConfig) settings.AutocompleteModel;
+            ModelConfig = (OllamaModelConfig) settings.AutocompleteConfig.ModelConfig;
 
             var uri = new Uri(ModelConfig.OllamaUrl);
             OLlamaClient = new OllamaApiClient(uri);

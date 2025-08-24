@@ -35,19 +35,6 @@ namespace AutocompleteVs.Config
         [Description("If true, suggestions will be generated automatically when typing or moving the caret in editor")]
         public bool AutomaticSuggestions { get; set; } = true;
 
-        [DisplayName("Max. number of characters in prompt")]
-        [Description("Maximum number of characters to send as prompt. Empty == send all file")]
-        public int? MaxPromptCharacters { get; set; } = 2048;
-
-        [DisplayName("Prefix % when max. characters is reached")]
-        [Description("Only applies the current file has a size lager than the max. number of characters in prompt. " +
-            "As only that maximum number of characters will be sent, this is the % of characters to get from before the caret position." +
-            "The remaining % will be characters after caret position. Between 0 and 100")]
-        public double? InfillPrefixPercentage { get; set; } = 75.0;
-
-        [Browsable(false)]
-        public double? InfillSuffixPercentage => 100.0 - InfillPrefixPercentage;
-
         [DisplayName("Log level")]
         [Description("Log level for this extension messages. Log is written to Output > AutocompleteVS pane")]
         public LogLevel LogLevel { get; set; } = LogLevel.Warning;
@@ -135,17 +122,21 @@ namespace AutocompleteVs.Config
         }
 
         /// <summary>
-        /// Id of model to use for autocomplete. Identifies the model in Models list.
-        /// null == do not generate autocompletions
+        /// Id of configuration to use for autocompletion
         /// </summary>
-        public string AutocompleteModelId { get; set; } = null;
+        public string AutocompleteConfigId { get; set; } = null;
 
         /// <summary>
-        /// Model to use for autocomplete
+        /// Autocompletion configurations
+        /// </summary>
+        public List<AutocompleteConfig> AutocompletionConfigurations = new List<AutocompleteConfig>();
+
+        /// <summary>
+        /// Model to use for autocomplete. It can be null if was not specified
         /// </summary>
         [Browsable(false)]
-        public IModelConfig AutocompleteModel => 
-            Models.FirstOrDefault(m => m.Id == AutocompleteModelId);
+        public AutocompleteConfig AutocompleteConfig =>
+            AutocompletionConfigurations.FirstOrDefault(a => a.Id == AutocompleteConfigId);
 
         /// <summary>
         /// Gets the Windows Forms control that hosts the custom options UI
@@ -177,18 +168,18 @@ namespace AutocompleteVs.Config
 
         protected override void OnApply(PageApplyEventArgs e)
         {
-            if (InfillPrefixPercentage != null)
-            {
-                if (InfillPrefixPercentage < 0 || InfillPrefixPercentage > 100)
-                {
-                    e.ApplyBehavior = ApplyKind.Cancel;
-                    AutocompleteVsPackage.Instance.MessageBox(
-                        "'Prefix % when max. characters is reached' must to be between 0 and 100",
-                        "Error",
-                        Microsoft.VisualStudio.Shell.Interop.OLEMSGICON.OLEMSGICON_CRITICAL);
-                    return;
-                }
-            }
+            //if (InfillPrefixPercentage != null)
+            //{
+            //    if (InfillPrefixPercentage < 0 || InfillPrefixPercentage > 100)
+            //    {
+            //        e.ApplyBehavior = ApplyKind.Cancel;
+            //        AutocompleteVsPackage.Instance.MessageBox(
+            //            "'Prefix % when max. characters is reached' must to be between 0 and 100",
+            //            "Error",
+            //            Microsoft.VisualStudio.Shell.Interop.OLEMSGICON.OLEMSGICON_CRITICAL);
+            //        return;
+            //    }
+            //}
 
             base.OnApply(e);
 

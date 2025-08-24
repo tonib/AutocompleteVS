@@ -79,7 +79,7 @@ namespace AutocompleteVs.Config
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(25, 27);
+            this.label7.Location = new System.Drawing.Point(25, 23);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(53, 13);
             this.label7.TabIndex = 0;
@@ -112,7 +112,7 @@ namespace AutocompleteVs.Config
             this.pnlOllamaSettings.Location = new System.Drawing.Point(20, 46);
             this.pnlOllamaSettings.Name = "pnlOllamaSettings";
             this.pnlOllamaSettings.Size = new System.Drawing.Size(496, 196);
-            this.pnlOllamaSettings.TabIndex = 2;
+            this.pnlOllamaSettings.TabIndex = 3;
             this.pnlOllamaSettings.Visible = false;
             // 
             // numMaxPredict
@@ -130,7 +130,7 @@ namespace AutocompleteVs.Config
             0});
             this.numMaxPredict.Name = "numMaxPredict";
             this.numMaxPredict.Size = new System.Drawing.Size(70, 20);
-            this.numMaxPredict.TabIndex = 18;
+            this.numMaxPredict.TabIndex = 15;
             // 
             // label2
             // 
@@ -138,7 +138,7 @@ namespace AutocompleteVs.Config
             this.label2.Location = new System.Drawing.Point(199, 126);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(103, 13);
-            this.label2.TabIndex = 17;
+            this.label2.TabIndex = 14;
             this.label2.Text = "Max. tokens predict:";
             // 
             // numSeed
@@ -151,7 +151,7 @@ namespace AutocompleteVs.Config
             this.numSeed.Location = new System.Drawing.Point(308, 98);
             this.numSeed.Name = "numSeed";
             this.numSeed.Size = new System.Drawing.Size(70, 20);
-            this.numSeed.TabIndex = 16;
+            this.numSeed.TabIndex = 11;
             // 
             // label1
             // 
@@ -159,7 +159,7 @@ namespace AutocompleteVs.Config
             this.label1.Location = new System.Drawing.Point(196, 100);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 15;
+            this.label1.TabIndex = 10;
             this.label1.Text = "Seed:";
             // 
             // chkIsInfillModel
@@ -168,7 +168,7 @@ namespace AutocompleteVs.Config
             this.chkIsInfillModel.Location = new System.Drawing.Point(308, 150);
             this.chkIsInfillModel.Name = "chkIsInfillModel";
             this.chkIsInfillModel.Size = new System.Drawing.Size(87, 17);
-            this.chkIsInfillModel.TabIndex = 14;
+            this.chkIsInfillModel.TabIndex = 18;
             this.chkIsInfillModel.Text = "Is Infill Model";
             this.chkIsInfillModel.UseVisualStyleBackColor = true;
             // 
@@ -177,7 +177,7 @@ namespace AutocompleteVs.Config
             this.txtKeepAlive.Location = new System.Drawing.Point(90, 150);
             this.txtKeepAlive.Name = "txtKeepAlive";
             this.txtKeepAlive.Size = new System.Drawing.Size(100, 20);
-            this.txtKeepAlive.TabIndex = 13;
+            this.txtKeepAlive.TabIndex = 17;
             // 
             // label16
             // 
@@ -185,7 +185,7 @@ namespace AutocompleteVs.Config
             this.label16.Location = new System.Drawing.Point(5, 153);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(61, 13);
-            this.label16.TabIndex = 12;
+            this.label16.TabIndex = 16;
             this.label16.Text = "Keep Alive:";
             // 
             // nudNumCtx
@@ -203,7 +203,7 @@ namespace AutocompleteVs.Config
             0});
             this.nudNumCtx.Name = "nudNumCtx";
             this.nudNumCtx.Size = new System.Drawing.Size(80, 20);
-            this.nudNumCtx.TabIndex = 11;
+            this.nudNumCtx.TabIndex = 13;
             this.nudNumCtx.Value = new decimal(new int[] {
             512,
             0,
@@ -216,7 +216,7 @@ namespace AutocompleteVs.Config
             this.label15.Location = new System.Drawing.Point(5, 126);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(69, 13);
-            this.label15.TabIndex = 10;
+            this.label15.TabIndex = 12;
             this.label15.Text = "Context Size:";
             // 
             // nudTemperature
@@ -394,7 +394,7 @@ namespace AutocompleteVs.Config
             this.btnOK.Location = new System.Drawing.Point(23, 248);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
-            this.btnOK.TabIndex = 4;
+            this.btnOK.TabIndex = 1;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -406,7 +406,7 @@ namespace AutocompleteVs.Config
             this.btnCancel.Location = new System.Drawing.Point(104, 248);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 5;
+            this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -422,8 +422,8 @@ namespace AutocompleteVs.Config
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.txtModelId);
-            this.Controls.Add(this.pnlOllamaSettings);
             this.Controls.Add(this.pnlOpenAISettings);
+            this.Controls.Add(this.pnlOllamaSettings);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

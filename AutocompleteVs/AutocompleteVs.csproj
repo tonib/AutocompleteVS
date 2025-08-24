@@ -47,6 +47,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Config\AutocompleteConfig.cs" />
+    <Compile Include="Config\AutocompleteConfigDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\AutocompleteConfigDialog.Designer.cs">
+      <DependentUpon>AutocompleteConfigDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Config\IModelConfig.cs" />
     <Compile Include="Config\ModelType.cs" />
     <Compile Include="Config\OllamaModelConfig.cs" />
@@ -147,6 +153,9 @@
     <Content Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Config\AutocompleteConfigDialog.resx">
+      <DependentUpon>AutocompleteConfigDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Config\SettingsUserControl.resx">
       <DependentUpon>SettingsUserControl.cs</DependentUpon>
     </EmbeddedResource>

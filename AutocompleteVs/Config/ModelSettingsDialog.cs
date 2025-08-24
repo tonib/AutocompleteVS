@@ -46,7 +46,7 @@ namespace AutocompleteVs.Config
             }
         }
 
-        private void SetValue(NumericUpDown field, float? value)
+        static internal void SetValue(NumericUpDown field, float? value)
         {
             if (value != null)
                 field.Value = (decimal)value;
@@ -105,11 +105,19 @@ namespace AutocompleteVs.Config
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtModelId.Text))
+            string id = txtModelId.Text;
+            if (string.IsNullOrWhiteSpace(id))
             {
                 MessageBox.Show("Model ID is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (AutocompleteVsPackage.Instance.Settings.Models
+                .Any(m => m.Id == id && m != _model))
+            {
+                MessageBox.Show("A model with this ID already exists.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             string errorMsg = OllamaValidation() ?? OpenAIValidation();
             if (errorMsg != null)
             {

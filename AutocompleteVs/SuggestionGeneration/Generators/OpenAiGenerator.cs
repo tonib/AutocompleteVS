@@ -27,7 +27,7 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
 
 		public OpenAiGenerator(Settings settings)
 		{
-			OpenAIModelConfig modelConfig = (OpenAIModelConfig) settings.AutocompleteModel;
+			OpenAIModelConfig modelConfig = (OpenAIModelConfig) settings.AutocompleteConfig.ModelConfig;
 			OpenAiClient = new OpenAIClient(modelConfig.OpenAiKey);
 			// TODO: Configure model
 			ChatClient = OpenAiClient.GetChatClient(modelConfig.ModelName);

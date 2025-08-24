@@ -100,7 +100,7 @@ namespace AutocompleteVs.SuggestionGeneration
 				Generator = null;
             }
 
-            IModelConfig modelConfig = Settings.AutocompleteModel;
+            IModelConfig modelConfig = Settings.AutocompleteConfig?.ModelConfig;
             if (modelConfig == null)
 			{
 				// No model configured. Do not generate anything
