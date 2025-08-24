@@ -1,15 +1,6 @@
 ﻿Config:
-	fix list heights
-	dlg config -center in window
-	dlg config - assign tab order
-	dlg config - select default model
-	double click not woring
-	edit / delete buttons enabled without selection
-	combo update not working
-	id error: check it BEFORE closing dialog
-	configs serialization
-
-When using extension for first time, create a default configuration
+	ERROR : If you try to delete a model, and some configuration uses it, show error
+	When using extension for first time, create a default configuration
 
 ERROR: Suggestion text has no right alignment (by pixels)
 

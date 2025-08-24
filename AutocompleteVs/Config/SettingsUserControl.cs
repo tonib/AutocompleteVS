@@ -180,6 +180,8 @@ namespace AutocompleteVs.Config
             AutcocompleteConfigDisplayItem item = cmbAutocompleteConfigId.Items
                 .Cast<AutcocompleteConfigDisplayItem>()
                 .FirstOrDefault(i => i.Id == _settings.AutocompleteConfigId);
+            if (item == null)
+                item = none;
             cmbAutocompleteConfigId.SelectedItem = item;
         }
 

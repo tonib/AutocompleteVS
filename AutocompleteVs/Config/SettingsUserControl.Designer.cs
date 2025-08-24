@@ -252,6 +252,7 @@ namespace AutocompleteVs.Config
             // 
             // btnDeleteConfig
             // 
+            this.btnDeleteConfig.Enabled = false;
             this.btnDeleteConfig.Location = new System.Drawing.Point(179, 147);
             this.btnDeleteConfig.Name = "btnDeleteConfig";
             this.btnDeleteConfig.Size = new System.Drawing.Size(75, 23);
@@ -262,6 +263,7 @@ namespace AutocompleteVs.Config
             // 
             // btnEditConfig
             // 
+            this.btnEditConfig.Enabled = false;
             this.btnEditConfig.Location = new System.Drawing.Point(96, 147);
             this.btnEditConfig.Name = "btnEditConfig";
             this.btnEditConfig.Size = new System.Drawing.Size(75, 23);

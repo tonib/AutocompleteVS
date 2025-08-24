@@ -132,6 +132,16 @@ namespace AutocompleteVs.Config
         public List<AutocompleteConfig> AutocompletionConfigurations = new List<AutocompleteConfig>();
 
         /// <summary>
+        /// Serialization for AutocompletionConfigurations. This is what is stored 
+        /// in VS settings
+        /// </summary>
+        public string AutocompletionConfigurationsJson
+        {
+            get => JsonConvert.SerializeObject(AutocompletionConfigurations, Formatting.Indented);
+            set => AutocompletionConfigurations = JsonConvert.DeserializeObject<List<AutocompleteConfig>>(value);
+        }
+
+        /// <summary>
         /// Model to use for autocomplete. It can be null if was not specified
         /// </summary>
         [Browsable(false)]
