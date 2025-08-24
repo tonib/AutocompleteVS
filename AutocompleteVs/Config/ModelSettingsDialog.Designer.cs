@@ -31,6 +31,8 @@ namespace AutocompleteVs.Config
             this.txtModelId = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.pnlOllamaSettings = new System.Windows.Forms.Panel();
+            this.numMaxPredict = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
             this.numSeed = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.chkIsInfillModel = new System.Windows.Forms.CheckBox();
@@ -56,6 +58,7 @@ namespace AutocompleteVs.Config
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.pnlOllamaSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numMaxPredict)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudNumCtx)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTemperature)).BeginInit();
@@ -87,6 +90,8 @@ namespace AutocompleteVs.Config
             this.pnlOllamaSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlOllamaSettings.Controls.Add(this.numMaxPredict);
+            this.pnlOllamaSettings.Controls.Add(this.label2);
             this.pnlOllamaSettings.Controls.Add(this.numSeed);
             this.pnlOllamaSettings.Controls.Add(this.label1);
             this.pnlOllamaSettings.Controls.Add(this.chkIsInfillModel);
@@ -110,6 +115,32 @@ namespace AutocompleteVs.Config
             this.pnlOllamaSettings.TabIndex = 2;
             this.pnlOllamaSettings.Visible = false;
             // 
+            // numMaxPredict
+            // 
+            this.numMaxPredict.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.numMaxPredict.Location = new System.Drawing.Point(308, 124);
+            this.numMaxPredict.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numMaxPredict.Name = "numMaxPredict";
+            this.numMaxPredict.Size = new System.Drawing.Size(70, 20);
+            this.numMaxPredict.TabIndex = 18;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(199, 126);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(103, 13);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "Max. tokens predict:";
+            // 
             // numSeed
             // 
             this.numSeed.Increment = new decimal(new int[] {
@@ -117,12 +148,7 @@ namespace AutocompleteVs.Config
             0,
             0,
             65536});
-            this.numSeed.Location = new System.Drawing.Point(241, 98);
-            this.numSeed.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.numSeed.Location = new System.Drawing.Point(308, 98);
             this.numSeed.Name = "numSeed";
             this.numSeed.Size = new System.Drawing.Size(70, 20);
             this.numSeed.TabIndex = 16;
@@ -139,7 +165,7 @@ namespace AutocompleteVs.Config
             // chkIsInfillModel
             // 
             this.chkIsInfillModel.AutoSize = true;
-            this.chkIsInfillModel.Location = new System.Drawing.Point(241, 150);
+            this.chkIsInfillModel.Location = new System.Drawing.Point(308, 150);
             this.chkIsInfillModel.Name = "chkIsInfillModel";
             this.chkIsInfillModel.Size = new System.Drawing.Size(87, 17);
             this.chkIsInfillModel.TabIndex = 14;
@@ -228,7 +254,7 @@ namespace AutocompleteVs.Config
             0,
             0,
             65536});
-            this.nudTopP.Location = new System.Drawing.Point(241, 72);
+            this.nudTopP.Location = new System.Drawing.Point(308, 72);
             this.nudTopP.Maximum = new decimal(new int[] {
             1,
             0,
@@ -407,6 +433,7 @@ namespace AutocompleteVs.Config
             this.Text = "Model Settings";
             this.pnlOllamaSettings.ResumeLayout(false);
             this.pnlOllamaSettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numMaxPredict)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudNumCtx)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTemperature)).EndInit();
@@ -448,5 +475,7 @@ namespace AutocompleteVs.Config
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.NumericUpDown numSeed;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown numMaxPredict;
+        private System.Windows.Forms.Label label2;
     }
 }

@@ -68,7 +68,7 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                     TopP = ModelConfig.TopP,
                     Temperature = ModelConfig.Temperature,
                     Seed = ModelConfig.Seed,
-                    NumPredict = Settings.NumPredict,
+                    NumPredict = ModelConfig.NumPredict,
                     NumCtx = ModelConfig.NumCtx
                 };
 

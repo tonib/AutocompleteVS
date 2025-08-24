@@ -15,6 +15,10 @@ namespace AutocompleteVs.Config
         public ModelSettingsDialog()
         {
             InitializeComponent();
+
+            // TODO: Check if temperature can have a maximum value
+            nudTopK.Maximum = nudTemperature.Maximum = numSeed.Maximum =
+                nudNumCtx.Maximum = numMaxPredict.Maximum = decimal.MaxValue;
         }
 
         public ModelSettingsDialog(IModelConfig model, bool isEditing = false) : this()
@@ -60,6 +64,7 @@ namespace AutocompleteVs.Config
             SetValue(nudTemperature, model.Temperature);
             SetValue(nudNumCtx, model.NumCtx);
             SetValue(numSeed, model.Seed);
+            SetValue(numMaxPredict, model.NumPredict);
             txtKeepAlive.Text = model.KeepAlive ?? "";
             chkIsInfillModel.Checked = model.IsInfillModel;
         }
@@ -83,7 +88,8 @@ namespace AutocompleteVs.Config
                 NumCtx = nudNumCtx.Text == "" ? null : (int?)nudNumCtx.Value,
                 KeepAlive = string.IsNullOrWhiteSpace(txtKeepAlive.Text) ? null : txtKeepAlive.Text,
                 IsInfillModel = chkIsInfillModel.Checked,
-                Seed = numSeed.Text == "" ? null : (int?)numSeed.Value
+                Seed = numSeed.Text == "" ? null : (int?)numSeed.Value,
+                NumPredict = numMaxPredict.Text == "" ? null : (int?)numMaxPredict.Value
             };
         }
 

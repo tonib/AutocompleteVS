@@ -58,10 +58,15 @@ namespace AutocompleteVs.Config
             "Empty == use ollama default")]
         public string KeepAlive { get; set; } = "1h";
 
+        // TODO: Replace this by enum with: Base / Infill / Chat or Instruct
         [DisplayName("Is infill model?")]
         [Description("True if model accepts cursor position, and text before and after cursor are feeded separately as prompt." +
             "False if model only accepts text before cursor")]
         public bool IsInfillModel { get; set; } = true;
+
+        [DisplayName("Suggestion max. tokens number")]
+        [Description("Maximum number of tokens to predict when generating text. Empty == use default")]
+        public int? NumPredict { get; set; } = 200;
 
         public override string ToString() => Id + " (OLlama)";
         

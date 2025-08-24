@@ -46,6 +46,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Config\AutocompleteConfig.cs" />
     <Compile Include="Config\IModelConfig.cs" />
     <Compile Include="Config\ModelType.cs" />
     <Compile Include="Config\OllamaModelConfig.cs" />

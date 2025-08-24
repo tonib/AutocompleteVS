@@ -35,10 +35,6 @@ namespace AutocompleteVs.Config
         [Description("If true, suggestions will be generated automatically when typing or moving the caret in editor")]
         public bool AutomaticSuggestions { get; set; } = true;
 
-        [DisplayName("Suggestion max. tokens number")]
-        [Description("Maximum number of tokens to predict when generating text. Empty == use default")]
-        public int? NumPredict { get; set; }
-
         [DisplayName("Max. number of characters in prompt")]
         [Description("Maximum number of characters to send as prompt. Empty == send all file")]
         public int? MaxPromptCharacters { get; set; } = 2048;
@@ -66,6 +62,7 @@ namespace AutocompleteVs.Config
 
         #endregion
 
+        // TODO: Still not in use
         [DisplayName("Custorm server URL")]
         [Description("URL for custom AutocompleteVs server")]
         public string CustomServerUrl { get; set; } = "http://localhost:5118/InferenceHub";
