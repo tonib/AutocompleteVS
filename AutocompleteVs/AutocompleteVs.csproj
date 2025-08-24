@@ -66,6 +66,12 @@
     <Compile Include="Config\SettingsUserControl.Designer.cs">
       <DependentUpon>SettingsUserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Config\ModelSettingsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config\ModelSettingsDialog.Designer.cs">
+      <DependentUpon>ModelSettingsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="SuggestionGeneration\Autocompletion.cs" />
     <Compile Include="SuggestionGeneration\GenerationParameters.cs" />
     <Compile Include="SuggestionGeneration\Generators\CustomServer\ContextValidWords.cs" />
@@ -142,6 +148,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Config\SettingsUserControl.resx">
       <DependentUpon>SettingsUserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Config\ModelSettingsDialog.resx">
+      <DependentUpon>ModelSettingsDialog.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

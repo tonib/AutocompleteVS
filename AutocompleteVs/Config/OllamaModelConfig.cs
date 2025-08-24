@@ -62,5 +62,8 @@ namespace AutocompleteVs.Config
         [Description("True if model accepts cursor position, and text before and after cursor are feeded separately as prompt." +
             "False if model only accepts text before cursor")]
         public bool IsInfillModel { get; set; } = true;
+
+        public override string ToString() => Id + " (OLlama)";
+        
     }
 }

@@ -27,5 +27,7 @@ namespace AutocompleteVs.Config
 
         public bool IsInfillModel => false;
 
+        public override string ToString() => $"{Id} (OpenAI)";
+
     }
 }
