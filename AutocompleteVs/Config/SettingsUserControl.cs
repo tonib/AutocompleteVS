@@ -140,7 +140,18 @@ namespace AutocompleteVs.Config
             IModelConfig model = lstModels.SelectedItem as IModelConfig;
             if (model == null)
                 return;
-            
+
+            var cfg = _settings.AutocompletionConfigurations
+                .Where(a => a.ModelConfigId == model.Id)
+                .FirstOrDefault();
+            if(cfg != null)
+            {
+                MessageBox.Show($"Can't delete the model because it is used in '{cfg.Id}' " +
+                    $"autocompletion configuration", "Validation Error", MessageBoxButtons.OK, 
+                    MessageBoxIcon.Error);
+                return;
+            }
+
             var result = MessageBox.Show($"Are you sure you want to delete the model " +
                 $"'{model.Id}'?", 
                 "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
