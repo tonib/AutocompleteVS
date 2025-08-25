@@ -1,4 +1,27 @@
 ﻿
+ERROR: If selection changes, suggestion is not removed.
+Ex, in string literal edition, press Shift + Alt + "+", suggestion is not removed
+
+ERROR: Not working in lsi server:
+[25/08/2025 9:18:32] System.IO.FileNotFoundException: No se puede cargar el archivo o ensamblado 'System.Text.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51' ni una de sus dependencias. El sistema no puede encontrar el archivo especificado.
+Nombre de archivo: 'System.Text.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'
+   en OllamaSharp.OllamaApiClient..ctor(HttpClient client, String defaultModel)
+   en OllamaSharp.OllamaApiClient..ctor(Configuration config)
+   en OllamaSharp.OllamaApiClient..ctor(Uri uri, String defaultModel)
+   en AutocompleteVs.SuggestionGeneration.Generators.OllamaGenerator..ctor(Settings settings)
+   en AutocompleteVs.SuggestionGeneration.AutocompletionsGenerator.ApplySettings(Boolean cancelCurrentAutocompletion)
+   en AutocompleteVs.SuggestionGeneration.AutocompletionsGenerator..ctor()
+   en AutocompleteVs.SuggestionGeneration.AutocompletionsGenerator.get_Instance()
+   en AutocompleteVs.ViewAutocompleteHandler.CancelCurrentAutocompletion()
+   en AutocompleteVs.ViewAutocompleteHandler.SuggestionContextChanged(Boolean isCaretPositonChanged)
+
+AVS: El registro del enlace de ensamblado está desactivado.
+Para habilitar el registro de errores del enlace de ensamblado, establezca el valor de Registro [HKLM\Software\Microsoft\Fusion!EnableLog] (DWORD) como 1.
+Nota: existe una disminución del rendimiento asociada registro de errores del enlace de ensamblado.
+Para desactivar esta característica, elimine el valor de Registro [HKLM\Software\Microsoft\Fusion!EnableLog].
+
+
+
 ERROR: Suggestion text has no right alignment (by pixels)
 
 Check how to disable VS 2002 inline suggestions, or check how to know if some of these VS 
