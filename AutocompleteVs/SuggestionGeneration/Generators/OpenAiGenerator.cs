@@ -1,4 +1,5 @@
-﻿using AutocompleteVs.Logging;
+﻿using AutocompleteVs.Config;
+using AutocompleteVs.Logging;
 using OllamaSharp;
 using OpenAI;
 using OpenAI.Chat;
@@ -26,9 +27,10 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
 
 		public OpenAiGenerator(Settings settings)
 		{
-			OpenAiClient = new OpenAIClient(settings.OpenAiKey);
+			OpenAIModelConfig modelConfig = (OpenAIModelConfig) settings.AutocompleteConfig.ModelConfig;
+			OpenAiClient = new OpenAIClient(modelConfig.OpenAiKey);
 			// TODO: Configure model
-			ChatClient = OpenAiClient.GetChatClient("gpt-4o-mini");
+			ChatClient = OpenAiClient.GetChatClient(modelConfig.ModelName);
 		}
 
 		public void Dispose()

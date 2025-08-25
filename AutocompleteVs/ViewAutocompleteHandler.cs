@@ -1,4 +1,5 @@
-﻿using AutocompleteVs.Extensions;
+﻿using AutocompleteVs.Config;
+using AutocompleteVs.Extensions;
 using AutocompleteVs.LIneTransforms;
 using AutocompleteVs.Logging;
 using AutocompleteVs.SuggestionGeneration;

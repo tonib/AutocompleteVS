@@ -7,11 +7,12 @@ using System.Threading;
 using AutocompleteVs.Logging;
 using AutocompleteVs.SuggestionGeneration.Generators;
 using AutocompleteVs.SuggestionGeneration.Generators.CustomServer;
+using AutocompleteVs.Config;
 
 namespace AutocompleteVs.SuggestionGeneration
 {
 	/// <summary>
-	/// Generates autocompletions with OLlama
+	/// Generates autocompletions with a given IGenerator
 	/// </summary>
 	internal class AutocompletionsGenerator
     {
@@ -61,7 +62,7 @@ namespace AutocompleteVs.SuggestionGeneration
         private Settings Settings;
 
         /// <summary>
-        /// Suggestions generator
+        /// Suggestions generator. Null if there is model configured
         /// </summary>
         private IGenerator Generator;
 
@@ -79,7 +80,9 @@ namespace AutocompleteVs.SuggestionGeneration
         /// <param name="cancelCurrentAutocompletion">True is current autocompletion should be cancelled</param>
         public void ApplySettings(bool cancelCurrentAutocompletion)
 		{
-			if (cancelCurrentAutocompletion)
+            Settings = AutocompleteVsPackage.Instance.Settings;
+
+            if (cancelCurrentAutocompletion)
 				CancelCurrentGeneration();
 
             // TODO: This is no thread safe, but an error should be very unusual
@@ -94,23 +97,30 @@ namespace AutocompleteVs.SuggestionGeneration
 				{
 					OutputPaneHandler.Instance.Log(ex);
                 }
+				Generator = null;
             }
 
-            // Set up the new client
-            Settings = AutocompleteVsPackage.Instance.Settings;
-			switch(Settings.GeneratorType)
+            IModelConfig modelConfig = Settings.AutocompleteConfig?.ModelConfig;
+            if (modelConfig == null)
 			{
-				case GeneratorType.Ollama:
+				// No model configured. Do not generate anything
+				return;
+			}
+
+            // Set up the new generator
+			switch(modelConfig.Type)
+			{
+				case ModelType.Ollama:
 					Generator = new OllamaGenerator(Settings);
 					break;
-				case GeneratorType.OpenAi:
+				case ModelType.OpenAi:
 					Generator = new OpenAiGenerator(Settings);
 					break;
-				case GeneratorType.CustomServer:
-					Generator = new CustomServerGenerator(Settings);
-					break;
+				//case GeneratorType.CustomServer:
+				//	Generator = new CustomServerGenerator(Settings);
+				//	break;
 				default:
-					throw new Exception($"Unknown {Settings.GeneratorType} suggestions generator");
+					throw new Exception($"Unknown {modelConfig.Type} autocomplete model");
 			}
             
         }
@@ -130,6 +140,9 @@ namespace AutocompleteVs.SuggestionGeneration
 
 		public void StartAutocompletion(GenerationParameters parameters)
 		{
+			if (Generator == null)
+				return;
+
             // Wait until the semaphore is available
             Semaphore.Wait();
 

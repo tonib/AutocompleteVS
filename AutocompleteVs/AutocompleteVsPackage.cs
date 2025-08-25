@@ -1,4 +1,5 @@
-﻿using AutocompleteVs.Logging;
+﻿using AutocompleteVs.Config;
+using AutocompleteVs.Logging;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;

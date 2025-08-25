@@ -1,4 +1,4 @@
-﻿
+
 ERROR: If selection changes, suggestion is not removed.
 Ex, in string literal edition, press Shift + Alt + "+", suggestion is not removed
 
@@ -20,9 +20,18 @@ Para habilitar el registro de errores del enlace de ensamblado, establezca el va
 Nota: existe una disminución del rendimiento asociada registro de errores del enlace de ensamblado.
 Para desactivar esta característica, elimine el valor de Registro [HKLM\Software\Microsoft\Fusion!EnableLog].
 
+﻿Allow inline autocompeltions if char at line end is "]"
 
+Config:
+	When using extension for first time, create a default configuration
+	Create a command for each autocompletion configuration
+	Configure a autocompletion configuration to use for automatic autocompletions
+	Export / import configuration
 
 ERROR: Suggestion text has no right alignment (by pixels)
+
+ERROR: There are issues when autocompletion is shown and you delete the current code line.
+	A inline suggestion is shown
 
 Check how to disable VS 2002 inline suggestions, or check how to know if some of these VS 
 	suggestions is visible (in this case, dont show ours)

@@ -1,4 +1,5 @@
 ﻿// using AutocompleteVs.Client;
+using AutocompleteVs.Config;
 using AutocompleteVs.Logging;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Completion;

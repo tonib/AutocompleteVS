@@ -1,4 +1,5 @@
-﻿using AutocompleteVs.Logging;
+﻿using AutocompleteVs.Config;
+using AutocompleteVs.Logging;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
@@ -27,13 +28,19 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
         /// </summary>
         Settings Settings;
 
+        /// <summary>
+        /// Autocompletion model configuration
+        /// </summary>
+        OllamaModelConfig ModelConfig;
+
         public OllamaGenerator(Settings settings)
         {
             Settings = settings;
+            ModelConfig = (OllamaModelConfig) settings.AutocompleteConfig.ModelConfig;
 
-            var uri = new Uri(Settings.OllamaUrl);
+            var uri = new Uri(ModelConfig.OllamaUrl);
             OLlamaClient = new OllamaApiClient(uri);
-            OLlamaClient.SelectedModel = Settings.ModelName;
+            OLlamaClient.SelectedModel = ModelConfig.ModelName;
         }
 
         public void Dispose() => OLlamaClient?.Dispose();
@@ -53,16 +60,16 @@ namespace AutocompleteVs.SuggestionGeneration.Generators
                 var request = new GenerateRequest();
 
                 // Request options
-                if (!string.IsNullOrEmpty(Settings.KeepAlive))
-                    request.KeepAlive = Settings.KeepAlive;
+                if (!string.IsNullOrEmpty(ModelConfig.KeepAlive))
+                    request.KeepAlive = ModelConfig.KeepAlive;
                 request.Options = new RequestOptions()
                 {
-                    TopK = Settings.TopK,
-                    TopP = Settings.TopP,
-                    Temperature = Settings.Temperature,
-                    Seed = Settings.Seed,
-                    NumPredict = Settings.NumPredict,
-                    NumCtx = Settings.NumCtx
+                    TopK = ModelConfig.TopK,
+                    TopP = ModelConfig.TopP,
+                    Temperature = ModelConfig.Temperature,
+                    Seed = ModelConfig.Seed,
+                    NumPredict = ModelConfig.NumPredict,
+                    NumCtx = ModelConfig.NumCtx
                 };
 
                 request.Prompt = parameters.ModelPrompt.PrefixText;
