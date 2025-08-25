@@ -49,5 +49,9 @@ namespace AutocompleteVs.Config
             return txt;
         }
 
+        public override bool Equals(object obj)
+            => (obj as AutocompleteConfig)?.Id == Id;
+        
+        override public int GetHashCode() => Id.GetHashCode();
     }
 }

@@ -12,7 +12,7 @@ namespace AutocompleteVs.Config
 
         public IModelConfig Model => _model;
 
-        public ModelSettingsDialog()
+        protected ModelSettingsDialog()
         {
             InitializeComponent();
 
@@ -21,7 +21,7 @@ namespace AutocompleteVs.Config
                 nudNumCtx.Maximum = numMaxPredict.Maximum = decimal.MaxValue;
         }
 
-        public ModelSettingsDialog(IModelConfig model, bool isEditing = false) : this()
+        public ModelSettingsDialog(IModelConfig model, bool isEditing) : this()
         {
             _isEditingExistingModel = isEditing;
             LoadModel(model);

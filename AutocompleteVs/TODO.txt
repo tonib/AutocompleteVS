@@ -2,8 +2,6 @@
 	When using extension for first time, create a default configuration
 	Create a command for each autocompletion configuration
 	Configure a autocompletion configuration to use for automatic autocompletions
-	If model id is changed, change id in autocompletion configurations
-	IndexOf calls in SettingsUserControl are failing
 	Export / import configuration
 
 ERROR: Suggestion text has no right alignment (by pixels)

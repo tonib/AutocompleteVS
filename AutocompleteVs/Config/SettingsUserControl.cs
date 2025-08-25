@@ -8,6 +8,9 @@ using System.Windows.Forms;
 
 namespace AutocompleteVs.Config
 {
+    /// <summary>
+    /// User control to edit extension settings in VS > Tools > Settings
+    /// </summary>
     public partial class SettingsUserControl : UserControl
     {
         private Settings _settings;
@@ -127,6 +130,13 @@ namespace AutocompleteVs.Config
                 {
                     _settings.Models[index] = dialog.Model;
                     UpdateModelList();
+
+                    // Update model id in autocomplete configs
+                    foreach (AutocompleteConfig c in _settings.AutocompletionConfigurations.Where(a => a.ModelConfigId == model.Id))
+                    {
+                        c.ModelConfigId = dialog.Model.Id;
+                    }
+                    UpdateConfigsList();
                 }
             }
             
@@ -216,7 +226,7 @@ namespace AutocompleteVs.Config
             if(_settings.Models.Count > 0)
                 cfg.ModelConfigId = _settings.Models[0].Id;
 
-            using (var dialog = new AutocompleteConfigDialog(cfg))
+            using (var dialog = new AutocompleteConfigDialog(cfg, false))
             {
                 if (dialog.ShowDialog(this) != DialogResult.OK)
                     return;
@@ -233,7 +243,7 @@ namespace AutocompleteVs.Config
             if (cfg == null)
                 return;
 
-            using (var dialog = new AutocompleteConfigDialog(cfg))
+            using (var dialog = new AutocompleteConfigDialog(cfg, true))
             {
                 if (dialog.ShowDialog(this) != DialogResult.OK)
                     return;
@@ -243,6 +253,11 @@ namespace AutocompleteVs.Config
                 {
                     _settings.AutocompletionConfigurations[index] = dialog.Config;
                     UpdateConfigsList();
+
+                    // If current selected autocomplete config was this, udpate it
+                    if(_settings.AutocompleteConfigId == cfg.Id)
+                        _settings.AutocompleteConfigId = dialog.Config.Id;
+
                     UpdateAutocompleteConfigCombo();
                 }
             }

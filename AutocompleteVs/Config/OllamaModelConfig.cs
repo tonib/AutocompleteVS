@@ -69,6 +69,10 @@ namespace AutocompleteVs.Config
         public int? NumPredict { get; set; } = 200;
 
         public override string ToString() => Id + " (OLlama)";
-        
+
+        public override bool Equals(object obj)
+            => (obj as IModelConfig)?.Id == Id;
+
+        override public int GetHashCode() => Id.GetHashCode();
     }
 }
