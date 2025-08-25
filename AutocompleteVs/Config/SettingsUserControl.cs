@@ -286,8 +286,41 @@ namespace AutocompleteVs.Config
 
         private void lstConfigs_SelectedIndexChanged(object sender, EventArgs e)
         {
+            var selectedItem = lstConfigs.SelectedItem;
             btnDeleteConfig.Enabled = btnEditConfig.Enabled =
-                lstConfigs.SelectedItem != null;
+                selectedItem != null;
+
+            btnMoveUp.Enabled = lstConfigs.SelectedIndex >= 1;
+            btnMoveDown.Enabled = selectedItem != null &&
+                lstConfigs.SelectedIndex < (lstModels.Items.Count - 1);
+        }
+
+        private void btnMoveUp_Click(object sender, EventArgs e)
+        {
+            if (lstConfigs.SelectedIndex < 1)
+                return;
+
+            int selIndex = lstConfigs.SelectedIndex;
+            var item = _settings.AutocompletionConfigurations[selIndex];
+            _settings.AutocompletionConfigurations[selIndex] =
+                _settings.AutocompletionConfigurations[selIndex - 1];
+            _settings.AutocompletionConfigurations[selIndex - 1] = item;
+            UpdateConfigsList();
+            lstConfigs.SelectedItem = item;
+        }
+
+        private void btnMoveDown_Click(object sender, EventArgs e)
+        {
+            if (lstConfigs.SelectedIndex > (lstConfigs.Items.Count - 1))
+                return;
+
+            int selIndex = lstConfigs.SelectedIndex;
+            var item = _settings.AutocompletionConfigurations[selIndex];
+            _settings.AutocompletionConfigurations[selIndex] =
+                _settings.AutocompletionConfigurations[selIndex + 1];
+            _settings.AutocompletionConfigurations[selIndex + 1] = item;
+            UpdateConfigsList();
+            lstConfigs.SelectedItem = item;
         }
 
         #endregion

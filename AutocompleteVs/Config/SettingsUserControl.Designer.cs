@@ -43,6 +43,8 @@ namespace AutocompleteVs.Config
             this.btnAddOllama = new System.Windows.Forms.Button();
             this.lstModels = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnMoveDown = new System.Windows.Forms.Button();
+            this.btnMoveUp = new System.Windows.Forms.Button();
             this.lstConfigs = new System.Windows.Forms.ListBox();
             this.btnDeleteConfig = new System.Windows.Forms.Button();
             this.btnEditConfig = new System.Windows.Forms.Button();
@@ -227,6 +229,8 @@ namespace AutocompleteVs.Config
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.btnMoveDown);
+            this.groupBox1.Controls.Add(this.btnMoveUp);
             this.groupBox1.Controls.Add(this.lstConfigs);
             this.groupBox1.Controls.Add(this.btnDeleteConfig);
             this.groupBox1.Controls.Add(this.btnEditConfig);
@@ -237,6 +241,28 @@ namespace AutocompleteVs.Config
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Autocompletion configurations";
+            // 
+            // btnMoveDown
+            // 
+            this.btnMoveDown.Enabled = false;
+            this.btnMoveDown.Location = new System.Drawing.Point(341, 147);
+            this.btnMoveDown.Name = "btnMoveDown";
+            this.btnMoveDown.Size = new System.Drawing.Size(75, 23);
+            this.btnMoveDown.TabIndex = 5;
+            this.btnMoveDown.Text = "Move down";
+            this.btnMoveDown.UseVisualStyleBackColor = true;
+            this.btnMoveDown.Click += new System.EventHandler(this.btnMoveDown_Click);
+            // 
+            // btnMoveUp
+            // 
+            this.btnMoveUp.Enabled = false;
+            this.btnMoveUp.Location = new System.Drawing.Point(260, 147);
+            this.btnMoveUp.Name = "btnMoveUp";
+            this.btnMoveUp.Size = new System.Drawing.Size(75, 23);
+            this.btnMoveUp.TabIndex = 4;
+            this.btnMoveUp.Text = "Move up";
+            this.btnMoveUp.UseVisualStyleBackColor = true;
+            this.btnMoveUp.Click += new System.EventHandler(this.btnMoveUp_Click);
             // 
             // lstConfigs
             // 
@@ -322,5 +348,7 @@ namespace AutocompleteVs.Config
         private System.Windows.Forms.Button btnAddConfig;
         private System.Windows.Forms.Button btnDeleteConfig;
         private System.Windows.Forms.ListBox lstConfigs;
+        private System.Windows.Forms.Button btnMoveDown;
+        private System.Windows.Forms.Button btnMoveUp;
     }
 }

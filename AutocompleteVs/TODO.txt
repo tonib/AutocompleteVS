@@ -1,4 +1,6 @@
-﻿Config:
+﻿Allow inline autocompeltions if char at line end is "]"
+
+Config:
 	When using extension for first time, create a default configuration
 	Create a command for each autocompletion configuration
 	Configure a autocompletion configuration to use for automatic autocompletions
