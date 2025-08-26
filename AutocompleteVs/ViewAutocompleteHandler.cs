@@ -363,7 +363,7 @@ namespace AutocompleteVs
             // TODO: It seems there can be more than one document. Right now supporting only one (where there can be more than one???)
             Microsoft.CodeAnalysis.Document doc = View.TextSnapshot.GetRelatedDocumentsWithChanges().FirstOrDefault();
             return new GenerationParameters(this, originalPrompt, modelPrompt, singleLineSuggestion, 
-				doc, caretIdx);
+				doc, caretIdx, settings.AutocompleteConfigId);
         }
 
 		/// <summary>

@@ -46,14 +46,24 @@ namespace AutocompleteVs.SuggestionGeneration
         public int CaretBufferLocation;
 
         /// <summary>
+        /// The id of the autocompletion settings for this autocompletion. 
+        /// Refrences to <see cref="AutocompleteConfig.Id" />
+        /// </summary>
+        public readonly string AutocompleteConfigId;
+
+        /// <summary>
         /// Creates a new instance of the <see cref="GenerationParameters"/> class
         /// </summary>
         /// <param name="view">The VS view where the autocompletion request is being made</param>
         /// <param name="originalPrompt">The original prompt (the entire file)</param>
         /// <param name="modelPrompt">The prompt to feed to the model. It may be cropped by a maximum length</param>
         /// <param name="singleLine">Whether the generation should be limited to a single line</param>
-        public GenerationParameters(ViewAutocompleteHandler view, Prompt originalPrompt, Prompt modelPrompt, bool singleLine,
-            Document document, int caretBufferLocation)
+        /// <param name="caretBufferLocation">Caret position in document buffer when autocompletion was
+        /// requested</param>
+        /// <param name="autocompleteConfigId">Id settings for this autocompletion</param>
+        public GenerationParameters(ViewAutocompleteHandler view, Prompt originalPrompt, 
+            Prompt modelPrompt, bool singleLine,
+            Document document, int caretBufferLocation, string autocompleteConfigId)
         {
             this.Document = document;
             this.View = view;
@@ -61,6 +71,7 @@ namespace AutocompleteVs.SuggestionGeneration
             this.ModelPrompt = modelPrompt;
             this.GenerateSingleLine = singleLine;
             this.CaretBufferLocation = caretBufferLocation;
+            this.AutocompleteConfigId = autocompleteConfigId;
         }
 
     }

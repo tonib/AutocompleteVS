@@ -61,10 +61,11 @@ namespace AutocompleteVs.SuggestionGeneration
         /// </summary>
         private Settings Settings;
 
-        /// <summary>
-        /// Suggestions generator. Null if there is model configured
-        /// </summary>
-        private IGenerator Generator;
+		/// <summary>
+		/// Suggestions generators cache. Key = AutocompleteConfig.Id, Value = Generator instance
+		/// for that configuration
+		/// </summary>
+		private Dictionary<string, IGenerator> Generators = new Dictionary<string, IGenerator>();
 
         /// <summary>
         /// Initializes the ollama client
@@ -86,42 +87,19 @@ namespace AutocompleteVs.SuggestionGeneration
 				CancelCurrentGeneration();
 
             // TODO: This is no thread safe, but an error should be very unusual
-			if(Generator != null)
-			{
+            foreach (IGenerator generator in Generators.Values)
+            {
 				// Dispose previous client
 				try 
 				{
-                    Generator.Dispose();  
+                    generator.Dispose();  
 				}
 				catch(Exception ex)
 				{
 					OutputPaneHandler.Instance.Log(ex);
                 }
-				Generator = null;
             }
-
-            IModelConfig modelConfig = Settings.AutocompleteConfig?.ModelConfig;
-            if (modelConfig == null)
-			{
-				// No model configured. Do not generate anything
-				return;
-			}
-
-            // Set up the new generator
-			switch(modelConfig.Type)
-			{
-				case ModelType.Ollama:
-					Generator = new OllamaGenerator(Settings);
-					break;
-				case ModelType.OpenAi:
-					Generator = new OpenAiGenerator(Settings);
-					break;
-				//case GeneratorType.CustomServer:
-				//	Generator = new CustomServerGenerator(Settings);
-				//	break;
-				default:
-					throw new Exception($"Unknown {modelConfig.Type} autocomplete model");
-			}
+            Generators.Clear();
             
         }
 
@@ -140,13 +118,12 @@ namespace AutocompleteVs.SuggestionGeneration
 
 		public void StartAutocompletion(GenerationParameters parameters)
 		{
-			if (Generator == null)
-				return;
-
             // Wait until the semaphore is available
             Semaphore.Wait();
 
-			try
+            IGenerator generator = GetGenerator(parameters);
+
+            try
 			{
 				if(CurrentAutocompletion != null)
 				{
@@ -160,7 +137,7 @@ namespace AutocompleteVs.SuggestionGeneration
 
                 // No generation is running. Start a new one, and do not wait for it to finish
                 CancellationTokenSource = new CancellationTokenSource();
-                CurrentAutocompletion = Generator.GetAutocompletionInternalAsync(parameters, CancellationTokenSource.Token);
+                CurrentAutocompletion = generator.GetAutocompletionInternalAsync(parameters, CancellationTokenSource.Token);
 				_ = RunQueuedAutocompletionsAsync();
 
             }
@@ -170,7 +147,51 @@ namespace AutocompleteVs.SuggestionGeneration
             }
         }
 
-		async private Task RunQueuedAutocompletionsAsync()
+		/// <summary>
+		/// Get the autocompletions generation for the requested autocompletion configuration
+		/// </summary>
+		/// <param name="parameters">Requested generation parameters</param>
+		/// <returns>The generator to use</returns>
+		/// <exception cref="Exception"></exception>
+        private IGenerator GetGenerator(GenerationParameters parameters)
+        {
+			// Try to get the generator from the cache
+            if(!Generators.TryGetValue(parameters.AutocompleteConfigId, out IGenerator generator))
+			{
+				// Create the generator for this configuration
+
+				AutocompleteConfig config = this.Settings.AutocompletionConfigurations
+					.FirstOrDefault(cfg => cfg.Id == parameters.AutocompleteConfigId);
+				if(config == null)
+					throw new Exception($"Unknown {parameters.AutocompleteConfigId} autocomplete configuration");								
+				var modelConfig = config.ModelConfig;
+				if(modelConfig == null)
+					throw new Exception($"Unknown model {config.ModelConfigId} in {config.Id} autocomplete configuration");
+
+				OutputPaneHandler.Instance.Log($"Creating new generator for {config.Id} autocomplete configuration",
+					LogLevel.Debug);
+
+				switch (modelConfig.Type)
+				{
+					case ModelType.Ollama:
+                        generator = new OllamaGenerator(Settings);
+						break;
+					case ModelType.OpenAi:
+                        generator = new OpenAiGenerator(Settings);
+						break;
+					//case GeneratorType.CustomServer:
+					//	Generator = new CustomServerGenerator(Settings);
+					//	break;
+					default:
+						throw new Exception($"Unknown {modelConfig.Type} autocomplete model in {config.Id} autocomplete configuration");
+				}
+				Generators[parameters.AutocompleteConfigId] = generator;
+            }
+
+            return generator;
+        }
+
+        async private Task RunQueuedAutocompletionsAsync()
 		{
 			while (true)
 			{
@@ -192,7 +213,8 @@ namespace AutocompleteVs.SuggestionGeneration
 
                     // Prepare the new generation
                     CancellationTokenSource = new CancellationTokenSource();
-                    CurrentAutocompletion = Generator.GetAutocompletionInternalAsync(NextAutocompletionParameters, 
+                    IGenerator generator = GetGenerator(NextAutocompletionParameters);
+                    CurrentAutocompletion = generator.GetAutocompletionInternalAsync(NextAutocompletionParameters, 
                         CancellationTokenSource.Token);
                     NextAutocompletionParameters = null;
 				}
