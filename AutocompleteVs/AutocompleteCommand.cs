@@ -24,10 +24,14 @@ namespace AutocompleteVs
 		// TODO: Enable command only in text editors
 		// TODO: Add key binding to command (https://learn.microsoft.com/en-us/visualstudio/extensibility/binding-keyboard-shortcuts-to-menu-items?view=vs-2022)
 
-		/// <summary>
-		/// Command ID.
-		/// </summary>
-		public const int CommandId = 0x0100;
+		public const int AutcompleteConfig0CommandId = 0x0100,
+            AutcompleteConfig1CommandId = 0x0101,
+            AutcompleteConfig2CommandId = 0x0102;
+
+        /// <summary>
+        /// Command ID.
+        /// </summary>
+        private int CommandId;
 
 		/// <summary>
 		/// Command menu group (command set GUID).
@@ -45,38 +49,37 @@ namespace AutocompleteVs
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
 		/// <param name="commandService">Command service to add command to, not null.</param>
-		private AutocompleteCommand(AsyncPackage package, OleMenuCommandService commandService)
+		private AutocompleteCommand(AsyncPackage package, OleMenuCommandService commandService,
+			int commandId)
 		{
 			this.package = package ?? throw new ArgumentNullException(nameof(package));
 			commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
-			var menuCommandID = new CommandID(CommandSet, CommandId);
+            CommandId = commandId;
+            var menuCommandID = new CommandID(CommandSet, CommandId);
 			var menuItem = new MenuCommand(this.Execute, menuCommandID);
 			
 			commandService.AddCommand(menuItem);
 		}
 
-		/// <summary>
-		/// Gets the instance of the command.
-		/// </summary>
-		public static AutocompleteCommand Instance
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Command instances. Index relates to the AutocompleteConfig index in 
+        /// Settings.AutocompletionConfigurations
+        /// </summary>
+        public static List<AutocompleteCommand> Instances = new List<AutocompleteCommand>();
 
 		/// <summary>
 		/// Initializes the singleton instance of the command.
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
-		public static async Task InitializeAsync(AsyncPackage package)
+		public static async Task InitializeAsync(AsyncPackage package, int commandId)
 		{
 			// Switch to the main thread - the call to AddCommand in AutocompleteCommand's constructor requires
 			// the UI thread.
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
 			OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
-			Instance = new AutocompleteCommand(package, commandService);
+			Instances.Add(new AutocompleteCommand(package, commandService, commandId));
 		}
 
 		/// <summary>

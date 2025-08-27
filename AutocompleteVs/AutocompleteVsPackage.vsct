@@ -68,11 +68,11 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId" priority="0x0100" type="Button">
+      <Button guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId0" priority="0x0100" type="Button">
         <Parent guid="guidAutocompleteVsPackageCmdSet" id="TopLevelMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>Invoke AutocompleteCommand</ButtonText>
+          <ButtonText>Generate autocompletion</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -89,7 +89,7 @@
   </Commands>
 
   <KeyBindings>
-    <KeyBinding guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId" editor="guidVSStd97"
+    <KeyBinding guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId0" editor="guidVSStd97"
       key1="M" mod1="CONTROL" key2="A" />
   </KeyBindings>
   
@@ -101,7 +101,7 @@
     <GuidSymbol name="guidAutocompleteVsPackageCmdSet" value="{6f75977d-a6b8-446e-92ad-c986456617f5}">
       <IDSymbol name="TopLevelMenu" value="0x1020" />
       <IDSymbol name="TopLevelMenuGroup" value="0x1021" />
-      <IDSymbol name="AutocompleteCommandId" value="0x0100" />
+      <IDSymbol name="AutocompleteCommandId0" value="0x0100" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{dbc8f891-a424-4890-a805-90d0288cf2d0}" >
