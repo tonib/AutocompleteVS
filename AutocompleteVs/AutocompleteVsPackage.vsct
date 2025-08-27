@@ -68,15 +68,40 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
+		
+	  <!-- Autocomplete command 0 -->
       <Button guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId0" priority="0x0100" type="Button">
         <Parent guid="guidAutocompleteVsPackageCmdSet" id="TopLevelMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
 		<CommandFlag>DynamicVisibility</CommandFlag>
 		<CommandFlag>TextChanges</CommandFlag>
         <Strings>
-          <ButtonText>Generate autocompletion</ButtonText>
+          <ButtonText>Generate autocompletion 0</ButtonText>
         </Strings>
       </Button>
+
+	  <!-- Autocomplete command 1 -->
+	  <Button guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId1" priority="0x0100" type="Button">
+		<Parent guid="guidAutocompleteVsPackageCmdSet" id="TopLevelMenuGroup" />
+		<Icon guid="guidImages" id="bmpPic1" />
+		<CommandFlag>DynamicVisibility</CommandFlag>
+		<CommandFlag>TextChanges</CommandFlag>
+		<Strings>
+			<ButtonText>Generate autocompletion 1</ButtonText>
+		</Strings>
+	  </Button>
+		
+	  <!-- Autocomplete command 2 -->
+	  <Button guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId2" priority="0x0100" type="Button">
+		<Parent guid="guidAutocompleteVsPackageCmdSet" id="TopLevelMenuGroup" />
+		<Icon guid="guidImages" id="bmpPic1" />
+		<CommandFlag>DynamicVisibility</CommandFlag>
+		<CommandFlag>TextChanges</CommandFlag>
+		<Strings>
+			<ButtonText>Generate autocompletion 2</ButtonText>
+		</Strings>
+	  </Button>
+		
     </Buttons>
     
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -93,6 +118,10 @@
   <KeyBindings>
     <KeyBinding guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId0" editor="guidVSStd97"
       key1="M" mod1="CONTROL" key2="A" />
+    <KeyBinding guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId1" editor="guidVSStd97"
+      key1="M" mod1="CONTROL" key2="B" />	
+    <KeyBinding guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId2" editor="guidVSStd97"
+      key1="M" mod1="CONTROL" key2="C" />
   </KeyBindings>
   
   <Symbols>
@@ -104,6 +133,8 @@
       <IDSymbol name="TopLevelMenu" value="0x1020" />
       <IDSymbol name="TopLevelMenuGroup" value="0x1021" />
       <IDSymbol name="AutocompleteCommandId0" value="0x0100" />
+      <IDSymbol name="AutocompleteCommandId1" value="0x0101" />
+      <IDSymbol name="AutocompleteCommandId2" value="0x0102" />		
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{dbc8f891-a424-4890-a805-90d0288cf2d0}" >
