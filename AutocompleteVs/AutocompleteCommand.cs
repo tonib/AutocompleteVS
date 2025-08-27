@@ -44,12 +44,17 @@ namespace AutocompleteVs
 		private readonly AsyncPackage package;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AutocompleteCommand"/> class.
-		/// Adds our command handlers for menu (commands must exist in the command table file)
+		/// Command menu item
 		/// </summary>
-		/// <param name="package">Owner package, not null.</param>
-		/// <param name="commandService">Command service to add command to, not null.</param>
-		private AutocompleteCommand(AsyncPackage package, OleMenuCommandService commandService,
+		private OleMenuCommand MenuItem { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutocompleteCommand"/> class.
+        /// Adds our command handlers for menu (commands must exist in the command table file)
+        /// </summary>
+        /// <param name="package">Owner package, not null.</param>
+        /// <param name="commandService">Command service to add command to, not null.</param>
+        private AutocompleteCommand(AsyncPackage package, OleMenuCommandService commandService,
 			int commandId)
 		{
 			this.package = package ?? throw new ArgumentNullException(nameof(package));
@@ -57,10 +62,27 @@ namespace AutocompleteVs
 
             CommandId = commandId;
             var menuCommandID = new CommandID(CommandSet, CommandId);
-			var menuItem = new MenuCommand(this.Execute, menuCommandID);
+            MenuItem = new OleMenuCommand(this.Execute, menuCommandID);
+            MenuItem.BeforeQueryStatus += MenuItem_BeforeQueryStatus;
 			
-			commandService.AddCommand(menuItem);
+			commandService.AddCommand(MenuItem);
 		}
+
+		/// <summary>
+		/// Updates command status
+		/// </summary>
+        private void MenuItem_BeforeQueryStatus(object sender, EventArgs e)
+        {
+            Config.AutocompleteConfig autocompleteConfig = 
+				AutocompleteVsPackage.Instance?.Settings.AutocompleteConfig;
+			if (autocompleteConfig == null)
+				MenuItem.Visible = false;
+			else
+			{
+                MenuItem.Visible = true;
+				MenuItem.Text = $"Generate autocompletion ({autocompleteConfig})";
+            }
+        }
 
         /// <summary>
         /// Command instances. Index relates to the AutocompleteConfig index in 

@@ -71,6 +71,8 @@
       <Button guid="guidAutocompleteVsPackageCmdSet" id="AutocompleteCommandId0" priority="0x0100" type="Button">
         <Parent guid="guidAutocompleteVsPackageCmdSet" id="TopLevelMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
+		<CommandFlag>DynamicVisibility</CommandFlag>
+		<CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <ButtonText>Generate autocompletion</ButtonText>
         </Strings>
